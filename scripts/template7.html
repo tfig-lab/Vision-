@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Análise de Performance de Velocidade</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="color-scheme" content="light only">
@@ -266,6 +267,7 @@ body.noscroll{overflow:hidden}
 .zarea .rb b{font-family:var(--f-mono);font-weight:500}
 [hidden]{display:none!important}
 .potleg{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--ink2)}.potleg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.ordsel{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12.5px;color:var(--ink2)}.ordsel select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:5px;padding:4px 6px}#t-raz th.ordon{color:var(--accent)}#t-raz th.ordon::after{content:' ▾'}
 </style>
 <header class="top wrap" style="padding-bottom:0">
   <div class="eyebrow" id="hdr-eyebrow">Serra Norte</div>
@@ -337,7 +339,7 @@ body.noscroll{overflow:hidden}
       <p>Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada pelo código do evento. Use o botão Grupo / Razao em cada quadro. "Perda" é o tempo equivalente perdido em relação à referência. Exemplo: 60 s a 50% da referência = 30 s perdidos. Quando há mais de uma interação ativa ao mesmo tempo, a perda da leitura é dividida em partes iguais entre elas.</p></div></div>
     <div class="g2w">
       <div class="card chart"><div class="chead"><h3 id="c-tipo-tit">Perda por grupo</h3><div class="vtog" data-vt="trecho"><button data-v="grupo" aria-pressed="true">Grupo</button><button data-v="razao" aria-pressed="false">Razao</button></div></div><p class="sub" id="c-tipo-sub">horas equivalentes · filtros aplicados</p><div id="c-tipo"></div><div class="note" id="c-tipo-note"></div></div>
-      <div class="card"><h3 id="t-raz-tit">Razao com mais perda</h3><p class="sub">top 20 · s/evento = perda média por ocorrência · queda = referência − real enquanto ativa</p><div class="tbl scroll"><table id="t-raz"><thead><tr><th id="t-raz-h">Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span></th><th class="n">Eventos</th><th class="n">Camin.</th><th class="n">Perda h</th><th class="n">s/evento</th><th class="n">Queda km/h</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="card"><div class="chead"><h3 id="t-raz-tit">Razao com mais perda</h3><label class="ordsel">Ordenar por<select id="t-raz-ord"><option value="perda">Perda (h)</option><option value="queda">Queda (km/h)</option><option value="sev">Perda por evento (s)</option><option value="ev">Eventos</option><option value="tm">Caminhões</option></select></label></div><p class="sub" id="t-raz-sub">s/evento = perda média por ocorrência · queda = referência − real enquanto ativa · clique no cabeçalho para ordenar</p><div class="tbl scroll"><table id="t-raz"><thead><tr><th id="t-raz-h">Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span></th><th class="n" data-k="ev">Eventos</th><th class="n" data-k="tm">Camin.</th><th class="n" data-k="perda">Perda h</th><th class="n" data-k="sev">s/evento</th><th class="n" data-k="queda">Queda km/h</th></tr></thead><tbody></tbody></table></div></div>
     </div>
   </section>
 
@@ -794,15 +796,25 @@ function chartTipo(){const r=R;const tot=r.parL.reduce((a,b)=>a+b,0);let it;
     it.forEach(o=>{o.ext=tot>0?` · ${nf(100*o.v*3600/tot,0)}%`:'';o.tip=`<div class="t">${esc(PARES[o.q].razao)}</div>${row('Grupo · Tipo_Alerta',tipoTxt(o.q))}${row('Perda',nf(o.v,2)+' h')}${row('Tempo com a Razao ativa',nf(r.parW[o.q]/3600,1)+' h')}`;});}
   hbars(document.getElementById('c-tipo'),it,' h',1);
   document.getElementById('c-tipo-note').innerHTML='';}
-function tableRaz(){const tb=document.querySelector('#t-raz tbody');tb.innerHTML='';const r=R;let n0=0;
-  const cnt=b=>{let tm=0;for(;b;b&=b-1)tm++;return tm;};
-  if(S.view==='grupo'){document.getElementById('t-raz-tit').textContent='Grupos com mais perda';document.getElementById('t-raz-h').innerHTML='Grupo <span style="text-transform:none;letter-spacing:0">(nº de Razao)</span>';
-    [...Array(NG).keys()].filter(g=>r.grL[g]>0).sort((a,b)=>r.grL[b]-r.grL[a]).forEach(g=>{n0++;const n=r.grEv[g];const tr=document.createElement('tr');
-      tr.innerHTML=`<td><span class="dot" style="background:${gvar(g)}"></span>${esc(GRUPOS[g])}<div style="color:var(--muted);font-size:11px;padding-left:14px;font-family:var(--f-mono)">${UNITS(g).length} Razao</div></td><td class="n">${n}</td><td class="n">${cnt(r.grTm[g])}</td><td class="n">${nf(r.grL[g]/3600,2)}</td><td class="n">${n?nf(r.grL[g]/n,0):'—'}</td><td class="n">${nf(r.grQ[g]/r.grW[g],1)}</td>`;tb.appendChild(tr);});}
-  else{document.getElementById('t-raz-tit').textContent='Razao com mais perda';document.getElementById('t-raz-h').innerHTML='Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span>';
-    [...Array(NP).keys()].filter(q=>r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).slice(0,25).forEach(q=>{n0++;const n=r.evCount[q];
-      const tr=document.createElement('tr');tr.innerHTML=`<td><span class="dot" style="background:${rvar(q)}"></span>${esc(PARES[q].razao)}<div style="color:var(--muted);font-size:11px;padding-left:14px;font-family:var(--f-mono)">${esc(tipoTxt(q))}</div></td><td class="n">${n}</td><td class="n">${cnt(r.parTm[q])}</td><td class="n">${nf(r.parL[q]/3600,2)}</td><td class="n">${n?nf(r.parL[q]/n,0):'—'}</td><td class="n">${nf(r.parQ[q]/r.parW[q],1)}</td>`;tb.appendChild(tr);});}
-  if(!n0)tb.innerHTML='<tr><td colspan="6" style="color:var(--muted)">Nenhuma interação com estes filtros.</td></tr>';}
+const ORDT={perda:'perda',queda:'queda de velocidade',sev:'perda por evento',ev:'eventos',tm:'caminhões afetados'};let ORD='perda';
+function tableRaz(){const tb=document.querySelector('#t-raz tbody');tb.innerHTML='';const r=R;
+  const cnt=b=>{let tm=0;for(;b;b&=b-1)tm++;return tm;};const MINEV=5,media=ORD==='queda'||ORD==='sev';
+  let rows;
+  if(S.view==='grupo'){document.getElementById('t-raz-h').innerHTML='Grupo <span style="text-transform:none;letter-spacing:0">(nº de Razao)</span>';
+    rows=[...Array(NG).keys()].filter(g=>r.grL[g]>0).map(g=>{const n=r.grEv[g];return {nome:esc(GRUPOS[g]),sub:UNITS(g).length+' Razao',cor:gvar(g),ev:n,tm:cnt(r.grTm[g]),perda:r.grL[g]/3600,sev:n?r.grL[g]/n:null,queda:r.grW[g]?r.grQ[g]/r.grW[g]:null};});}
+  else{document.getElementById('t-raz-h').innerHTML='Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span>';
+    rows=[...Array(NP).keys()].filter(q=>r.parL[q]>0).map(q=>{const n=r.evCount[q];return {nome:esc(PARES[q].razao),sub:esc(tipoTxt(q)),cor:rvar(q),ev:n,tm:cnt(r.parTm[q]),perda:r.parL[q]/3600,sev:n?r.parL[q]/n:null,queda:r.parW[q]?r.parQ[q]/r.parW[q]:null};});}
+  if(media)rows=rows.filter(o=>o.ev>=MINEV&&o[ORD]!=null);
+  rows.sort((a,b)=>(b[ORD]-a[ORD])||(b.perda-a.perda));if(S.view!=='grupo')rows=rows.slice(0,25);
+  document.getElementById('t-raz-tit').textContent=(S.view==='grupo'?'Grupos':'Razao')+' com mais '+ORDT[ORD];
+  document.getElementById('t-raz-sub').textContent=(S.view==='grupo'?'':'top 25 · ')+(media?`só com ${MINEV} eventos ou mais · `:'')+'s/evento = perda média por ocorrência · queda = referência − real enquanto ativa · clique no cabeçalho para ordenar';
+  document.getElementById('t-raz-ord').value=ORD;
+  document.querySelectorAll('#t-raz th[data-k]').forEach(th=>{const on=th.dataset.k===ORD;th.classList.toggle('ordon',on);th.setAttribute('aria-sort',on?'descending':'none');});
+  rows.forEach(o=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="dot" style="background:${o.cor}"></span>${o.nome}<div style="color:var(--muted);font-size:11px;padding-left:14px;font-family:var(--f-mono)">${o.sub}</div></td><td class="n">${o.ev}</td><td class="n">${o.tm}</td><td class="n">${nf(o.perda,2)}</td><td class="n">${o.sev!=null?nf(o.sev,0):'—'}</td><td class="n">${o.queda!=null?nf(o.queda,1):'—'}</td>`;tb.appendChild(tr);});
+  if(!rows.length)tb.innerHTML=`<tr><td colspan="6" style="color:var(--muted)">${media?'Nenhuma interação com 5 eventos ou mais com estes filtros.':'Nenhuma interação com estes filtros.'}</td></tr>`;}
+document.getElementById('t-raz-ord').addEventListener('change',e=>{ORD=e.target.value;tableRaz();});
+document.querySelectorAll('#t-raz th[data-k]').forEach(th=>{th.style.cursor='pointer';th.title='Ordenar por esta coluna';th.addEventListener('click',()=>{ORD=th.dataset.k;tableRaz();});});
 function vbars(host,labels,vals,hours,opt){host.innerHTML='';const Wd=Math.max(300,host.clientWidth),Hh=220,ml=34,mb=opt.rot?40:24,mt=16,s=svg(Wd,Hh);host.appendChild(s);
   const n=labels.length,bw=(Wd-ml-6)/n,inner=Math.max(3,bw-Math.max(2,bw*.28)),mx=Math.max(...vals,1)*1.12,y=v=>mt+(Hh-mt-mb)*(1-v/mx);
   const step=mx>60?20:mx>30?10:mx>16?5:mx>8?2:1;for(let t=0;t<=mx;t+=step){el('line',{x1:ml,x2:Wd,y1:y(t),y2:y(t),class:'grid'},s);txt(s,ml-6,y(t)+4,t,{'text-anchor':'end',class:'num',style:'fill:var(--muted)'});}
