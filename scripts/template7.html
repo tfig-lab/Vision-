@@ -224,7 +224,7 @@ body.noscroll{overflow:hidden}
 .upcard.err .upst{color:var(--crit)}
 .upadv{margin-top:14px;font-size:13px;color:var(--ink2)}
 .upadv summary{cursor:pointer;font-weight:600;color:var(--ink)}
-.upparams{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 16px;margin-top:10px}
+.upparams{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px 28px;margin-top:12px}
 .upparams label{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
 .upparams input{font:inherit;font-size:13.5px;padding:6px 8px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink);max-width:160px}
 .uprun{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px}
@@ -268,6 +268,7 @@ body.noscroll{overflow:hidden}
 [hidden]{display:none!important}
 .potleg{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--ink2)}.potleg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .ordsel{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12.5px;color:var(--ink2)}.ordsel select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:5px;padding:4px 6px}#t-raz th.ordon{color:var(--accent)}#t-raz th.ordon::after{content:' ▾'}
+.upparams label{display:flex;flex-direction:column;gap:6px}.phelp{display:block;font-size:12.5px;line-height:1.5;color:var(--ink2);font-weight:400;margin-top:2px}.phelp b{color:var(--ink);font-weight:600}
 </style>
 <header class="top wrap" style="padding-bottom:0">
   <div class="eyebrow" id="hdr-eyebrow">Serra Norte</div>
@@ -440,10 +441,10 @@ body.noscroll{overflow:hidden}
     </div>
     <details class="upadv"><summary>Parâmetros da análise</summary>
       <div class="upparams">
-        <label>Janela antes do evento (s)<input type="number" id="up-pre" value="5" min="0" step="1"></label>
-        <label>Janela depois do evento (s)<input type="number" id="up-pos" value="20" min="0" step="1"></label>
-        <label>Queda mínima para contar perda (km/h)<input type="number" id="up-tol" value="3" min="0" step="0.5"></label>
-        <label>Parada longa, fora da conta (s)<input type="number" id="up-par" value="600" min="60" step="60"></label>
+        <label>Janela antes do evento (s)<input type="number" id="up-pre" value="5" min="0" step="1"><span class="phelp"><b>O que é:</b> quantos segundos antes do início registrado da interação a leitura de GPS já conta como "com interação". Serve para pegar a desaceleração que começa um pouco antes do registro.<br><b>O que impacta:</b> valores maiores atribuem mais perda às interações e reduzem o que fica sem interação. A referência também muda um pouco, porque essas leituras deixam de ser usadas para calculá-la.</span></label>
+        <label>Janela depois do evento (s)<input type="number" id="up-pos" value="20" min="0" step="1"><span class="phelp"><b>O que é:</b> quantos segundos depois do término da interação a leitura ainda conta como "com interação". Cobre a retomada da velocidade depois que o evento termina.<br><b>O que impacta:</b> valores maiores incluem a aceleração de volta na perda da interação. Isso aumenta a perda, a queda em km/h e a perda por evento, principalmente em interações curtas.</span></label>
+        <label>Queda mínima para contar perda (km/h)<input type="number" id="up-tol" value="3" min="0" step="0.5"><span class="phelp"><b>O que é:</b> o quanto a velocidade real precisa ficar abaixo da referência para a leitura contar como perda. Diferenças menores são tratadas como variação normal do modelo.<br><b>O que impacta:</b> um valor menor conta pequenas oscilações como perda e aumenta todos os totais. Um valor maior deixa só as quedas claras. Afeta perda (h), velocidade perdida por interações, potencial de ganho e o mapa.</span></label>
+        <label>Parada longa, fora da conta (s)<input type="number" id="up-par" value="600" min="60" step="60"><span class="phelp"><b>O que é:</b> paradas contínuas (abaixo de 1 km/h) mais longas que isso são tiradas da análise, como fila, troca de turno ou manutenção.<br><b>O que impacta:</b> um valor menor tira mais paradas da conta, reduzindo as horas paradas e a perda atribuída a interações que mantêm o caminhão parado. Um valor maior inclui essas paradas e pode inflar a perda.</span></label>
       </div></details>
     <div class="uprun"><button type="button" class="btn-go" id="up-go" disabled>Processar e atualizar o painel</button><button type="button" class="btn-reset" id="up-reset" hidden>Voltar aos dados originais</button></div>
     <div class="upprog" id="up-prog" hidden><div class="upbar"><b id="up-bar"></b></div><div class="upmsg" id="up-msg"></div></div>
