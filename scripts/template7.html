@@ -81,7 +81,10 @@ section.band{padding-block:26px;border-top:1px solid var(--line)}
 .zrow{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:2px 10px;padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;font:inherit;color:inherit}
 .zrow:hover,.zrow.sel{background:var(--chip)}
 .secsw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:0}
-#t-sec td,#t-sec th{white-space:nowrap}#t-sec td:last-child{white-space:normal;min-width:180px}
+#t-sec{width:100%}#t-sec th{white-space:normal;vertical-align:bottom;line-height:1.3}#t-sec td.n{white-space:nowrap}#t-sec td:last-child{min-width:150px}
+#t-sec tr.tp{cursor:pointer}#t-sec tr.tp:hover td{background:var(--chip)}#t-sec .car{display:inline-block;width:14px;color:var(--muted);font-size:11px;transition:transform .15s}#t-sec tr.tp[aria-expanded="true"] .car{transform:rotate(90deg)}
+#t-sec tr.sub td{font-size:12.5px;background:color-mix(in srgb,var(--panel) 70%,var(--bg))}#t-sec tr.sub td:first-child{padding-left:34px}#t-sec tr.sub{cursor:pointer}#t-sec tr.sub:hover td{background:var(--chip)}
+#t-sec tr.sub .sid{font-family:var(--f-mono);font-weight:500;color:var(--accent);margin-right:6px}#t-sec tr.sub .sdesc{color:var(--muted);font-size:11.5px}#t-sec tr.more td{font-size:12px;color:var(--muted);padding-left:34px}
 .zid{font-family:var(--f-display);font-weight:700;font-size:20px;color:var(--accent);grid-row:span 4;align-self:start;padding-top:2px}
 .zstats{grid-column:2/4;display:flex;flex-direction:column;gap:6px;margin:4px 0 2px}
 .zlost{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;border-left:3px solid var(--accent);padding-left:8px}
@@ -341,7 +344,7 @@ body.noscroll{overflow:hidden}
   <section class="band" id="secoes">
     <div class="shead"><div><h2>Por tipo de seção física</h2>
       <p>O trajeto é reconstruído a partir do GPS e cortado em seções: <b>retas</b>, <b>curvas</b>, <b>interseções</b>, <b>frentes de carga</b> e <b>áreas de basculamento</b>. Cada linha soma as seções daquele tipo, com os filtros aplicados. A velocidade perdida por interações já desconta a rampa, a carga e a curvatura, porque elas fazem parte da referência.</p></div></div>
-    <div class="card"><div class="tbl scroll"><table id="t-sec"><thead><tr><th>Tipo de seção</th><th class="n">Seções</th><th class="n">Extensão</th><th class="n">Tempo h</th><th class="n">Parado</th><th class="n">Referência</th><th class="n">Real</th><th class="n">Perdida por interações</th><th class="n">Perda h</th><th class="n">% da perda</th><th>Principal Razao</th></tr></thead><tbody></tbody></table></div>
+    <div class="card"><div class="tbl scroll"><table id="t-sec"><thead><tr><th>Tipo de seção</th><th class="n">Seções</th><th class="n">Extensão</th><th class="n">Tempo h</th><th class="n">Parado</th><th class="n">Referência km/h</th><th class="n">Real km/h</th><th class="n">Perdida por interações km/h</th><th class="n">Perda h</th><th class="n">% da perda</th><th>Principal Razao</th></tr></thead><tbody></tbody></table></div>
     <p class="note" id="t-sec-note" style="margin-bottom:0"></p></div>
   </section>
 
@@ -645,15 +648,25 @@ function locais(){LOCPE=locaisPor('pe').L;LOCRI=locaisPor('ri').L;const o=locais
 
 /* ---------- seções por tipo ---------- */
 const STIPOS=['Reta','Curva','Interseção','Frente de carga','Área de basculamento'];const SCOR={'Reta':'--t0','Curva':'--t1','Interseção':'--t6','Frente de carga':'--t2','Área de basculamento':'--t3'};
+const SOPEN=new Set();
+function focoSecao(id){const s=SECS.find(x=>x.id===id);if(!s)return;S.unit='sec';unitUI();locCrit();S.selSec=id;T.cx=s.x;T.cy=s.y;const ext=s.r?s.r*4:Math.max(150,(s.len||200)*1.3);T.s=Math.min(1.6,Math.min(W,H)/ext);zoneList();sched();box.scrollIntoView({block:'center',behavior:'smooth'});}
 function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)return;const band=document.getElementById('secoes');if(!HASSEC){band.hidden=true;return;}
-  const G={};let totPe=0;for(const tp of STIPOS)G[tp]={n:0,len:0,w:0,vw:0,rw:0,ri:0,pe:0,st:0,pm:new Map()};
-  SECS.forEach((s,si)=>{const g=G[s.tipo];if(!g||!SA.w[si])return;g.n++;if(s.poly)g.len+=s.len||0;g.w+=SA.w[si];g.vw+=SA.vw[si];g.rw+=SA.rw[si];g.ri+=SA.ri[si];g.pe+=SA.pe[si];g.st+=SA.st[si];SPAR[si].forEach((v,q)=>g.pm.set(q,(g.pm.get(q)||0)+v));});
+  const G={};let totPe=0;for(const tp of STIPOS)G[tp]={n:0,len:0,w:0,vw:0,rw:0,ri:0,pe:0,st:0,pm:new Map(),ss:[]};
+  SECS.forEach((s,si)=>{const g=G[s.tipo];if(!g||!SA.w[si])return;g.n++;if(s.poly)g.len+=s.len||0;g.w+=SA.w[si];g.vw+=SA.vw[si];g.rw+=SA.rw[si];g.ri+=SA.ri[si];g.pe+=SA.pe[si];g.st+=SA.st[si];SPAR[si].forEach((v,q)=>g.pm.set(q,(g.pm.get(q)||0)+v));g.ss.push(si);});
   for(const tp of STIPOS)totPe+=G[tp].pe;totPe+=SOUT.pe;tb.innerHTML='';
-  for(const tp of STIPOS){const g=G[tp];if(!g.w)continue;const q=topPar(g.pm);const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="secsw" style="background:var(${SCOR[tp]})"></span><b style="font-weight:600">${tp}</b></td><td class="n">${g.n}</td><td class="n">${g.len?nf(g.len/1000,1)+' km':'—'}</td><td class="n">${nf(g.w/3600,1)}</td><td class="n">${nf(100*g.st/g.w,0)}%</td><td class="n">${nf(g.rw/g.w,1)} km/h</td><td class="n">${nf(g.vw/g.w,1)} km/h</td><td class="n"><b style="color:var(--accent)">${nf(g.ri/g.w,1)} km/h</b></td><td class="n">${nf(g.pe/3600,1)}</td><td class="n">${totPe?nf(100*g.pe/totPe,0):0}%</td><td>${q>=0?`${esc(PARES[q].razao)} <span style="color:var(--muted)">(${nf(100*g.pm.get(q)/(g.pe||1),0)}%)</span>`:'—'}</td>`;tb.appendChild(tr);}
-  if(SOUT.w){const tr=document.createElement('tr');tr.style.color='var(--muted)';tr.innerHTML=`<td>Fora das seções</td><td class="n">—</td><td class="n">—</td><td class="n">${nf(SOUT.w/3600,1)}</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">${nf(SOUT.ri/SOUT.w,1)} km/h</td><td class="n">${nf(SOUT.pe/3600,1)}</td><td class="n">${totPe?nf(100*SOUT.pe/totPe,0):0}%</td><td>leituras a mais de 30 m de qualquer seção (pistas pouco usadas, pátios)</td>`;tb.appendChild(tr);}
+  const razTxt=(pm,pe)=>{const q=topPar(pm);return q>=0?`${esc(PARES[q].razao)} <span style="color:var(--muted)">(${nf(100*pm.get(q)/(pe||1),0)}%)</span>`:'—';};
+  for(const tp of STIPOS){const g=G[tp];if(!g.w)continue;const open=SOPEN.has(tp);const tr=document.createElement('tr');tr.className='tp';tr.setAttribute('aria-expanded',open);tr.tabIndex=0;tr.title=open?'Fechar as seções':'Abrir as seções deste tipo';
+    tr.innerHTML=`<td><span class="car">▶</span><span class="secsw" style="background:var(${SCOR[tp]})"></span><b style="font-weight:600">${tp}</b></td><td class="n">${g.n}</td><td class="n">${g.len?nf(g.len/1000,1)+' km':'—'}</td><td class="n">${nf(g.w/3600,1)}</td><td class="n">${nf(100*g.st/g.w,0)}%</td><td class="n">${nf(g.rw/g.w,1)}</td><td class="n">${nf(g.vw/g.w,1)}</td><td class="n"><b style="color:var(--accent)">${nf(g.ri/g.w,1)}</b></td><td class="n">${nf(g.pe/3600,1)}</td><td class="n">${totPe?nf(100*g.pe/totPe,0):0}%</td><td>${razTxt(g.pm,g.pe)}</td>`;
+    const tog=()=>{open?SOPEN.delete(tp):SOPEN.add(tp);tableSec();};tr.onclick=tog;tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog();}};tb.appendChild(tr);
+    if(open){g.ss.sort((a,b)=>SA.pe[b]-SA.pe[a]);
+      g.ss.forEach(si=>{const s=SECS[si],w=SA.w[si];const sr=document.createElement('tr');sr.className='sub';sr.tabIndex=0;sr.title='Ver no mapa';
+        const desc=[s.raio?'raio '+nf(s.raio,0)+' m':null,SA.n[si]<60?'pouca leitura':null].filter(Boolean).join(' · ');
+        sr.innerHTML=`<td><span class="sid">S${s.id}</span><span class="sdesc">${desc}</span></td><td class="n"></td><td class="n">${s.poly&&s.len?nf(s.len,0)+' m':'—'}</td><td class="n">${nf(w/3600,2)}</td><td class="n">${nf(100*SA.st[si]/w,0)}%</td><td class="n">${nf(SA.rw[si]/w,1)}</td><td class="n">${nf(SA.vw[si]/w,1)}</td><td class="n" style="color:var(--accent)">${nf(SA.ri[si]/w,1)}</td><td class="n">${nf(SA.pe[si]/3600,2)}</td><td class="n">${totPe?nf(100*SA.pe[si]/totPe,1):0}%</td><td>${razTxt(SPAR[si],SA.pe[si])}</td>`;
+        sr.onclick=()=>focoSecao(s.id);sr.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();focoSecao(s.id);}};tb.appendChild(sr);});
+      const m=document.createElement('tr');m.className='more';m.innerHTML=`<td colspan="11">${g.ss.length} seções, ordenadas pela perda. Clique em uma seção para vê-la no mapa.</td>`;tb.appendChild(m);}}
+  if(SOUT.w){const tr=document.createElement('tr');tr.style.color='var(--muted)';tr.innerHTML=`<td>Fora das seções</td><td class="n">—</td><td class="n">—</td><td class="n">${nf(SOUT.w/3600,1)}</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">${nf(SOUT.ri/SOUT.w,1)}</td><td class="n">${nf(SOUT.pe/3600,1)}</td><td class="n">${totPe?nf(100*SOUT.pe/totPe,0):0}%</td><td>leituras a mais de 30 m de qualquer seção (pistas pouco usadas, pátios)</td>`;tb.appendChild(tr);}
   const nOk=SECS.filter((s,si)=>SA.w[si]).length;
-  document.getElementById('t-sec-note').innerHTML=`${nOk} seções com leituras nestes filtros. "Perdida por interações" = queda média abaixo da referência enquanto há interação selecionada ativa, dividida por todo o tempo no tipo de seção. "% da perda" = parte da perda por interações (h) que aconteceu naquele tipo. Use <b>Seções físicas</b> no mapa acima para ver cada seção.`;}
+  document.getElementById('t-sec-note').innerHTML=`${nOk} seções com leituras nestes filtros. <b>Clique em um tipo para abrir as seções dele</b> e, dentro dele, em uma seção para vê-la no mapa. "Perdida por interações" = queda média abaixo da referência enquanto há interação selecionada ativa, dividida por todo o tempo na seção. "% da perda" = parte da perda por interações (h) que aconteceu ali.`;}
 /* ---------- KPIs ---------- */
 function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.max(0,hOp-hSt);
   document.getElementById('k-h').innerHTML=`${nf(hMov,0)}<small>h</small>`;document.getElementById('k-st').innerHTML=`${nf(hSt,0)}<small>h</small>`;
@@ -700,7 +713,8 @@ function drawSecs(){const D=MET[S.metric],lw=Math.max(5,22*T.s),gray=css('--line
   SECS.forEach((s,si)=>{if(s.poly)return;const o=SECL[si];const[sx,sy]=toS(s.x,s.y);const rad=Math.max(6,s.r*T.s);ctx.beginPath();ctx.arc(sx,sy,rad,0,6.283);
     ctx.globalAlpha=.55;ctx.fillStyle=col(o);ctx.fill();ctx.globalAlpha=1;ctx.lineWidth=s.id===S.selSec?3:1.4;ctx.strokeStyle=s.id===S.selSec?ink:col(o);ctx.setLineDash(s.tipo==='Interseção'?[]:[5,4]);ctx.stroke();ctx.setLineDash([]);});
   if(S.zones){ctx.font=`600 12px ${css('--f-body')}`;const placed=[];
-    SECTOP.forEach(o=>{const[sx,sy]=toS(o.x,o.y);const lab='S'+o.id,tw=ctx.measureText(lab).width+10;let lx=sx+8,ly=sy-26;
+    const lst=SECTOP.slice();if(S.selSec&&!lst.some(o=>o.id===S.selSec)){const si=SECS.findIndex(s=>s.id===S.selSec);if(si>=0)lst.push(SECL[si]||{id:SECS[si].id,x:SECS[si].x,y:SECS[si].y});}
+    lst.forEach(o=>{const[sx,sy]=toS(o.x,o.y);const lab='S'+o.id,tw=ctx.measureText(lab).width+10;let lx=sx+8,ly=sy-26;
       const hit=y=>placed.some(p=>lx<p[0]+p[2]+2&&lx+tw+2>p[0]&&y<p[1]+20&&y+20>p[1]);for(const off of[0,22,-22,44,-44,66]){if(!hit(sy-26+off)){ly=sy-26+off;break;}}
       placed.push([lx,ly,tw]);ctx.strokeStyle=ink;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(lx,ly+9);ctx.stroke();
       ctx.fillStyle=o.id===S.selSec?css('--accent'):ink;ctx.beginPath();ctx.roundRect?ctx.roundRect(lx,ly,tw,18,4):ctx.rect(lx,ly,tw,18);ctx.fill();ctx.fillStyle=css('--bg');ctx.fillText(lab,lx+5,ly+13);});}}
@@ -828,10 +842,11 @@ document.getElementById('m-z').onchange=e=>{S.zones=e.target.checked;sched();};
 function zoneList(){if(S.unit==='sec'&&HASSEC)return secList();zoneList0();}
 function secList(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
   document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções, carga e basculamento) · muda com a métrica e os filtros. Clique para centralizar.`;
-  if(!SECTOP.length){el.innerHTML='<p style="padding:14px;color:var(--muted)">Nada a mostrar com estes filtros.</p>';return;}
-  SECTOP.forEach(o=>{const q=topPar(o.pm);const det=[`perda ${nf(o.pe/60,0)} min`,`${nf(o.h,1)} h na seção`,o.rampa!=null?`rampa ${nf(o.rampa,0)}%`:null].filter(Boolean).join(' · ');
+  const lst=SECTOP.slice();let extra=null;if(S.selSec&&!lst.some(o=>o.id===S.selSec)){const si=SECS.findIndex(s=>s.id===S.selSec);if(si>=0&&SECL[si]){extra=SECL[si];lst.unshift(extra);}}
+  if(!lst.length){el.innerHTML='<p style="padding:14px;color:var(--muted)">Nada a mostrar com estes filtros.</p>';return;}
+  lst.forEach(o=>{if(o===extra){const h=document.createElement('div');h.className='zl';h.style.cssText='padding:10px 14px 0';h.textContent='Seção selecionada (fora do ranking)';el.appendChild(h);}else if(extra&&o===lst[1]){const h=document.createElement('div');h.className='zl';h.style.cssText='padding:10px 14px 0';h.textContent='Ranking';el.appendChild(h);}const q=topPar(o.pm);const det=[`perda ${nf(o.pe/60,0)} min`,`${nf(o.h,1)} h na seção`,o.rampa!=null?`rampa ${nf(o.rampa,0)}%`:null].filter(Boolean).join(' · ');
     const b=document.createElement('button');b.type='button';b.className='zrow'+(S.selSec===o.id?' sel':'');
-    b.innerHTML=`<span class="zid">S${o.id}</span><span class="ztipo">${secDesc(o)}</span><span class="zval" title="Valor usado para ordenar">${nf(o.val,D.dec)} ${D.un}</span>
+    b.innerHTML=`<span class="zid">S${o.id}</span><span class="ztipo">${secDesc(o)}</span><span class="zval" title="Valor usado para ordenar">${o.val!=null&&isFinite(o.val)?nf(o.val,D.dec)+' '+D.un:'—'}</span>
       <div class="zstats"><div class="zlost"><span class="zl">Velocidade perdida por interações</span><span class="zbig">${nf(o.ri,1)}<small>km/h</small></span></div>
         <div class="zpair"><div><span class="zl">Referência da seção</span><b>${nf(o.r,1)} km/h</b></div><div><span class="zl">Velocidade real</span><b>${nf(o.v,1)} km/h</b></div></div></div>
       <span class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].razao)}</b> (${nf(100*o.pm.get(q)/(o.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${Math.round(M.origem[0]+o.x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+o.y).toLocaleString('pt-BR')}</span></span>`;
