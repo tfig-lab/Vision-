@@ -1,0 +1,7 @@
+# Dados e painéis abertos nunca vão para o repositório público
+*.csv
+*.xlsx
+*.xls
+painel*.html
+!scripts/*.html
+saida/
