@@ -1,5 +1,6 @@
 <title>Análise de Performance de Velocidade</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="color-scheme" content="light only">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -17,27 +18,8 @@
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#121210; --panel:#1b1a18; --ink:#efede7; --ink2:#c4c0b6; --muted:#8f8b82; --line:#2c2a27; --line2:#3b3935;
-  --accent:#e2875f; --accent-ink:#1b0f08; --chip:#262522;
-  --map-bg:#0e0e0d; --road:#3d3b37;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --gray-series:#6d6a64;
-  --o0:#3a1f12; --o1:#7a3417; --o2:#c4521f; --o3:#f08a55; --o4:#ffd2b8;
-  --b0:#13243b; --b1:#184f95; --b2:#2a78d6; --b3:#6da7ec; --b4:#cde2fb;
-  --dv-neg:#3987e5; --dv-mid:#383835; --dv-pos:#e66767;
-  --t0:#3987e5; --t1:#d95926; --t2:#199e70; --t3:#c98500; --t4:#d55181; --t5:#008300; --t6:#9085e9; --bar:#a8a49b; --ref:#6da7ec; --loss-fill:rgba(230,103,103,.22); --band-cheio:rgba(226,135,95,.11); --band-vazio:rgba(57,135,229,.11); --grade:#d8b45a; --grade-fill:rgba(216,180,90,.14);
-  color-scheme:dark;}}
-:root[data-theme="dark"]{
-  --bg:#121210; --panel:#1b1a18; --ink:#efede7; --ink2:#c4c0b6; --muted:#8f8b82; --line:#2c2a27; --line2:#3b3935;
-  --accent:#e2875f; --accent-ink:#1b0f08; --chip:#262522;
-  --map-bg:#0e0e0d; --road:#3d3b37;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --gray-series:#6d6a64;
-  --o0:#3a1f12; --o1:#7a3417; --o2:#c4521f; --o3:#f08a55; --o4:#ffd2b8;
-  --b0:#13243b; --b1:#184f95; --b2:#2a78d6; --b3:#6da7ec; --b4:#cde2fb;
-  --dv-neg:#3987e5; --dv-mid:#383835; --dv-pos:#e66767;
-  --t0:#3987e5; --t1:#d95926; --t2:#199e70; --t3:#c98500; --t4:#d55181; --t5:#008300; --t6:#9085e9; --bar:#a8a49b; --ref:#6da7ec; --loss-fill:rgba(230,103,103,.22); --band-cheio:rgba(226,135,95,.11); --band-vazio:rgba(57,135,229,.11); --grade:#d8b45a; --grade-fill:rgba(216,180,90,.14);
-  color-scheme:dark;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
