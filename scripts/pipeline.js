@@ -279,6 +279,120 @@ const meta={origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota,dias,arquivos:
   eventos_fora:eventosFora,periodo:[fmt(tmin),fmt(tmax)],tol:TOL,pre:PRE,pos:POS,cv:cvs,
   q:{linhas:linhasInter,eventos:EM.length,sem_fim:EM.filter(e=>!e.fv).length,pontos:N,horas:horas/3600,pts_limpos:LIMPO.reduce((a,b)=>a+b,0),pts_com_evento:NAT.reduce((a,b)=>a+(b>0),0),n_reg:regPar.n||0,pares:pares.length},
   reg_pista:regPista,reg_par:regPar.tab,shap,curva,ciclos,usa_grupo:usaGrupo};
+log('Reconstruindo as seções físicas da pista',.97);
+{const SF=secoesFisicas(P,meta,E);meta.secoes=SF.secoes;P.sid=SF.sid;E.sid=SF.eid;}
 log('Pronto',1);
 return{meta,P,E};}
-if(typeof module!=='undefined')module.exports={rodarPipeline};
+// Seções físicas: reconstrói o eixo das pistas a partir do GPS e corta em retas, curvas, interseções e áreas de carga/basculamento.
+function secoesFisicas(P,M,E,opt){
+  opt=Object.assign({g:4,minHits:3,fecha:6,abre:5,buraco:2500,spur:70,raioCurva:150,minReta:50,minCurva:30,rInter:35,dMax:30},opt||{});
+  const N=P.x.length,G=opt.g;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(let i=0;i<N;i++){const x=P.x[i],y=P.y[i];if(x<x0)x0=x;if(y<y0)y0=y;if(x>x1)x1=x;if(y>y1)y1=y;}
+  x0-=60;y0-=60;x1+=60;y1+=60;const NX=Math.ceil((x1-x0)/G)+1,NY=Math.ceil((y1-y0)/G)+1,id=(a,b)=>a*NY+b;
+  const gx=x=>Math.round((x-x0)/G),gy=y=>Math.round((y-y0)/G);
+  // 1) zonas de carga e basculamento (agrupamento dos eventos)
+  const zonas=[];
+  const agrupa=(pts,tipo)=>{const used=new Uint8Array(pts.length);
+    for(let a=0;a<pts.length;a++){if(used[a])continue;const st=[a],mem=[];used[a]=1;
+      while(st.length){const u=st.pop();mem.push(u);for(let b=0;b<pts.length;b++)if(!used[b]&&Math.hypot(pts[b][0]-pts[u][0],pts[b][1]-pts[u][1])<100){used[b]=1;st.push(b);}}
+      let cx=0,cy=0;for(const u of mem){cx+=pts[u][0];cy+=pts[u][1];}cx/=mem.length;cy/=mem.length;let r=0;for(const u of mem)r=Math.max(r,Math.hypot(pts[u][0]-cx,pts[u][1]-cy));
+      const ds=mem.map(u=>Math.hypot(pts[u][0]-cx,pts[u][1]-cy)).sort((a,b)=>a-b);const p90=ds[Math.floor(.9*(ds.length-1))];zonas.push({tipo,x:cx,y:cy,r:Math.min(140,Math.max(60,p90+40)),n:mem.length});}};
+  agrupa(M.loadxy||[],'Frente de carga');agrupa(M.dumpxy||[],'Área de basculamento');
+  const naZona=(x,y)=>{for(let z=0;z<zonas.length;z++){const Z=zonas[z];if(Math.abs(x-Z.x)<Z.r&&Math.abs(y-Z.y)<Z.r&&Math.hypot(x-Z.x,y-Z.y)<Z.r)return z;}return -1;};
+  // 2) ocupação: linhas entre leituras consecutivas do mesmo caminhão
+  const hit=new Uint16Array(NX*NY);
+  for(let i=1;i<N;i++){if(P.k[i]!==P.k[i-1]||P.t[i]-P.t[i-1]>40||P.v[i]<20||P.v[i-1]<20)continue;
+    const ax=(P.x[i-1]-x0)/G,ay=(P.y[i-1]-y0)/G,bx=(P.x[i]-x0)/G,by=(P.y[i]-y0)/G,L=Math.hypot(bx-ax,by-ay);if(L*G>130)continue;
+    const n=Math.max(1,Math.ceil(L));let last=-1;for(let s=0;s<=n;s++){const k=id(Math.round(ax+(bx-ax)*s/n),Math.round(ay+(by-ay)*s/n));if(k!==last){if(hit[k]<65535)hit[k]++;last=k;}}}
+  let road=new Uint8Array(NX*NY);for(let k=0;k<road.length;k++)road[k]=hit[k]>=opt.minHits?1:0;
+  // fecha buracos (dilata 3, erode 2) e tira as zonas de carga/basculamento
+  const dil=(src,r)=>{const o=new Uint8Array(src.length);for(let a=0;a<NX;a++)for(let b=0;b<NY;b++){if(!src[id(a,b)])continue;for(let da=-r;da<=r;da++)for(let db=-r;db<=r;db++){if(da*da+db*db>r*r)continue;const aa=a+da,bb=b+db;if(aa>=0&&bb>=0&&aa<NX&&bb<NY)o[id(aa,bb)]=1;}}return o;};
+  const ero=(src,r)=>{const inv=new Uint8Array(src.length);for(let k=0;k<src.length;k++)inv[k]=src[k]?0:1;const d=dil(inv,r);for(let k=0;k<src.length;k++)d[k]=d[k]?0:1;return d;};
+  road=ero(dil(road,opt.fecha),opt.abre);
+  // preenche buracos pequenos (as duas mãos da pista viram uma faixa só)
+  {const bg=new Int32Array(NX*NY).fill(-1);let c=0;for(let k0=0;k0<road.length;k0++){if(road[k0]||bg[k0]>=0)continue;const st=[k0],mem=[];bg[k0]=c;let borda=false;
+    while(st.length){const k=st.pop();mem.push(k);const a=(k/NY)|0,b=k%NY;if(a===0||b===0||a===NX-1||b===NY-1)borda=true;for(const[da,db]of[[1,0],[-1,0],[0,1],[0,-1]]){const aa=a+da,bb=b+db;if(aa<0||bb<0||aa>=NX||bb>=NY)continue;const kk=id(aa,bb);if(!road[kk]&&bg[kk]<0){bg[kk]=c;st.push(kk);}}}
+    if(!borda&&mem.length<opt.buraco)for(const k of mem)road[k]=1;c++;}}
+  for(let a=0;a<NX;a++)for(let b=0;b<NY;b++)if(road[id(a,b)]&&naZona(x0+a*G,y0+b*G)>=0)road[id(a,b)]=0;
+  // 3) esqueleto (Zhang-Suen)
+  const sk=road;let mudou=true;const nb=(a,b)=>[sk[id(a,b+1)],sk[id(a+1,b+1)],sk[id(a+1,b)],sk[id(a+1,b-1)],sk[id(a,b-1)],sk[id(a-1,b-1)],sk[id(a-1,b)],sk[id(a-1,b+1)]];
+  for(let a=0;a<NX;a++){sk[id(a,0)]=0;sk[id(a,NY-1)]=0;}for(let b=0;b<NY;b++){sk[id(0,b)]=0;sk[id(NX-1,b)]=0;}
+  let ativos=[];for(let k=0;k<sk.length;k++)if(sk[k])ativos.push(k);
+  while(mudou){mudou=false;for(const passo of[0,1]){const del=[];
+    for(const k of ativos){if(!sk[k])continue;const a=(k/NY)|0,b=k%NY;const p=nb(a,b);let B=0,A=0;for(let j=0;j<8;j++){B+=p[j];if(!p[j]&&p[(j+1)%8])A++;}
+      if(B<2||B>6||A!==1)continue;if(passo===0){if(p[0]*p[2]*p[4]||p[2]*p[4]*p[6])continue;}else{if(p[0]*p[2]*p[6]||p[0]*p[4]*p[6])continue;}del.push(k);}
+    for(const k of del)sk[k]=0;if(del.length)mudou=true;}ativos=ativos.filter(k=>sk[k]);}
+  // remove degraus (pixels de canto redundantes), deixando o esqueleto com 1 pixel de largura em 8-conectividade
+  const OFF=[[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
+  const comps=p=>{const on=[];for(let j=0;j<8;j++)if(p[j])on.push(j);const par=on.map((_,i)=>i);const f=i=>par[i]===i?i:(par[i]=f(par[i]));
+    for(let u=0;u<on.length;u++)for(let v=u+1;v<on.length;v++){const A_=OFF[on[u]],B_=OFF[on[v]];if(Math.abs(A_[0]-B_[0])<=1&&Math.abs(A_[1]-B_[1])<=1)par[f(u)]=f(v);}
+    let c=0;for(let u=0;u<on.length;u++)if(f(u)===u)c++;return[c,on.length];};
+  for(const k of ativos){if(!sk[k])continue;const a=(k/NY)|0,b=k%NY;const p=nb(a,b);
+    if(!((p[0]&&p[2])||(p[2]&&p[4])||(p[4]&&p[6])||(p[6]&&p[0])))continue;const[c,B]=comps(p);if(c===1&&B>=2)sk[k]=0;}
+  ativos=ativos.filter(k=>sk[k]);
+  // 4) grafo: nós (pontas e junções) e arestas
+  const N8=[[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
+  const viz=k=>{const a=(k/NY)|0,b=k%NY,o=[];for(const[da,db]of N8){const kk=id(a+da,b+db);if(sk[kk])o.push(kk);}return o;};
+  let edges;
+  const grafo=()=>{const deg=new Map();for(const k of ativos)if(sk[k])deg.set(k,viz(k).length);
+    const isNode=k=>{const d=deg.get(k);return d===1||d>=3;};const seen=new Set(),E=[];
+    for(const[k,d]of deg){if(!isNode(k))continue;for(const n0 of viz(k)){const key=k<n0?k+','+n0:n0+','+k;if(seen.has(key))continue;seen.add(key);
+      const path=[k,n0];let prev=k,cur=n0;while(!isNode(cur)){const nx=viz(cur).filter(q=>q!==prev);if(!nx.length)break;
+        // prefere vizinho 4-conectado para não pular cantos
+        let nn=nx[0];prev=cur;cur=nn;const key2=prev<cur?prev+','+cur:cur+','+prev;if(seen.has(key2))break;seen.add(key2);path.push(cur);if(path.length>200000)break;}
+      E.push({a:k,b:cur,path,da:deg.get(k),db:deg.get(cur)});}}
+    // laços sem nó
+    return E;};
+  for(let it=0;it<5;it++){edges=grafo();let cut=0;for(const e of edges){const len=e.path.length*G;if((e.da===1||e.db===1)&&len<opt.spur){
+      for(const k of e.path){if(k===e.a&&e.da>=3)continue;if(k===e.b&&e.db>=3)continue;sk[k]=0;cut++;}}}
+    // re-afina depois do corte
+    ativos=ativos.filter(k=>sk[k]);if(!cut)break;}
+  edges=grafo().filter(e=>e.path.length*G>=12||(e.da>=3&&e.db>=3));
+  // junções: agrupa pixels de grau>=3 próximos
+  const jpx=[];for(const k of ativos){if(sk[k]&&viz(k).length>=3)jpx.push(k);}
+  const juncs=[];for(const k of jpx){const x=x0+((k/NY)|0)*G,y=y0+(k%NY)*G;let J=juncs.find(j=>Math.hypot(j.x-x,j.y-y)<opt.rInter);if(J){J.n++;J.x+=(x-J.x)/J.n;J.y+=(y-J.y)/J.n;}else juncs.push({x,y,n:1});}
+  // 5) cada aresta: reamostra a 5 m, suaviza, curvatura, classifica
+  const secs=[];
+  const pxy=k=>[x0+((k/NY)|0)*G,y0+(k%NY)*G];
+  const perto=(x,y)=>juncs.findIndex(j=>Math.hypot(j.x-x,j.y-y)<opt.rInter);
+  for(const e of edges){let pts=e.path.map(pxy);
+    // suaviza 2x janela 5
+    for(let r=0;r<3;r++){const q=pts.map((p,i)=>{let sx=0,sy=0,n=0;for(let d=-3;d<=3;d++){const j=Math.min(pts.length-1,Math.max(0,i+d));sx+=pts[j][0];sy+=pts[j][1];n++;}return[sx/n,sy/n];});q[0]=pts[0];q[q.length-1]=pts[pts.length-1];pts=q;}
+    // reamostra cada 5 m
+    const rs=[pts[0]];let acc=0;for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);acc+=d;if(acc>=5){rs.push(pts[i]);acc=0;}}if(rs.length<2||rs[rs.length-1]!==pts[pts.length-1])rs.push(pts[pts.length-1]);
+    const n=rs.length,hd=[];for(let i=0;i<n;i++){const a=rs[Math.max(0,i-1)],b=rs[Math.min(n-1,i+1)];hd.push(Math.atan2(b[1]-a[1],b[0]-a[0]));}
+    const B=4,kap=[];for(let i=0;i<n;i++){const a=Math.max(0,i-B),b=Math.min(n-1,i+B);let d=hd[b]-hd[a];while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;kap.push((b>a)?d/((b-a)*5):0);}
+    // rótulo por ponto: J (junção), C (curva), R (reta)
+    const kIn=1/opt.raioCurva,kOut=0.7/opt.raioCurva;let curva=false;
+    const lab=rs.map((p,i)=>{if(perto(p[0],p[1])>=0)return'J';const k=Math.abs(kap[i]);if(curva?k>kOut:k>kIn)curva=true;else curva=false;return curva?'C':'R';});
+    // runs
+    let runs=[];for(let i=0;i<n;i++){if(runs.length&&runs[runs.length-1].t===lab[i])runs[runs.length-1].j=i;else runs.push({t:lab[i],i,j:i});}
+    const len=r=>(r.j-r.i+1)*5;
+    // funde trechos curtos: curva curta vira reta, reta curta entre curvas vira curva
+    for(let pass=0;pass<3;pass++){for(let q=0;q<runs.length;q++){const r=runs[q];if(r.t==='C'&&len(r)<opt.minCurva)r.t='R';if(r.t==='R'&&len(r)<opt.minReta&&q>0&&q<runs.length-1&&runs[q-1].t==='C'&&runs[q+1].t==='C')r.t='C';}
+      const m=[];for(const r of runs){if(m.length&&m[m.length-1].t===r.t)m[m.length-1].j=r.j;else m.push(Object.assign({},r));}runs=m;}
+    // reta curta solta: junta com o vizinho mais longo
+    for(let q=0;q<runs.length;q++){const r=runs[q];if(r.t!=='J'&&len(r)<20&&runs.length>1){const nb2=[runs[q-1],runs[q+1]].filter(Boolean).filter(x=>x.t!=='J').sort((a,b)=>len(b)-len(a))[0];if(nb2)r.t=nb2.t;}}
+    {const m=[];for(const r of runs){if(m.length&&m[m.length-1].t===r.t)m[m.length-1].j=r.j;else m.push(Object.assign({},r));}runs=m;}
+    for(const r of runs){if(r.t==='J')continue;const poly=rs.slice(Math.max(0,r.i-1),Math.min(n,r.j+2));let kmax=0;for(let i=r.i;i<=r.j;i++)kmax=Math.max(kmax,Math.abs(kap[i]));
+      let L=0;for(let i=1;i<poly.length;i++)L+=Math.hypot(poly[i][0]-poly[i-1][0],poly[i][1]-poly[i-1][1]);
+      secs.push({tipo:r.t==='C'?'Curva':'Reta',poly,len:L,raio:r.t==='C'&&kmax>0?1/kmax:null});}}
+  for(const j of juncs)secs.push({tipo:'Interseção',x:j.x,y:j.y,r:opt.rInter,len:2*opt.rInter,poly:null});
+  for(const z of zonas)secs.push({tipo:z.tipo,x:z.x,y:z.y,r:z.r,len:null,poly:null});
+  // 6) rótulo de cada ponto GPS: zona > interseção > trecho mais próximo (até dMax)
+  const lbl=new Int32Array(NX*NY).fill(-1),dist=new Float32Array(NX*NY).fill(1e9);
+  const q=[];secs.forEach((s,si)=>{if(!s.poly)return;for(let i=1;i<s.poly.length;i++){const[a,b]=[s.poly[i-1],s.poly[i]];const L=Math.hypot(b[0]-a[0],b[1]-a[1]),m=Math.max(1,Math.ceil(L/(G/2)));for(let t=0;t<=m;t++){const x=a[0]+(b[0]-a[0])*t/m,y=a[1]+(b[1]-a[1])*t/m;const k=id(gx(x),gy(y));if(dist[k]>0){dist[k]=0;lbl[k]=si;q.push(k);}}}});
+  for(let h=0;h<q.length;h++){const k=q[h],a=(k/NY)|0,b=k%NY;for(const[da,db]of N8){const aa=a+da,bb=b+db;if(aa<0||bb<0||aa>=NX||bb>=NY)continue;const kk=id(aa,bb),nd=dist[k]+G*Math.hypot(da,db);if(nd<dist[kk]&&nd<=opt.dMax){dist[kk]=nd;lbl[kk]=lbl[k];q.push(kk);}}}
+  const nS=secs.length,jBase=secs.findIndex(s=>s.tipo==='Interseção');
+  const atrib=(x,y)=>{const z=naZona(x,y);if(z>=0)return nS-zonas.length+z;
+    if(jBase>=0){let bj=-1,bd=1e9;for(let j=0;j<juncs.length;j++){const d=Math.hypot(juncs[j].x-x,juncs[j].y-y);if(d<opt.rInter&&d<bd){bd=d;bj=j;}}if(bj>=0)return jBase+bj;}
+    const a=gx(x),b=gy(y);return(a>=0&&b>=0&&a<NX&&b<NY)?lbl[id(a,b)]:-1;};
+  const sid=new Array(N);for(let i=0;i<N;i++)sid[i]=atrib(P.x[i],P.y[i]);
+  const eid=[];if(E)for(let j=0;j<E.x.length;j++)eid.push(atrib(E.x[j],E.y[j]));
+  const out=secs.map((s,k)=>{const o={id:k+1,tipo:s.tipo,len:s.len!=null?Math.round(s.len):null};
+    if(s.poly){o.poly=s.poly.map(p=>[Math.round(p[0]),Math.round(p[1])]);let sx=0,sy=0;for(const p of s.poly){sx+=p[0];sy+=p[1];}o.x=Math.round(sx/s.poly.length);o.y=Math.round(sy/s.poly.length);}
+    else{o.x=Math.round(s.x);o.y=Math.round(s.y);o.r=Math.round(s.r);}
+    if(s.raio)o.raio=Math.round(s.raio);return o;});
+  return {secoes:out,sid,eid};
+}
+if(typeof module!=='undefined')module.exports={rodarPipeline,secoesFisicas};

@@ -64,3 +64,4 @@ Planilha de resultados em Python: `python pipeline5.py Interacoes.csv velocidade
 - **Potencial de ganho:** velocidade atual + queda atribuída às interações, em média no tempo.
 - **GPS:** cada leitura vale no máximo 20 s. Acima de 25 s sem leitura, o trecho fica marcado como "sem registro" (não é assumido 0 km/h).
 - **Dia:** `Dt_Referencia`.
+- **Seções físicas:** o eixo das pistas é reconstruído a partir do GPS (grade de 4 m, as duas mãos viram uma faixa, esqueleto da faixa) e cortado em retas e curvas (raio < 150 m = curva), interseções (3 ou mais trechos, raio de 35 m), frentes de carga e áreas de basculamento (eventos `AT is in Loading` / `AT is in Dumping`). Cada leitura vai para a seção mais próxima, até 30 m. Função `secoesFisicas` em `scripts/pipeline.js`.
