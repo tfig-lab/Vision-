@@ -65,7 +65,7 @@ Planilha de resultados em Python: `python pipeline5.py Interacoes.csv velocidade
 - **Histórico:** matriz seção × dia (ou turno) colorida pela métrica escolhida e detalhe de uma seção ao longo do tempo: real × referência, velocidade perdida por interações, eventos por grupo e tempo na seção. As seções são montadas uma vez com todo o período, então mantêm o mesmo número em todos os dias.
 - **Carregar dados:** processa novos arquivos no navegador.
 
-Dados publicados: 15/09/2026 a 22/09/2026 e 15/10/2026 (9 dias, 1,17 milhão de leituras de GPS, 29 mil interações no modelo).
+Dados publicados: 15/09/2026 a 22/09/2026 (8 dias, 1,07 milhão de leituras de GPS, 25,8 mil interações no modelo).
 
 ## Critérios
 
