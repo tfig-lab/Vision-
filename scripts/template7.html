@@ -222,7 +222,12 @@ body.noscroll{overflow:hidden}
 #cm-box:fullscreen,#cm-box.expandido{height:100%!important;padding:0}
 #fs-tl:fullscreen,#fs-tl.expandido{border:0}
 .tip{z-index:300}
-.upnow{margin:0 0 14px;font-size:13px;color:var(--ink2)}
+.upnow{margin:0 0 16px;font-size:13px;color:var(--ink2)}
+.upnow table{width:100%;border-collapse:collapse;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.upnow th,.upnow td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:12.5px}.upnow th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.upnow td.n{text-align:right;font-family:var(--f-mono);white-space:nowrap}.upnow td.f{font-family:var(--f-mono);font-size:12px;word-break:break-all}.upnow tr:last-child td{border-bottom:0}
+.upfiles{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}.upfiles li{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:6px}
+.upfiles li b{font-family:var(--f-mono);font-weight:600;color:var(--ink);word-break:break-all}.upfiles li span{display:block;font-family:var(--f-mono);font-size:11.5px;color:var(--ink2)}.upfiles li .lendo{color:var(--muted)}
 .upgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .upcard{position:relative;display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1.5px dashed var(--line2);border-radius:10px;padding:16px;cursor:pointer;min-width:0;transition:border-color .15s,background .15s}
 .upcard:hover,.upcard.drag{border-color:var(--accent)}
@@ -482,18 +487,18 @@ body.noscroll{overflow:hidden}
 <main class="wrap">
   <section class="band" style="border-top:0">
     <div class="shead"><div><h2>Carregar novos dados</h2>
-      <p>Escolha os arquivos no mesmo formato dos que usamos aqui, e o painel inteiro é refeito com eles. Para vários dias, selecione (ou arraste) vários arquivos de interações e vários de velocidade de uma vez; registros repetidos entre arquivos são descartados. O processamento roda no seu navegador: os arquivos não são enviados para lugar nenhum e não ficam salvos. Ao recarregar a página, o painel volta para os dados originais.</p></div></div>
-    <p class="upnow" id="up-now"></p>
+      <p>Escolha os arquivos no mesmo formato dos que usamos aqui, e o painel inteiro é refeito com eles. Para vários dias, selecione (ou arraste) vários arquivos de interações e vários de velocidade de uma vez; registros repetidos entre arquivos são descartados. O processamento roda no seu navegador: os arquivos não são enviados para lugar nenhum e não ficam salvos. Ao recarregar a página, o painel volta para os dados publicados.</p></div></div>
+    <div class="upnow" id="up-now"></div>
     <div class="upgrid">
       <label class="upcard" id="up-c-inter" for="up-inter"><span class="upnum">1</span><span class="uptit">Interações <em>obrigatório · 1 ou mais arquivos</em></span>
         <span class="updesc">CSV separado por ponto e vírgula. Colunas usadas: <code>Id_Evento_Origem</code>, <code>TAG</code>, <code>Data_Inicio</code>, <code>Data_Termino</code>, <code>Latitude</code>, <code>Longitude</code>, <code>Tipo_Alerta</code>, <code>Razao</code>, <code>Evento_Codigo</code>.</span>
-        <input type="file" id="up-inter" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-inter">Nenhum arquivo escolhido</span></label>
+        <input type="file" id="up-inter" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-inter">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-inter"></ul></label>
       <label class="upcard" id="up-c-vel" for="up-vel"><span class="upnum">2</span><span class="uptit">Velocidade por trecho <em>obrigatório · 1 ou mais arquivos</em></span>
         <span class="updesc">CSV separado por ponto e vírgula. Colunas usadas: <code>TAG</code>, <code>Data_Leitura</code>, <code>PosX</code>, <code>PosY</code>, <code>PosZ</code>, <code>Velocidade</code>, <code>Direcao</code>, <code>NomeTurno</code>.</span>
-        <input type="file" id="up-vel" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-vel">Nenhum arquivo escolhido</span></label>
+        <input type="file" id="up-vel" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-vel">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-vel"></ul></label>
       <label class="upcard" id="up-c-dp" for="up-dp"><span class="upnum">3</span><span class="uptit">De-para de códigos <em>opcional</em></span>
         <span class="updesc">Planilha Excel com <code>Event Code</code> e a coluna L <code>Consolidação Operação</code>. Só as interações com grupo entram no modelo. Sem esta planilha, todas as Razao entram, sem grupo.</span>
-        <input type="file" id="up-dp" accept=".xlsx,.xls,.csv"><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-dp">Nenhum arquivo escolhido</span></label>
+        <input type="file" id="up-dp" accept=".xlsx,.xls,.csv"><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-dp">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-dp"></ul></label>
     </div>
     <details class="upadv"><summary>Parâmetros da análise</summary>
       <div class="upparams">
@@ -502,7 +507,7 @@ body.noscroll{overflow:hidden}
         <label>Queda mínima para contar perda (km/h)<input type="number" id="up-tol" value="3" min="0" step="0.5"><span class="phelp"><b>O que é:</b> o quanto a velocidade real precisa ficar abaixo da referência para a leitura contar como perda. Diferenças menores são tratadas como variação normal do modelo.<br><b>O que impacta:</b> um valor menor conta pequenas oscilações como perda e aumenta todos os totais. Um valor maior deixa só as quedas claras. Afeta perda (h), velocidade perdida por interações, potencial de ganho e o mapa.</span></label>
         <label>Parada longa, fora da conta (s)<input type="number" id="up-par" value="600" min="60" step="60"><span class="phelp"><b>O que é:</b> paradas contínuas (abaixo de 1 km/h) mais longas que isso são tiradas da análise, como fila, troca de turno ou manutenção.<br><b>O que impacta:</b> um valor menor tira mais paradas da conta, reduzindo as horas paradas e a perda atribuída a interações que mantêm o caminhão parado. Um valor maior inclui essas paradas e pode inflar a perda.</span></label>
       </div></details>
-    <div class="uprun"><button type="button" class="btn-go" id="up-go" disabled>Processar e atualizar o painel</button><button type="button" class="btn-reset" id="up-reset" hidden>Voltar aos dados originais</button></div>
+    <div class="uprun"><button type="button" class="btn-go" id="up-go" disabled>Processar e atualizar o painel</button><button type="button" class="btn-reset" id="up-reset" hidden>Voltar aos dados publicados</button></div>
     <div class="upprog" id="up-prog" hidden><div class="upbar"><b id="up-bar"></b></div><div class="upmsg" id="up-msg"></div></div>
     <div class="upres" id="up-res" hidden></div>
   </section>
@@ -1479,7 +1484,7 @@ window.__reboot=(D,aba)=>{aba=aba||'trecho';window.__D=D;document.getElementById
 /* ---------- aba Carregar dados ---------- */
 (function(){
 const $=id=>document.getElementById(id);
-const F={inter:[],vel:[],dp:null};let gmap=null;
+const F={inter:[],vel:[],dp:null};let gmap=null,DPN=null;
 const tam=b=>b>1e6?(b/1e6).toFixed(1).replace('.',',')+' MB':Math.round(b/1e3)+' kB';
 function setCard(k,file,ok,msg){const c=$('up-c-'+k);c.classList.toggle('ok',!!ok);c.classList.toggle('err',ok===false);const fs=Array.isArray(file)?file:(file?[file]:[]);
   $('up-s-'+k).textContent=msg||(fs.length?(fs.length===1?`${fs[0].name} · ${tam(fs[0].size)}`:`${fs.length} arquivos · ${tam(fs.reduce((a,f)=>a+f.size,0))} · ${fs.map(f=>f.name).join(', ')}`):'Nenhum arquivo escolhido');}
@@ -1496,17 +1501,37 @@ async function lerDepara(file){
   if(!n)throw new Error('A coluna "Consolidação Operação" está vazia na planilha.');
   return{m,n};}
 function liga(k){const inp=$('up-'+k),card=$('up-c-'+k);
-  const usar=async files=>{files=[...(files||[])];if(!files.length)return;if(k!=='dp'){F[k]=files;setCard(k,files,true);pronto();return;}const file=files[0];F[k]=file;setCard(k,file);
-    if(k==='dp'){try{const r=await lerDepara(file);gmap=r.m;setCard(k,file,true,`${file.name} · ${r.n} códigos com grupo`);}catch(e){gmap=null;F.dp=null;setCard(k,file,false,e.message);}}
+  const usar=async files=>{files=[...(files||[])];if(!files.length)return;if(k!=='dp'){F[k]=files;setCard(k,files,true);pronto();listarArquivos(k,files);return;}const file=files[0];F[k]=file;setCard(k,file);
+    if(k==='dp'){try{const r=await lerDepara(file);gmap=r.m;DPN=r.n;setCard(k,file,true,`${file.name} · ${r.n} códigos com grupo`);}catch(e){gmap=null;F.dp=null;setCard(k,file,false,e.message);}}
     else setCard(k,file,true);pronto();};
   inp.onchange=()=>usar(inp.files);
   card.addEventListener('dragover',e=>{e.preventDefault();card.classList.add('drag');});
   card.addEventListener('dragleave',()=>card.classList.remove('drag'));
   card.addEventListener('drop',e=>{e.preventDefault();card.classList.remove('drag');usar(e.dataTransfer.files);});}
 ['inter','vel','dp'].forEach(liga);
+// leitura rápida de cada arquivo escolhido: linhas, primeira e última data/hora e dias de referência
+async function escanear(file,tipo){const rd=file.stream().pipeThrough(new TextDecoderStream()).getReader();let resto='',hdr=null,iD=-1,iR=-1,n=0,mn='',mx='';const dias=new Set();
+  const campo=(l,i)=>{let a=0;for(let k=0;k<i;k++){a=l.indexOf(';',a)+1;if(!a)return'';}const b=l.indexOf(';',a);return b<0?l.slice(a):l.slice(a,b);};
+  const linha=l=>{if(!l)return;if(!hdr){hdr=l.replace(/^\uFEFF/,'').split(';').map(s=>s.trim().replace(/^"|"$/g,''));const pref=tipo==='vel'?['Data_Leitura']:['Data_Inicio','Data','Inicio'];for(const c of pref){iD=hdr.indexOf(c);if(iD>=0)break;}iR=hdr.indexOf('Dt_Referencia');return;}
+    n++;if(iD>=0){const d=campo(l,iD).replace(/"/g,'').slice(0,19);if(/^\d{4}-\d\d-\d\d/.test(d)&&d.slice(0,4)>'1990'){if(!mn||d<mn)mn=d;if(!mx||d>mx)mx=d;}}if(iR>=0){const r=campo(l,iR).replace(/"/g,'').slice(0,10);if(r)dias.add(r);}};
+  for(;;){const{value,done}=await rd.read();if(done)break;const s=resto+value;let a=0,b;while((b=s.indexOf('\n',a))>=0){linha(s.slice(a,b).replace(/\r$/,''));a=b+1;}resto=s.slice(a);}
+  linha(resto.replace(/\r$/,''));const ds=[...dias].sort();return{nome:file.name,tam:file.size,linhas:n,ini:mn,fim:mx,dias:ds};}
+const fdh=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)} ${s.slice(11,16)}`:'—';const fd=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}`:'—';
+const linhaArq=x=>`${x.linhas.toLocaleString('pt-BR')} linhas · ${fdh(x.ini)} → ${fdh(x.fim)}${x.dias&&x.dias.length?` · ${x.dias.length} dia${x.dias.length>1?'s':''} de referência (${fd(x.dias[0])}${x.dias.length>1?'–'+fd(x.dias[x.dias.length-1]):''})`:''}`;
+const SCAN={inter:[],vel:[]};
+async function listarArquivos(k,files){const ul=$('up-f-'+k);SCAN[k]=[];ul.innerHTML=files.map((f,i)=>`<li id="up-f-${k}-${i}"><b>${esc2(f.name)}</b> · ${tam(f.size)}<span class="lendo">lendo o arquivo…</span></li>`).join('');
+  for(let i=0;i<files.length;i++){const li=$(`up-f-${k}-${i}`);try{const x=await escanear(files[i],k);SCAN[k][i]=x;if(li)li.innerHTML=`<b>${esc2(x.nome)}</b> · ${tam(x.tam)}<span>${linhaArq(x)}</span>`;}catch(e){if(li)li.innerHTML=`<b>${esc2(files[i].name)}</b><span class="lendo">não foi possível ler: ${esc2(e.message||e)}</span>`;}}
+  const tot=SCAN[k].filter(Boolean);if(tot.length>1){const n=tot.reduce((a,x)=>a+x.linhas,0),ini=tot.map(x=>x.ini).filter(Boolean).sort()[0],fim=tot.map(x=>x.fim).filter(Boolean).sort().pop(),ds=[...new Set(tot.flatMap(x=>x.dias))].sort();
+    ul.insertAdjacentHTML('beforeend',`<li><b>Total</b><span>${linhaArq({linhas:n,ini,fim,dias:ds})}</span></li>`);}}
+const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const desc=M=>`<b>${M.q.pontos.toLocaleString('pt-BR')}</b> leituras de GPS de <b>${M.tags.length}</b> caminhões, de ${M.periodo[0]} a ${M.periodo[1]}${M.dias&&M.dias.length>1?` (<b>${M.dias.length}</b> dias)`:''}; <b>${M.q.eventos.toLocaleString('pt-BR')}</b> interações no modelo${M.usa_grupo===false?' (sem de-para: todas as Razao, sem grupo)':''}.`;
 const fontes=M=>M.fontes?`${M.fontes.inter}, ${M.fontes.vel}${M.fontes.dp?', '+M.fontes.dp:''}`:'Interações_15102026.csv, velocidade_trecho_15102026.csv, CESG_Codigos_Caminhoes_pt_BR_1.xlsx';
-function emUso(M,orig){$('up-now').innerHTML=`<b>Em uso agora:</b> ${orig?'dados originais':'dados carregados nesta sessão'} (${fontes(M)}). ${desc(M)}`;}
+function emUso(M,orig){const A=M.arquivos_det;let tab='';
+  if(A){const rows=[];const add=(rot,x)=>rows.push(`<tr><td>${rot}</td><td class="f">${esc2(x.nome)}</td><td class="n">${x.linhas!=null?x.linhas.toLocaleString('pt-BR'):'—'}</td><td class="n">${fdh(x.ini)}</td><td class="n">${fdh(x.fim)}</td><td class="n">${x.dias&&x.dias.length?`${x.dias.length} (${fd(x.dias[0])}${x.dias.length>1?'–'+fd(x.dias[x.dias.length-1]):''})`:'—'}</td></tr>`);
+    (A.inter||[]).forEach((x,i)=>add(i?'':'Interações',x));(A.vel||[]).forEach((x,i)=>add(i?'':'Velocidade',x));
+    if(A.dp)rows.push(`<tr><td>De-para</td><td class="f">${esc2(A.dp.nome)}</td><td class="n">${A.dp.codigos!=null?A.dp.codigos.toLocaleString('pt-BR')+' códigos':'—'}</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>`);
+    tab=`<table><thead><tr><th>Entrada</th><th>Arquivo</th><th style="text-align:right">Linhas</th><th style="text-align:right">Primeiro registro</th><th style="text-align:right">Último registro</th><th style="text-align:right">Dias de referência</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;}
+  $('up-now').innerHTML=`<b>Em uso agora:</b> ${orig?'dados publicados':'dados carregados nesta sessão'}${A?'':` (${fontes(M)})`}. ${desc(M)}${tab}`;}
 if(window.__ORIG)emUso(window.__ORIG.meta,true);else window.__aoCarregar=()=>emUso(window.__ORIG.meta,true);
 const workerSrc=()=>document.getElementById('pipeline-src').textContent+`
 onmessage=async e=>{const {inter,vel,gmap,prm}=e.data;
@@ -1518,7 +1543,7 @@ let worker=null;
 $('up-go').onclick=()=>{const prm={pre:+$('up-pre').value,pos:+$('up-pos').value,tol:+$('up-tol').value,parada:+$('up-par').value};
   $('up-go').disabled=true;$('up-prog').hidden=false;$('up-res').hidden=true;$('up-res').classList.remove('err');$('up-bar').style.width='1%';$('up-msg').textContent='Preparando…';
   const t0=performance.now();
-  const fim=D=>{const nomes=fs=>fs.length===1?fs[0].name:`${fs.length} arquivos (${fs.map(f=>f.name).join(', ')})`;D.meta.fontes={inter:nomes(F.inter),vel:nomes(F.vel),dp:F.dp&&gmap?F.dp.name:null};const seg=Math.round((performance.now()-t0)/1000);
+  const fim=D=>{const nomes=fs=>fs.length===1?fs[0].name:`${fs.length} arquivos (${fs.map(f=>f.name).join(', ')})`;D.meta.fontes={inter:nomes(F.inter),vel:nomes(F.vel),dp:F.dp&&gmap?F.dp.name:null};D.meta.arquivos_det={inter:F.inter.map((f,i)=>SCAN.inter[i]||{nome:f.name,linhas:null}),vel:F.vel.map((f,i)=>SCAN.vel[i]||{nome:f.name,linhas:null}),dp:F.dp&&gmap?{nome:F.dp.name,codigos:DPN}:null};const seg=Math.round((performance.now()-t0)/1000);
     $('up-bar').style.width='100%';$('up-msg').textContent=`Pronto em ${seg} s`;
     $('up-res').hidden=false;$('up-res').innerHTML=`Painel atualizado: ${desc(D.meta)}`;$('up-reset').hidden=false;$('up-go').disabled=false;emUso(D.meta,false);
     window.__reboot(D,'trecho');window.scrollTo({top:0});};
