@@ -75,9 +75,9 @@ const KS='vision_k';
 async function abrir(raw){
   const k=await S.importKey('raw',raw,'AES-GCM',false,['decrypt']);
   const gz=await S.decrypt({name:'AES-GCM',iv:b2u(C.iv)},k,b2u(C.ct));
-  const html=await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  let html=await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
   const sair=`<script>(function(){function s(){try{sessionStorage.removeItem('${KS}')}catch(e){}location.reload()}function add(){var a=document.getElementById('fs-page');var b=document.createElement('button');b.type='button';b.className='fsbtn';b.textContent='Sair';b.style.alignSelf='center';b.setAttribute('aria-label','Sair do painel');b.onclick=s;if(a&&a.parentNode){a.parentNode.insertBefore(b,a.nextSibling)}else{b.style.cssText='position:fixed;top:10px;right:12px;z-index:9999';document.body.appendChild(b)}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add()})()<\/script>`;
-  const fim=html.search(/<\/body>(?![\s\S]*<\/body>)/i);document.open();document.write(fim<0?html+sair:html.slice(0,fim)+sair+html.slice(fim));document.close();
+  html=html.replace(/<head>/i,'<head><script>window.__VISION_K="'+u2b(raw)+'";<\/script>');const fim=html.search(/<\/body>(?![\s\S]*<\/body>)/i);document.open();document.write(fim<0?html+sair:html.slice(0,fim)+sair+html.slice(fim));document.close();
 }
 async function entrar(user,pw){
   const id=hex(await S.digest('SHA-256',enc.encode('vision:'+user.trim().toLowerCase())));

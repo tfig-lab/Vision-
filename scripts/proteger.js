@@ -7,7 +7,8 @@
 //   node proteger.js adicionar --admin admin --senha-admin "S3nha" --usuario joao --senha "Outra" [--index index.html]
 //   node proteger.js remover   --admin admin --senha-admin "S3nha" --usuario joao                 [--index index.html]
 //   node proteger.js senha     --usuario joao --senha "Atual" --nova "Nova"                       [--index index.html]
-//   node proteger.js atualizar --admin admin --senha-admin "S3nha" --painel painel_novo.html     [--index index.html]
+//   node proteger.js atualizar --admin admin --senha-admin "S3nha" --painel painel_novo.html     [--index index.html] [--dados parte0.bin,parte1.bin]
+//     (--dados: cifra as partes de dados do painel em dados/parteN.enc, ao lado do index; o painel deve apontar para esses nomes com "cifrado":true)
 //   node proteger.js listar                                                                        [--index index.html]
 const fs=require('fs'),path=require('path'),zlib=require('zlib');const wc=require('crypto').webcrypto,subtle=wc.subtle;
 const ITER=600000,enc=new TextEncoder();
@@ -27,6 +28,9 @@ function paginaCompleta(h){if(/^\s*<!doctype/i.test(h))return h;
 async function cifrarPainel(K,arquivo){const html=paginaCompleta(fs.readFileSync(arquivo,'utf8'));const gz=zlib.gzipSync(Buffer.from(html,'utf8'),{level:9});
   const iv=rnd(12),k=await subtle.importKey('raw',K,'AES-GCM',false,['encrypt']);return {iv:b64(iv),ct:b64(new Uint8Array(await subtle.encrypt({name:'AES-GCM',iv},k,gz)))};}
 const TPL=path.join(__dirname,'login_template.html');
+async function cifrarDados(K,arqs,dir){const k=await subtle.importKey('raw',K,'AES-GCM',false,['encrypt']);fs.mkdirSync(path.join(dir,'dados'),{recursive:true});
+  for(let i=0;i<arqs.length;i++){const iv=rnd(12);const ct=new Uint8Array(await subtle.encrypt({name:'AES-GCM',iv},k,fs.readFileSync(arqs[i])));
+    const out=path.join(dir,'dados','parte'+i+'.enc');fs.writeFileSync(out,Buffer.concat([Buffer.from(iv),Buffer.from(ct)]));console.log(out+' · '+(ct.length/1e6).toFixed(1)+' MB');}}
 function ler(f){const t=fs.readFileSync(f,'utf8');const m=t.match(/<script id="cfg" type="application\/json">([\s\S]*?)<\/script>/);if(!m)fail(f+' não é um index protegido');return JSON.parse(m[1]);}
 function gravar(f,C){fs.writeFileSync(f,fs.readFileSync(TPL,'utf8').replace('__CFG__',()=>JSON.stringify(C)));console.log(`${f} gravado · ${Object.keys(C.users).length} usuário(s) · ${(fs.statSync(f).size/1e6).toFixed(1)} MB`);}
 (async()=>{const idx=O.index||O.saida||'index.html';
@@ -34,7 +38,7 @@ function gravar(f,C){fs.writeFileSync(f,fs.readFileSync(TPL,'utf8').replace('__C
   else if(cmd==='adicionar'){need('admin','senha-admin','usuario','senha');const C=ler(idx);const K=await unwrap(C,O.admin,O['senha-admin']);C.users[await uid(O.usuario)]=await wrap(K,O.senha);gravar(idx,C);}
   else if(cmd==='remover'){need('admin','senha-admin','usuario');const C=ler(idx);await unwrap(C,O.admin,O['senha-admin']);const id=await uid(O.usuario);if(!C.users[id])fail('usuário não encontrado');delete C.users[id];gravar(idx,C);}
   else if(cmd==='senha'){need('usuario','senha','nova');const C=ler(idx);const K=await unwrap(C,O.usuario,O.senha);C.users[await uid(O.usuario)]=await wrap(K,O.nova);gravar(idx,C);}
-  else if(cmd==='atualizar'){need('admin','senha-admin','painel');const C=ler(idx);const K=await unwrap(C,O.admin,O['senha-admin']);Object.assign(C,await cifrarPainel(K,O.painel));gravar(idx,C);}
+  else if(cmd==='atualizar'){need('admin','senha-admin','painel');const C=ler(idx);const K=await unwrap(C,O.admin,O['senha-admin']);Object.assign(C,await cifrarPainel(K,O.painel));gravar(idx,C);if(O.dados)await cifrarDados(K,O.dados.split(','),path.dirname(path.resolve(idx)));}
   else if(cmd==='listar'){const C=ler(idx);console.log(Object.keys(C.users).length+' usuário(s) cadastrados (os nomes ficam guardados só como hash).');}
   else fail('comando: criar | adicionar | remover | senha | atualizar | listar');
 })();

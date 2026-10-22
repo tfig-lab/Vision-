@@ -5,3 +5,6 @@
 painel*.html
 !scripts/*.html
 saida/
+
+# dados cifrados do painel publicado podem ir
+!dados/*.enc

@@ -85,6 +85,15 @@ section.band{padding-block:26px;border-top:1px solid var(--line)}
 #t-sec tr.tp{cursor:pointer}#t-sec tr.tp:hover td{background:var(--chip)}#t-sec .car{display:inline-block;width:14px;color:var(--muted);font-size:11px;transition:transform .15s}#t-sec tr.tp[aria-expanded="true"] .car{transform:rotate(90deg)}
 #t-sec tr.sub td{font-size:12.5px;background:color-mix(in srgb,var(--panel) 70%,var(--bg))}#t-sec tr.sub td:first-child{padding-left:34px}#t-sec tr.sub{cursor:pointer}#t-sec tr.sub:hover td{background:var(--chip)}
 #t-sec tr.sub .sid{font-family:var(--f-mono);font-weight:500;color:var(--accent);margin-right:6px}#t-sec tr.sub .sdesc{color:var(--muted);font-size:11.5px}#t-sec tr.more td{font-size:12px;color:var(--muted);padding-left:34px}
+.hmat svg{display:block;width:100%;height:auto}.hmat .hrow:hover rect:first-child{opacity:.9}
+.hleg{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12px;color:var(--ink2);margin:4px 0 8px}.hleg i,.hkey i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.hramp{display:inline-block;width:140px;height:10px;border-radius:2px}.hsw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.hcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.hc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.hc b{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1.15}.hc b small{font-family:var(--f-body);font-size:12px;font-weight:500;color:var(--ink2)}.hsmall{display:block;font-size:12px;color:var(--muted);font-family:var(--f-body);font-weight:400}
+.linkbtn{background:none;border:0;padding:6px 0;color:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.carga{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:14px;color:var(--ink2)}
+.carga[hidden]{display:none}.carga.err .spin2{display:none}.carga.err{color:var(--accent)}
+.spin2{width:28px;height:28px;border:3px solid var(--line2);border-top-color:var(--accent);border-radius:50%;animation:gira .9s linear infinite}@keyframes gira{to{transform:rotate(360deg)}}
 .zid{font-family:var(--f-display);font-weight:700;font-size:20px;color:var(--accent);grid-row:span 4;align-self:start;padding-top:2px}
 .zstats{grid-column:2/4;display:flex;flex-direction:column;gap:6px;margin:4px 0 2px}
 .zlost{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;border-left:3px solid var(--accent);padding-left:8px}
@@ -281,6 +290,7 @@ body.noscroll{overflow:hidden}
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-trecho" aria-selected="true" aria-controls="pane-trecho">Trecho</button>
     <button role="tab" id="tab-ciclo" aria-selected="false" aria-controls="pane-ciclo">Ciclo do caminhão</button>
+    <button role="tab" id="tab-hist" aria-selected="false" aria-controls="pane-hist">Histórico</button>
     <button role="tab" id="tab-dados" aria-selected="false" aria-controls="pane-dados">Carregar dados</button>
     <button type="button" class="fsbtn" id="fs-page" style="margin-left:auto;align-self:center" aria-label="Painel em tela cheia">⛶ Tela cheia</button>
   </div>
@@ -435,6 +445,33 @@ body.noscroll{overflow:hidden}
   </section>
 </main>
 </div>
+<div id="pane-hist" role="tabpanel" hidden>
+  <section class="band" style="border-top:0;padding-top:14px">
+    <div class="shead"><div><h2>Histórico das seções</h2>
+      <p>Como cada seção física se comportou ao longo do tempo. As seções são as mesmas em todos os dias, porque foram montadas uma vez com todo o período. Os filtros de cima (caminhão, carga, turno, data e grupo/Razao) valem aqui também. Clique em uma linha da matriz para ver o detalhe da seção.</p></div></div>
+    <p class="note" id="h-semsec" hidden>Estes dados não têm seções físicas. Processe os arquivos de novo na aba "Carregar dados".</p>
+    <div class="maptools">
+      <div class="fgroup"><span class="flabel">Ver por</span><div class="seg" id="h-gran"><button data-v="dia" aria-pressed="true">Dia</button><button data-v="turno" aria-pressed="false">Turno</button></div></div>
+      <div class="fgroup"><label for="h-met">Cor da matriz</label><select id="h-met"><option value="ri" selected>Velocidade perdida por interações (km/h)</option><option value="pe">Perda por interações (min)</option><option value="v">Velocidade real (km/h)</option><option value="r">Velocidade de referência (km/h)</option><option value="ev">Eventos (nº)</option><option value="h">Tempo na seção (h)</option><option value="st">Tempo parado (%)</option></select></div>
+      <div class="fgroup"><label for="h-ord">Ordenar seções por</label><select id="h-ord"><option value="pe" selected>Perda total no período (min)</option><option value="ri">Perdida por interações no período (km/h)</option><option value="met">Métrica da cor (período)</option><option value="id">Número da seção</option></select></div>
+      <div class="fgroup"><label for="h-tipo">Tipo de seção</label><select id="h-tipo"><option value="">Todas</option><option>Reta</option><option>Curva</option><option>Interseção</option><option>Frente de carga</option><option>Área de basculamento</option></select></div>
+    </div>
+    <div class="card chart"><div class="chead"><h3>Seção × período</h3><span class="note" id="h-mat-n" style="margin:0"></span></div>
+      <div class="hleg" id="h-mat-leg"></div><div id="h-mat" class="hmat"></div>
+      <button type="button" class="linkbtn" id="h-todas" hidden></button></div>
+  </section>
+  <section class="band">
+    <div class="chead" style="margin-bottom:12px"><h2 id="h-det-tit" style="margin:0">Trajeto todo</h2><button type="button" class="linkbtn" id="h-mapa" hidden>Ver no mapa →</button></div>
+    <div class="hcards" id="h-cards"></div>
+    <div class="g2" style="margin-top:16px">
+      <div class="card chart"><h3>Velocidade real × referência</h3><p class="sub"><span class="hkey"><i style="background:var(--ink)"></i>real</span> <span class="hkey"><i style="background:var(--ref)"></i>referência</span> · km/h, média no tempo com paradas</p><div id="h-c-vel"></div></div>
+      <div class="card chart"><h3>Velocidade perdida por interações</h3><p class="sub">km/h abaixo da referência com interação selecionada ativa (rampa, carga e curva já descontadas)</p><div id="h-c-ri"></div></div>
+      <div class="card chart"><h3>Eventos por grupo</h3><p class="sub">interações selecionadas que começaram na seção</p><div class="hleg" id="h-ev-leg"></div><div id="h-c-ev"></div></div>
+      <div class="card chart"><h3>Tempo na seção</h3><p class="sub"><span class="hkey"><i style="background:var(--ref)"></i>em movimento</span> <span class="hkey"><i style="background:var(--o2)"></i>parado</span> · horas</p><div id="h-c-h"></div></div>
+    </div>
+    <p class="note">Médias (km/h) só aparecem com pelo menos 15 leituras (~2,5 min) no dia ou turno. A linha tracejada vertical marca um salto de datas. A tendência compara a média da velocidade perdida por interações na segunda metade dos dias/turnos com a da primeira.</p>
+  </section>
+</div>
 <div id="pane-dados" role="tabpanel" hidden>
 <main class="wrap">
   <section class="band" style="border-top:0">
@@ -467,12 +504,13 @@ body.noscroll{overflow:hidden}
 </div>
 <footer class="wrap" id="foot"></footer>
 <div class="tip" id="tip" hidden></div>
+<div class="carga" id="carga"><div class="spin2"></div><div id="carga-msg">Carregando os dados…</div></div>
 
 <script id="dados" type="application/json">__DATA__</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script id="pipeline-src" type="text/plain">__PIPELINE__</script>
 <script>
-const PRISTINE={trecho:document.getElementById('pane-trecho').innerHTML,ciclo:document.getElementById('pane-ciclo').innerHTML};
+const PRISTINE={trecho:document.getElementById('pane-trecho').innerHTML,ciclo:document.getElementById('pane-ciclo').innerHTML,hist:document.getElementById('pane-hist').innerHTML};
 function BOOT(D){
 const GEN=window.__gen=(window.__gen||0)+1;const vivo=()=>GEN===window.__gen;
 const M=D.meta,P=D.P,E=D.E,N=P.x.length,NE=E.k.length;
@@ -497,10 +535,10 @@ const day=s=>{const d=new Date(t0ms+s*1000);return String(d.getUTCDate()).padSta
 const row=(a,b)=>`<div class="r"><span>${a}</span><span>${b}</span></div>`;
 
 /* ---------- abas ---------- */
-const tabs={trecho:[document.getElementById('tab-trecho'),document.getElementById('pane-trecho')],ciclo:[document.getElementById('tab-ciclo'),document.getElementById('pane-ciclo')],dados:[document.getElementById('tab-dados'),document.getElementById('pane-dados')]};
-function showTab(k){for(const n in tabs){tabs[n][0].setAttribute('aria-selected',n===k);tabs[n][1].hidden=n!==k;}
-  if(k==='ciclo')drawCycle();else if(k==='trecho'){resize();sched();}}
-tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');window.__showTab=showTab;
+const tabs={trecho:[document.getElementById('tab-trecho'),document.getElementById('pane-trecho')],ciclo:[document.getElementById('tab-ciclo'),document.getElementById('pane-ciclo')],dados:[document.getElementById('tab-dados'),document.getElementById('pane-dados')],hist:[document.getElementById('tab-hist'),document.getElementById('pane-hist')]};let TAB='trecho';
+function showTab(k){TAB=k;for(const n in tabs){tabs[n][0].setAttribute('aria-selected',n===k);tabs[n][1].hidden=n!==k;}filtrosNoLugar(fsActive());
+  if(k==='ciclo')drawCycle();else if(k==='trecho'){resize();sched();}else if(k==='hist'&&HASSEC){if(HDIRTY)histCompute();histMatrix();histDetail();}}
+tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');tabs.hist[0].onclick=()=>showTab('hist');window.__showTab=showTab;
 
 /* ---------- estado e filtros ---------- */
 const S={ano:'',mes:'',dia:'',view:'grupo',sview:'grupo',tag:-1,carga:-1,turno:-1,raz:new Set(PARES.map((p,q)=>q)),metric:'ri',heat:true,sel:false,area:null,ev:false,zones:true,selZone:0,unit:'sec',selSec:0};
@@ -562,7 +600,7 @@ document.getElementById('f-reset').onclick=()=>{S.days=new Set(DIAS.map((d,k)=>k
   ['f-carga','f-turno'].forEach(id=>document.getElementById(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v==='-1')));razList();razSum();update();};
 
 /* ---------- grade de células ---------- */
-const CS=25,CW=512,NCELL=CW*CW;
+const CS=25;let _mx=0,_my=0;for(let i=0;i<N;i++){if(P.x[i]>_mx)_mx=P.x[i];if(P.y[i]>_my)_my=P.y[i];}const CW=Math.ceil(_my/CS)+2,NCELL=(Math.ceil(_mx/CS)+2)*CW;
 const cellOf=i=>((P.x[i]/CS)|0)*CW+((P.y[i]/CS)|0);
 const baseCells=[];{const seen=new Uint8Array(NCELL);for(let i=0;i<N;i++){const k=cellOf(i);if(!seen[k]){seen[k]=1;baseCells.push(k);}}}
 const SEG=[];{const seen=new Set();for(let i=1;i<N;i++){if(P.k[i]!==P.k[i-1]||P.t[i]-P.t[i-1]>40)continue;const d=Math.hypot(P.x[i]-P.x[i-1],P.y[i]-P.y[i-1]);if(d<4||d>150)continue;
@@ -667,6 +705,120 @@ function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)retur
   if(SOUT.w){const tr=document.createElement('tr');tr.style.color='var(--muted)';tr.innerHTML=`<td>Fora das seções</td><td class="n">—</td><td class="n">—</td><td class="n">${nf(SOUT.w/3600,1)}</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">${nf(SOUT.ri/SOUT.w,1)}</td><td class="n">${nf(SOUT.pe/3600,1)}</td><td class="n">${totPe?nf(100*SOUT.pe/totPe,0):0}%</td><td>leituras a mais de 30 m de qualquer seção (pistas pouco usadas, pátios)</td>`;tb.appendChild(tr);}
   const nOk=SECS.filter((s,si)=>SA.w[si]).length;
   document.getElementById('t-sec-note').innerHTML=`${nOk} seções com leituras nestes filtros. <b>Clique em um tipo para abrir as seções dele</b> e, dentro dele, em uma seção para vê-la no mapa. "Perdida por interações" = queda média abaixo da referência enquanto há interação selecionada ativa, dividida por todo o tempo na seção. "% da perda" = parte da perda por interações (h) que aconteceu ali.`;}
+/* ---------- aba Histórico ---------- */
+const HS={gran:'dia',met:'ri',ord:'pe',tipo:'',todas:false,sel:-1};let HDIRTY=true,HA=null;
+const HMET={
+  ri:{lab:'Velocidade perdida por interações',un:'km/h',dec:1,media:true,esc:'o'},
+  pe:{lab:'Perda por interações',un:'min',dec:0,media:false,esc:'o'},
+  v:{lab:'Velocidade real',un:'km/h',dec:1,media:true,esc:'b'},
+  r:{lab:'Velocidade de referência',un:'km/h',dec:1,media:true,esc:'b'},
+  ev:{lab:'Eventos (interações selecionadas)',un:'',dec:0,media:false,esc:'o'},
+  h:{lab:'Tempo na seção',un:'h',dec:1,media:false,esc:'b'},
+  st:{lab:'Tempo parado',un:'%',dec:0,media:true,esc:'o'}};
+const dmy=d=>d.slice(8,10)+'/'+d.slice(5,7);
+function hPeriodos(){const ds=DIAS.map((d,k)=>k).filter(k=>DAYOK[k]);const out=[];
+  ds.forEach((k,j)=>{const gap=j>0&&(Date.parse(DIAS[k])-Date.parse(DIAS[ds[j-1]]))>86400000*1.5;
+    if(HS.gran==='dia')out.push({d:k,s:-1,lab:dmy(DIAS[k]),gap});
+    else{for(const s of[1,0]){if(S.turno>=0&&S.turno!==s)continue;out.push({d:k,s,lab:dmy(DIAS[k])+(s?' N':' D'),gap:gap&&(s===1||S.turno===0)});}}});
+  return out;}
+function histCompute(){const per=hPeriodos(),NPER=per.length,NR=NSEC+1;const pidx=new Int16Array(DIAS.length*2).fill(-1);
+  per.forEach((p,j)=>{if(p.s<0){pidx[p.d*2]=j;pidx[p.d*2+1]=j;}else pidx[p.d*2+p.s]=j;});
+  const Z=()=>new Float64Array(NR*NPER);const A_={w:Z(),vw:Z(),rw:Z(),ri:Z(),pe:Z(),st:Z(),n:Z(),ev:Z(),evg:new Float64Array(NR*NPER*NG)};
+  for(let i=0;i<N;i++){if(!pass(i)||P.lp[i])continue;const j=pidx[P.dr[i]*2+P.s[i]];if(j<0)continue;
+    const w=P.w[i],v=P.v[i]/10,rf=P.r[i]/10,ps=P.p[i]/10,a0=P.eo[i],a1=P.eo[i+1],n=a1-a0;
+    let pe=0,riC=0;if(n){let ns=0;for(let q=a0;q<a1;q++)if(selPar(P.el[q]))ns++;if(ns){pe=ps*ns/n;if(rf-v>M.tol)riC=(rf-v)*w*ns/n;}}
+    const si=SIDP?SIDP[i]:-1;for(const row of(si>=0?[si+1,0]:[0])){const o=row*NPER+j;A_.w[o]+=w;A_.vw[o]+=v*w;A_.rw[o]+=rf*w;A_.ri[o]+=riC;A_.pe[o]+=pe;A_.n[o]++;if(P.v[i]<10)A_.st[o]+=w;}}
+  for(let q=0;q<NE;q++){if(!passE(q))continue;const j=pidx[E.dr[q]*2+E.s[q]];if(j<0)continue;const si=SIDE?SIDE[q]:-1;const g=GI[E.q[q]];
+    for(const row of(si>=0?[si+1,0]:[0])){A_.ev[row*NPER+j]++;A_.evg[(row*NPER+j)*NG+g]++;}}
+  HA={per,NPER,A:A_};HDIRTY=false;}
+function hVal(row,j,m){const A_=HA.A,o=row*HA.NPER+j,w=A_.w[o];const MD=HMET[m];
+  if(m==='ev')return A_.ev[o]||(w?0:null);if(!w)return null;if(MD.media&&A_.n[o]<15)return null;
+  if(m==='ri')return A_.ri[o]/w;if(m==='pe')return A_.pe[o]/60;if(m==='v')return A_.vw[o]/w;if(m==='r')return A_.rw[o]/w;if(m==='h')return w/3600;if(m==='st')return 100*A_.st[o]/w;}
+function hTot(row,m){const A_=HA.A;let w=0,vw=0,rw=0,ri=0,pe=0,st=0,ev=0,n=0;for(let j=0;j<HA.NPER;j++){const o=row*HA.NPER+j;w+=A_.w[o];vw+=A_.vw[o];rw+=A_.rw[o];ri+=A_.ri[o];pe+=A_.pe[o];st+=A_.st[o];ev+=A_.ev[o];n+=A_.n[o];}
+  if(m==='ev')return ev;if(!w)return null;if(HMET[m].media&&n<15)return null;return m==='ri'?ri/w:m==='pe'?pe/60:m==='v'?vw/w:m==='r'?rw/w:m==='h'?w/3600:100*st/w;}
+const hNome=row=>row===0?'Trajeto todo':'S'+SECS[row-1].id;
+const hDesc=row=>{if(row===0)return'todas as leituras';const s=SECS[row-1];return[s.tipo,s.poly&&s.len?nf(s.len,0)+' m':null,s.raio?'raio '+nf(s.raio,0)+' m':null].filter(Boolean).join(' · ');};
+function hEscala(m,vals){vals=vals.filter(v=>v!=null&&isFinite(v)).sort((a,b)=>a-b);const q=p=>vals.length?vals[Math.min(vals.length-1,Math.floor(p*vals.length))]:1;
+  if(m==='v'||m==='r')return{st:rampsB(),f:v=>v/40,ticks:['0','20','40 km/h']};
+  if(m==='h')return{st:rampsB(),f:v=>Math.sqrt(v/Math.max(q(.95),.1)),ticks:['0',nf(q(.95),1)+' h+']};
+  if(m==='st')return{st:rampsO(),f:v=>v/100,ticks:['0%','50%','100%']};
+  const mx=Math.max(q(.95),m==='ri'?1:1);return{st:rampsO(),f:v=>(m==='pe'||m==='ev')?Math.sqrt(v/mx):v/mx,ticks:['0',nf(mx,m==='ri'?1:0)+(HMET[m].un?' '+HMET[m].un:'')+'+']};}
+function histMatrix(){const host=document.getElementById('h-mat');host.innerHTML='';const m=HS.met,MD=HMET[m],per=HA.per,NPER=HA.NPER;
+  if(!NPER){host.innerHTML='<p class="note">Nenhum dia selecionado.</p>';return;}
+  let rows=[];for(let si=0;si<NSEC;si++){if(HS.tipo&&SECS[si].tipo!==HS.tipo)continue;let w=0;for(let j=0;j<NPER;j++)w+=HA.A.w[(si+1)*NPER+j];if(w)rows.push(si+1);}
+  const key=r=>HS.ord==='id'?-SECS[r-1].id:HS.ord==='ri'?(hTot(r,'ri')??-1):HS.ord==='met'?(hTot(r,m)??-1e9):(hTot(r,'pe')??0);
+  rows.sort((a,b)=>key(b)-key(a));const total=rows.length;if(!HS.todas)rows=rows.slice(0,25);rows=[0,...rows];
+  const allv=[];rows.forEach(r=>{if(r===0&&(m==='pe'||m==='ev'||m==='h'))return;for(let j=0;j<NPER;j++)allv.push(hVal(r,j,m));});const sc=hEscala(m,allv);
+  const Wd=Math.max(560,host.clientWidth),lw=Math.min(210,Wd*.24),tw=78,gapW=8,ngap=per.filter(p=>p.gap).length,cw=Math.max(14,(Wd-lw-tw-12-ngap*gapW)/NPER),rh=24,top=34;
+  const Hh=top+rows.length*rh+6+14,s=svg(Wd,Hh);host.appendChild(s);const xs=[];let x=lw;per.forEach((p,j)=>{if(p.gap)x+=gapW;xs.push(x);x+=cw;});const xt=x+12;
+  const every=Math.max(1,Math.ceil(30/cw));per.forEach((p,j)=>{if(j%every===0||p.gap)txt(s,xs[j]+cw/2,top-10,p.lab,{'text-anchor':'middle',class:'num',style:'fill:var(--muted);font-size:10.5px'});
+    if(p.gap)el('line',{x1:xs[j]-gapW/2,x2:xs[j]-gapW/2,y1:top-4,y2:top+rows.length*rh,stroke:'var(--line2)','stroke-dasharray':'3 3'},s);});
+  txt(s,xt+tw/2,top-10,'período',{'text-anchor':'middle',style:'fill:var(--muted);font-size:10.5px'});
+  const gray=css('--chip'),ink=css('--ink');
+  rows.forEach((r,k)=>{const y=top+k*rh;const g=el('g',{class:'hrow','data-row':r,style:'cursor:pointer'},s);
+    if(r===HS.sel)el('rect',{x:0,y:y,width:Wd,height:rh,fill:'var(--chip)'},g);
+    if(k===1)el('line',{x1:0,x2:Wd,y1:y-.5,y2:y-.5,stroke:'var(--line2)'},s);
+    txt(g,4,y+rh/2+4,hNome(r),{style:`font-family:var(--f-mono);font-size:11.5px;font-weight:600;fill:${r===0?'var(--ink)':'var(--accent)'}`});
+    const d=hDesc(r);txt(g,r===0?96:46,y+rh/2+4,d.length>30?d.slice(0,29)+'…':d,{style:'font-size:11px;fill:var(--ink2)'});
+    for(let j=0;j<NPER;j++){const v=hVal(r,j,m);const fill=v==null?gray:(r===0&&(m==='pe'||m==='ev'||m==='h'))?css('--line2'):ramp(sc.st,Math.max(0,Math.min(1,sc.f(Math.max(0,v)))));
+      const c=el('rect',{x:xs[j]+1,y:y+2,width:cw-2,height:rh-4,rx:2,fill},g);
+      const o=r*NPER+j,A_=HA.A,w=A_.w[o];
+      c.setAttribute('data-tip',`<div class="t">${hNome(r)} · ${per[j].lab}</div>${w?row('Vel. real',nf(A_.vw[o]/w,1)+' km/h')+row('Referência',nf(A_.rw[o]/w,1)+' km/h')+row('Perdida por interações',nf(A_.ri[o]/w,1)+' km/h')+row('Perda por interações',nf(A_.pe[o]/60,1)+' min')+row('Eventos',A_.ev[o])+row('Tempo',nf(w/3600,2)+' h')+row('Parado',nf(100*A_.st[o]/w,0)+'%')+(A_.n[o]<15?'<div style="color:var(--muted)">pouca leitura (média não mostrada)</div>':''):'<span style="color:var(--muted)">sem leituras</span>'}`);
+      if(v!=null&&cw>=34){const lum=sc.f(Math.max(0,v));txt(g,xs[j]+cw/2,y+rh/2+4,nf(v,MD.dec),{'text-anchor':'middle',class:'num',style:`font-size:10px;fill:${lum>.55&&!(r===0&&(m==='pe'||m==='ev'||m==='h'))?'#fff':'var(--ink)'};pointer-events:none`});}}
+    const tv=hTot(r,m);txt(g,xt+tw-4,y+rh/2+4,tv==null?'—':nf(tv,MD.dec),{'text-anchor':'end',class:'num',style:'font-weight:600'});
+    g.addEventListener('click',()=>{HS.sel=r;histDetail();histMatrix();});});
+  bindTips(s);
+  document.getElementById('h-mat-leg').innerHTML=`<span>${MD.lab}${MD.un?' ('+MD.un+')':''}</span><span class="hramp" style="background:linear-gradient(90deg,${[0,.25,.5,.75,1].map(t=>ramp(sc.st,t)).join(',')})"></span><span class="num">${sc.ticks.join(' · ')}</span><span><i class="hsw" style="background:var(--chip)"></i>sem leitura ou pouca leitura</span>`;
+  document.getElementById('h-mat-n').textContent=total>25&&!HS.todas?`Mostrando 25 de ${total} seções.`:`${total} seções.`;
+  document.getElementById('h-todas').textContent=HS.todas?'Mostrar só as 25 primeiras':`Mostrar todas (${total})`;document.getElementById('h-todas').hidden=total<=25;}
+function hChart(host,per,series,opt){host.innerHTML='';const Wd=Math.max(320,host.clientWidth),Hh=opt.h||190,ml=40,mr=10,mt=12,mb=26,s=svg(Wd,Hh);host.appendChild(s);
+  const NPER=per.length;if(!NPER)return;const gapW=8,ngap=per.filter(p=>p.gap).length,cw=(Wd-ml-mr-ngap*gapW)/NPER;const xs=[];let x=ml;per.forEach(p=>{if(p.gap)x+=gapW;xs.push(x);x+=cw;});
+  let mx=0;if(opt.stack){for(let j=0;j<NPER;j++){let t=0;series.forEach(se=>t+=se.v[j]||0);mx=Math.max(mx,t);}}else series.forEach(se=>se.v.forEach(v=>{if(v!=null&&isFinite(v))mx=Math.max(mx,v);}));
+  mx=mx>0?mx*1.12:1;const y=v=>mt+(Hh-mt-mb)*(1-v/mx);const step=[.1,.2,.25,.5,1,2,5,10,20,50,100,200,500,1000,2000,5000].find(st=>mx/st<=5)||Math.ceil(mx/5);
+  for(let t=0;t<=mx;t+=step){el('line',{x1:ml,x2:Wd-mr,y1:y(t),y2:y(t),class:'grid'},s);txt(s,ml-6,y(t)+4,nf(t,step<1?(step%.5?2:1):0),{'text-anchor':'end',class:'num',style:'fill:var(--muted)'});}
+  const every=Math.max(1,Math.ceil(36/cw));per.forEach((p,j)=>{if(j%every===0||p.gap)txt(s,xs[j]+cw/2,Hh-8,p.lab,{'text-anchor':'middle',class:'num',style:'fill:var(--muted);font-size:10.5px'});
+    if(p.gap)el('line',{x1:xs[j]-gapW/2,x2:xs[j]-gapW/2,y1:mt,y2:Hh-mb,stroke:'var(--line2)','stroke-dasharray':'3 3'},s);});
+  const bw=Math.max(2,cw*.66);
+  if(opt.stack){for(let j=0;j<NPER;j++){let acc=0;series.forEach(se=>{const v=se.v[j]||0;if(v>0){rbar(s,xs[j]+(cw-bw)/2,y(acc+v),bw,y(acc)-y(acc+v),se.col,false,opt.tip(j));acc+=v;}});}}
+  else series.forEach(se=>{if(se.tipo==='bar'){se.v.forEach((v,j)=>{if(v!=null&&v>0)rbar(s,xs[j]+(cw-bw)/2,y(v),bw,y(0)-y(v),se.col,false,opt.tip(j));});}
+    else{let d='';se.v.forEach((v,j)=>{if(v==null){d+=' ';return;}const cx=xs[j]+cw/2;d+=(d===''||d.endsWith(' ')?'M':'L')+cx+','+y(v);});
+      el('path',{d:d.replace(/ /g,''),fill:'none',stroke:se.col,'stroke-width':2,'stroke-linejoin':'round'},s);
+      se.v.forEach((v,j)=>{if(v!=null)el('circle',{cx:xs[j]+cw/2,cy:y(v),r:cw>18?3:2,fill:se.col},s);});}});
+  per.forEach((p,j)=>{const h=el('rect',{x:xs[j],y:mt,width:cw,height:Hh-mt-mb,fill:'transparent'},s);h.setAttribute('data-tip',opt.tip(j));});
+  el('line',{x1:ml,x2:Wd-mr,y1:y(0),y2:y(0),class:'axis'},s);bindTips(s);}
+function histDetail(){const r=Math.max(0,HS.sel),per=HA.per,NPER=HA.NPER,A_=HA.A;const o=j=>r*NPER+j;
+  document.getElementById('h-det-tit').textContent=r===0?'Trajeto todo':`${hNome(r)} · ${hDesc(r)}`;
+  document.getElementById('h-mapa').hidden=r===0;
+  const vv=j=>{const w=A_.w[o(j)];return w&&A_.n[o(j)]>=15?A_.vw[o(j)]/w:null;},rr=j=>{const w=A_.w[o(j)];return w&&A_.n[o(j)]>=15?A_.rw[o(j)]/w:null;},ri=j=>{const w=A_.w[o(j)];return w&&A_.n[o(j)]>=15?A_.ri[o(j)]/w:null;};
+  const J=[...Array(NPER).keys()];
+  const tip=j=>{const w=A_.w[o(j)];return`<div class="t">${hNome(r)} · ${per[j].lab}</div>`+(w?row('Vel. real',nf(A_.vw[o(j)]/w,1)+' km/h')+row('Referência',nf(A_.rw[o(j)]/w,1)+' km/h')+row('Perdida por interações',nf(A_.ri[o(j)]/w,1)+' km/h')+row('Perda',nf(A_.pe[o(j)]/60,1)+' min')+row('Eventos',A_.ev[o(j)])+row('Tempo',nf(w/3600,2)+' h')+row('Parado',nf(100*A_.st[o(j)]/w,0)+'%'):'<span style="color:var(--muted)">sem leituras</span>');};
+  // cartões
+  const okJ=J.filter(j=>ri(j)!=null);const tv=hTot(r,'v'),tr=hTot(r,'r'),tri=hTot(r,'ri'),tpe=hTot(r,'pe'),tev=hTot(r,'ev'),th=hTot(r,'h');
+  const best=okJ.length?okJ.reduce((a,b)=>ri(b)<ri(a)?b:a):null,worst=okJ.length?okJ.reduce((a,b)=>ri(b)>ri(a)?b:a):null;
+  let tend='—';if(okJ.length>=4){const h2=Math.floor(okJ.length/2),m1=okJ.slice(0,h2).reduce((a,j)=>a+ri(j),0)/h2,m2=okJ.slice(okJ.length-h2).reduce((a,j)=>a+ri(j),0)/h2;const d=m2-m1;tend=`${d>0?'+':''}${nf(d,1)} km/h`+`<span class="hsmall">${Math.abs(d)<0.15?'estável':d>0?'piorou':'melhorou'} (2ª metade × 1ª)</span>`;}
+  document.getElementById('h-cards').innerHTML=`<div class="hc"><span class="zl">Real × referência (período)</span><b>${nf(tv,1)} <small>×</small> ${nf(tr,1)} <small>km/h</small></b></div>
+    <div class="hc"><span class="zl">Perdida por interações</span><b style="color:var(--accent)">${nf(tri,1)} <small>km/h</small></b><span class="hsmall">${nf(tpe,0)} min de perda · ${nf(tev,0)} eventos · ${nf(th,1)} h na seção</span></div>
+    <div class="hc"><span class="zl">Tendência</span><b>${tend}</b></div>
+    <div class="hc"><span class="zl">Melhor e pior ${HS.gran==='dia'?'dia':'turno'}</span><b>${best!=null?per[best].lab+' <small>'+nf(ri(best),1)+'</small>':'—'} <small>·</small> ${worst!=null?per[worst].lab+' <small>'+nf(ri(worst),1)+'</small>':'—'}</b><span class="hsmall">pela velocidade perdida por interações (km/h)</span></div>`;
+  hChart(document.getElementById('h-c-vel'),per,[{v:J.map(rr),col:css('--ref')},{v:J.map(vv),col:css('--ink')}],{tip});
+  hChart(document.getElementById('h-c-ri'),per,[{v:J.map(ri),col:css('--accent'),tipo:'bar'}],{tip});
+  // eventos por grupo (7 grupos com mais eventos na seção + outros)
+  const tg=new Float64Array(NG);for(let j=0;j<NPER;j++)for(let g=0;g<NG;g++)tg[g]+=A_.evg[o(j)*NG+g];
+  const gs=[...Array(NG).keys()].filter(g=>tg[g]>0).sort((a,b)=>tg[b]-tg[a]);const top=gs.slice(0,6),rest=gs.slice(6);
+  const ser=top.map(g=>({g,v:J.map(j=>A_.evg[o(j)*NG+g]),col:gcol(g)}));if(rest.length)ser.push({g:-1,v:J.map(j=>rest.reduce((a,g)=>a+A_.evg[o(j)*NG+g],0)),col:css('--line2')});
+  hChart(document.getElementById('h-c-ev'),per,ser,{stack:true,tip:j=>`<div class="t">${hNome(r)} · ${per[j].lab}</div>`+(ser.filter(se=>se.v[j]).map(se=>row(se.g<0?'Outros grupos':esc(GRUPOS[se.g]),se.v[j])).join('')||'<span style="color:var(--muted)">sem eventos</span>')});
+  document.getElementById('h-ev-leg').innerHTML=ser.map(se=>`<span><i style="background:${se.col}"></i>${se.g<0?'Outros grupos':esc(GRUPOS[se.g])}</span>`).join('');
+  const mov=J.map(j=>A_.w[o(j)]?(A_.w[o(j)]-A_.st[o(j)])/3600:0),par=J.map(j=>A_.st[o(j)]/3600);
+  hChart(document.getElementById('h-c-h'),per,[{v:mov,col:css('--ref')},{v:par,col:css('--o2')}],{stack:true,tip});}
+function histUpdate(){if(document.getElementById('pane-hist').hidden){HDIRTY=true;return;}histCompute();if(HS.sel>NSEC)HS.sel=-1;if(HS.sel<0){HS.sel=0;}histMatrix();histDetail();}
+(function(){const $=id=>document.getElementById(id);
+  const seg=(id,k,cb)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{HS[k]=b.dataset.v;$(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));cb();});
+  seg('h-gran','gran',()=>{histCompute();histMatrix();histDetail();});
+  $('h-met').onchange=e=>{HS.met=e.target.value;histMatrix();};$('h-ord').onchange=e=>{HS.ord=e.target.value;histMatrix();};
+  $('h-tipo').onchange=e=>{HS.tipo=e.target.value;histMatrix();};$('h-todas').onclick=()=>{HS.todas=!HS.todas;histMatrix();};
+  $('h-mapa').onclick=()=>{const r=HS.sel;if(r<=0)return;showTab('trecho');focoSecao(SECS[r-1].id);};
+  if(!HASSEC){$('h-semsec').hidden=false;}})();
+
 /* ---------- KPIs ---------- */
 function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.max(0,hOp-hSt);
   document.getElementById('k-h').innerHTML=`${nf(hMov,0)}<small>h</small>`;document.getElementById('k-st').innerHTML=`${nf(hSt,0)}<small>h</small>`;
@@ -826,7 +978,7 @@ function hover(e){const r=cv.getBoundingClientRect();const[wx,wy]=toW(e.clientX-
     if(!o){showTip(`<div class="t">S${s.id} · ${secDesc({tipo:s.tipo,len:s.len,raio:s.raio,r0:s.r})}</div><span style="color:var(--muted)">sem leituras com estes filtros</span>`,e.clientX,e.clientY);return;}const q=topPar(o.pm);
     showTip(`<div class="t">S${s.id} · ${secDesc(o)}</div>${row('Tempo na seção',nf(o.h,1)+' h')}${row('Leituras',o.n)}${row('Vel. real',nf(o.v,1)+' km/h')}${row('Referência',nf(o.r,1)+' km/h')}${row('Perdida por interações',nf(o.ri,1)+' km/h')}${row('Perda por interações',nf(o.pe/60,1)+' min')}${o.rampa!=null?row('Rampa média',nf(o.rampa,1)+' %'):''}${q>=0?row('Maior Razao',esc(parLab(q))):''}`,e.clientX,e.clientY);return;}
   if(wx<0||wy<0){hideTip();return;}
-  const k=((wx/CS)|0)*CW+((wy/CS)|0);if(!A.cn[k]){hideTip();return;}const q=topPar(cellPar.get(k));
+  if(wy>=CW*CS||wx>=(NCELL/CW)*CS){hideTip();return;}const k=((wx/CS)|0)*CW+((wy/CS)|0);if(!A.cn[k]){hideTip();return;}const q=topPar(cellPar.get(k));
   const E_=Math.round(M.origem[0]+(k/CW|0)*CS),N_=Math.round(M.origem[1]+(k%CW)*CS);
   showTip(`<div class="t">Célula de 25 m</div>${row('Leituras',A.cn[k])}${row('Vel. média',nf(A.cvw[k]/A.cw[k],1)+' km/h')}${row('Referência',nf(A.crw[k]/A.cw[k],1)+' km/h')}${row('Perda atribuída',nf(A.cpe[k]/60,1)+' min')}${q>=0?row('Maior Razao',esc(parLab(q))):''}${A.cgn[k]?row('Rampa média',nf(A.cg[k]/A.cgn[k],1)+' %'):''}<div style="color:var(--muted);margin-top:4px;font-family:var(--f-mono);font-size:10.5px">UTM 22S E ${E_.toLocaleString('pt-BR')} · N ${N_.toLocaleString('pt-BR')}</div>`,e.clientX,e.clientY);}
 const mm=document.getElementById('m-metric');mm.value=S.metric;
@@ -1204,7 +1356,7 @@ document.getElementById('cm-in').onclick=()=>cmZoom(CM.W/2,CM.H/2,1.5);document.
 document.getElementById('cm-fit').onclick=()=>{cmFit();cmDraw();};
 /* ---------- tela cheia: usa a API do navegador; se o visualizador não permitir, expande dentro da página ---------- */
 function fsActive(){return document.fullscreenElement||document.querySelector('.expandido');}
-function filtrosNoLugar(el){const fb=document.querySelector('#pane-trecho .filters')||document.querySelector('#fs-trecho .filters');if(!fb)return;const home=document.getElementById('pane-trecho');
+function filtrosNoLugar(el){const fb=document.querySelector('#pane-trecho .filters')||document.querySelector('#fs-trecho .filters')||document.querySelector('#pane-hist .filters');if(!fb)return;const home=document.getElementById(typeof TAB!=='undefined'&&TAB==='hist'?'pane-hist':'pane-trecho');
   if(el&&el.id==='fs-trecho'){if(fb.parentElement!==el)el.insertBefore(fb,el.firstChild);}else if(fb.parentElement!==home)home.insertBefore(fb,home.firstChild);}
 function afterFs(){const el=fsActive();filtrosNoLugar(el);const tipEl=document.getElementById('tip');(el&&document.fullscreenElement?el:document.body).appendChild(tipEl);
   document.querySelectorAll('.fsx').forEach(b=>{const on=el&&el.id===b.dataset.fs;b.textContent=on?'✕':'⛶';b.title=on?'Sair da tela cheia (Esc)':'Tela cheia';});
@@ -1226,7 +1378,7 @@ document.getElementById('cm-time').onchange=e=>{CM.time=e.target.checked;cmDraw(
 document.getElementById('cm-dir').onchange=e=>{CM.dir=e.target.checked;cmDraw();};
 
 /* ---------- ciclo de atualização ---------- */
-function update(){compute();kpis();tableSec();zoneList();areaCard();sched();chartTipo();tableRaz();chartTruck();chartHour();}
+function update(){compute();kpis();tableSec();if(HASSEC)histUpdate();zoneList();areaCard();sched();chartTipo();tableRaz();chartTruck();chartHour();}
 function initColors(){const L=new Float64Array(NP);for(let i=0;i<N;i++){if(P.lp[i])continue;const a0=P.eo[i],a1=P.eo[i+1],n=a1-a0;if(!n)continue;for(let j=a0;j<a1;j++)L[P.el[j]]+=P.p[i]/10/n;}
   [...Array(NP).keys()].sort((a,b)=>L[b]-L[a]).slice(0,7).forEach((q,k)=>RCOL[q]=k);
   const LG=new Float64Array(NG);for(let q=0;q<NP;q++)LG[GI[q]]+=L[q];[...Array(NG).keys()].filter(g=>GRUPOS[g]!==SEMG).sort((a,b)=>LG[b]-LG[a]).slice(0,7).forEach((g,k)=>GCOL[g]=k);}
@@ -1239,13 +1391,31 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',rethemed);
 new MutationObserver(rethemed).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 init();
 }
-const ORIG=JSON.parse(document.getElementById('dados').textContent);
-BOOT(ORIG);
-window.__reboot=(D,aba)=>{aba=aba||'trecho';window.__D=D;document.getElementById('pane-trecho').innerHTML=PRISTINE.trecho;document.getElementById('pane-ciclo').innerHTML=PRISTINE.ciclo;
+/* ---------- carga dos dados: JSON embutido ou partes binárias compactadas (opcionalmente cifradas) ---------- */
+const TIPOSB={Int8Array,Uint8Array,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array};
+function decodificarVSD(ab){const u=new Uint8Array(ab),dv=new DataView(ab);if(String.fromCharCode(u[0],u[1],u[2],u[3])!=='VSD1')throw new Error('arquivo de dados inválido');
+  const hl=dv.getUint32(4,true);const H=JSON.parse(new TextDecoder().decode(u.subarray(8,8+hl)));let base=8+hl;base+=(8-(base%8))%8;
+  const D={meta:H.meta,P:{},E:Object.assign({},H.Eextra)};
+  for(const c of H.cols){const T=TIPOSB[c.tp];const a=new T(ab,base+c.off,c.n);
+    if(c.k==='eoN'){const eo=new Uint32Array(c.n+1);for(let i=0;i<c.n;i++)eo[i+1]=eo[i]+a[i];D[c.o].eo=eo;}else D[c.o][c.k]=a;}
+  return D;}
+async function carregarDados(){const txt=document.getElementById('dados').textContent;const cfg=JSON.parse(txt);if(!cfg.partes)return cfg;
+  const msg=document.getElementById('carga-msg');const K=window.__VISION_K?await crypto.subtle.importKey('raw',Uint8Array.from(atob(window.__VISION_K),c=>c.charCodeAt(0)),'AES-GCM',false,['decrypt']):null;
+  const partes=[];let lido=0;
+  for(let i=0;i<cfg.partes.length;i++){msg.textContent=`Baixando os dados (${i+1} de ${cfg.partes.length}, ${nfMB(cfg.mb)} no total)…`;
+    const r=await fetch(cfg.partes[i]);if(!r.ok)throw new Error('não foi possível baixar '+cfg.partes[i]+' ('+r.status+')');let b=new Uint8Array(await r.arrayBuffer());
+    if(cfg.cifrado){if(!K)throw new Error('faltou a chave de acesso. Entre de novo pela tela de login.');b=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:b.subarray(0,12)},K,b.subarray(12)));}
+    partes.push(b);lido+=b.length;}
+  msg.textContent='Descompactando…';const ab=await new Response(new Blob(partes).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  msg.textContent='Montando o painel…';await new Promise(r=>setTimeout(r,30));return decodificarVSD(ab);}
+const nfMB=x=>x.toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB';
+let ORIG=null;
+carregarDados().then(D=>{ORIG=D;window.__ORIG=D;BOOT(D);document.getElementById('carga').hidden=true;if(window.__aoCarregar)window.__aoCarregar();})
+  .catch(e=>{document.getElementById('carga-msg').textContent='Não foi possível carregar os dados: '+(e&&e.message?e.message:e);document.getElementById('carga').classList.add('err');});
+window.__reboot=(D,aba)=>{aba=aba||'trecho';window.__D=D;document.getElementById('pane-trecho').innerHTML=PRISTINE.trecho;document.getElementById('pane-ciclo').innerHTML=PRISTINE.ciclo;document.getElementById('pane-hist').innerHTML=PRISTINE.hist;
   // mostra a aba antes de montar, para o mapa medir o tamanho certo
-  ['trecho','ciclo','dados'].forEach(k=>{document.getElementById('pane-'+k).hidden=k!==aba;document.getElementById('tab-'+k).setAttribute('aria-selected',k===aba);});
+  ['trecho','ciclo','dados','hist'].forEach(k=>{document.getElementById('pane-'+k).hidden=k!==aba;document.getElementById('tab-'+k).setAttribute('aria-selected',k===aba);});
   BOOT(D);window.__showTab(aba);};
-window.__ORIG=ORIG;
 </script>
 <script>
 /* ---------- aba Carregar dados ---------- */
@@ -1279,7 +1449,7 @@ function liga(k){const inp=$('up-'+k),card=$('up-c-'+k);
 const desc=M=>`<b>${M.q.pontos.toLocaleString('pt-BR')}</b> leituras de GPS de <b>${M.tags.length}</b> caminhões, de ${M.periodo[0]} a ${M.periodo[1]}${M.dias&&M.dias.length>1?` (<b>${M.dias.length}</b> dias)`:''}; <b>${M.q.eventos.toLocaleString('pt-BR')}</b> interações no modelo${M.usa_grupo===false?' (sem de-para: todas as Razao, sem grupo)':''}.`;
 const fontes=M=>M.fontes?`${M.fontes.inter}, ${M.fontes.vel}${M.fontes.dp?', '+M.fontes.dp:''}`:'Interações_15102026.csv, velocidade_trecho_15102026.csv, CESG_Codigos_Caminhoes_pt_BR_1.xlsx';
 function emUso(M,orig){$('up-now').innerHTML=`<b>Em uso agora:</b> ${orig?'dados originais':'dados carregados nesta sessão'} (${fontes(M)}). ${desc(M)}`;}
-emUso(window.__ORIG.meta,true);
+if(window.__ORIG)emUso(window.__ORIG.meta,true);else window.__aoCarregar=()=>emUso(window.__ORIG.meta,true);
 const workerSrc=()=>document.getElementById('pipeline-src').textContent+`
 onmessage=async e=>{const {inter,vel,gmap,prm}=e.data;
   const ler=async f=>{const buf=await f.arrayBuffer();let s=new TextDecoder('utf-8').decode(buf);if((s.match(/\uFFFD/g)||[]).length>20)s=new TextDecoder('windows-1252').decode(buf);return s;};

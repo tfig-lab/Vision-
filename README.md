@@ -29,8 +29,9 @@ node scripts/proteger.js remover --admin admin --senha-admin "SENHA_ADMIN" --usu
 # trocar a própria senha
 node scripts/proteger.js senha --usuario joao --senha "ATUAL" --nova "NOVA"
 
-# publicar um painel novo (mantém os usuários)
-node scripts/proteger.js atualizar --admin admin --senha-admin "SENHA_ADMIN" --painel painel.html
+# publicar um painel novo (mantém os usuários); com --dados cifra também as partes de dados em dados/parteN.enc
+node scripts/proteger.js atualizar --admin admin --senha-admin "SENHA_ADMIN" --painel painel_enc.html --dados dados/parte0.bin,dados/parte1.bin
+# painel_enc.html = painel gerado com --binario, trocando no <script id="dados"> os nomes .bin por .enc e acrescentando "cifrado":true
 ```
 
 ## Gerar um painel novo a partir dos dados
@@ -49,11 +50,22 @@ Planilha de resultados em Python: `python pipeline5.py Interacoes.csv velocidade
 | Caminho | O que é |
 |---|---|
 | `index.html` | Tela de login + painel criptografado |
+| `dados/parte*.enc` | Dados do painel (GPS, interações, seções), compactados e criptografados com a mesma chave |
 | `scripts/proteger.js`, `scripts/login_template.html` | Criptografia, usuários e tela de login |
 | `scripts/pipeline.js` | Processamento: velocidade de referência, perdas, locais, regressão |
 | `scripts/template7.html` | Layout do painel |
-| `scripts/gerar_painel.js` | Gera o painel no Node a partir dos arquivos |
+| `scripts/gerar_painel.js` | Gera o painel no Node a partir dos arquivos (`--binario` grava os dados em `dados/parte*.bin`) |
+| `scripts/codec.js` | Formato binário compacto dos dados (colunas + gzip) |
 | `scripts/pipeline5.py` (+ `prep.py`, `classif.py`, `modelo.py`, `assoc.py`) | Versão em Python, gera a planilha de resultados |
+
+## Abas
+
+- **Trecho:** mapa por seções físicas ou células de 25 m, ranking, tabela por tipo de seção (com cada seção aberta), interações por grupo/Razao, por caminhão e hora, estatística.
+- **Ciclo do caminhão:** linha do tempo de um ciclo, com velocidade real, referência, grade e interações.
+- **Histórico:** matriz seção × dia (ou turno) colorida pela métrica escolhida e detalhe de uma seção ao longo do tempo: real × referência, velocidade perdida por interações, eventos por grupo e tempo na seção. As seções são montadas uma vez com todo o período, então mantêm o mesmo número em todos os dias.
+- **Carregar dados:** processa novos arquivos no navegador.
+
+Dados publicados: 15/09/2026 a 22/09/2026 e 15/10/2026 (9 dias, 1,17 milhão de leituras de GPS, 29 mil interações no modelo).
 
 ## Critérios
 
