@@ -844,17 +844,23 @@ function hMapa(){const cv=document.getElementById('h-map1');if(!cv)return;const 
 (function(){const cv=document.getElementById('h-map1');if(!cv)return;let drag=null;let raf2=0;const redraw=()=>{if(!raf2)raf2=requestAnimationFrame(()=>{raf2=0;hMapa();});};
   const zoomAt=(sx,sy,f)=>{const r=cv.getBoundingClientRect();const wx=(sx-r.width/2)/HV.s+HV.cx,wy=HV.cy-(sy-r.height/2)/HV.s;HV.s=Math.max(0.02,Math.min(8,HV.s*f));HV.cx=wx-(sx-r.width/2)/HV.s;HV.cy=wy+(sy-r.height/2)/HV.s;redraw();};
   cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,Math.exp(-e.deltaY*0.0015));},{passive:false});
-  cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:HV.cx,cy:HV.cy};cv.setPointerCapture(e.pointerId);cv.classList.add('drag');});
-  cv.addEventListener('pointermove',e=>{if(!drag)return;HV.cx=drag.cx-(e.clientX-drag.x)/HV.s;HV.cy=drag.cy+(e.clientY-drag.y)/HV.s;redraw();});
-  cv.addEventListener('pointerup',()=>{drag=null;cv.classList.remove('drag');});
+  const secNo=(sx,sy)=>{const r=cv.getBoundingClientRect();const wx=(sx-r.width/2)/HV.s+HV.cx,wy=HV.cy-(sy-r.height/2)/HV.s;let best=-1,bd=Math.max(15,12/HV.s);
+    SECS.forEach((s,si)=>{if(s.poly){for(let i=1;i<s.poly.length;i++){const a=s.poly[i-1],b=s.poly[i],dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy||1;let u=((wx-a[0])*dx+(wy-a[1])*dy)/L2;u=Math.max(0,Math.min(1,u));const d=Math.hypot(wx-a[0]-u*dx,wy-a[1]-u*dy);if(d<bd){bd=d;best=si;}}}});
+    if(best<0)SECS.forEach((s,si)=>{if(!s.poly){const d=Math.hypot(wx-s.x,wy-s.y);if(d<s.r&&(best<0||d<bd)){bd=d;best=si;}}});return best;};
+  cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:HV.cx,cy:HV.cy,moved:false};cv.setPointerCapture(e.pointerId);cv.classList.add('drag');});
+  cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();if(!drag){const si=secNo(e.clientX-r.left,e.clientY-r.top);cv.style.cursor=si>=0?'pointer':'grab';if(si>=0)showTip(`<div class="t">S${SECS[si].id} · ${hDesc(si+1)}</div><span style="color:var(--muted)">clique para ver o histórico</span>`,e.clientX,e.clientY);else hideTip();return;}
+    if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>3)drag.moved=true;HV.cx=drag.cx-(e.clientX-drag.x)/HV.s;HV.cy=drag.cy+(e.clientY-drag.y)/HV.s;redraw();});
+  cv.addEventListener('pointerleave',()=>hideTip());
+  cv.addEventListener('pointerup',e=>{const d=drag;drag=null;cv.classList.remove('drag');if(d&&!d.moved){const r=cv.getBoundingClientRect();const si=secNo(e.clientX-r.left,e.clientY-r.top);
+    if(si>=0&&si+1!==HS.sel){const keep={cx:HV.cx,cy:HV.cy,s:HV.s};HS.sel=si+1;histDetail();histMatrix();HV.cx=keep.cx;HV.cy=keep.cy;HV.s=keep.s;HV.sel=si+1;HV.ok=true;hMapa();}}});
   const c=()=>{const r=cv.getBoundingClientRect();return[r.width/2,r.height/2];};
   document.getElementById('hz-in').onclick=()=>zoomAt(...c(),1.5);document.getElementById('hz-out').onclick=()=>zoomAt(...c(),1/1.5);
   document.getElementById('hz-sec').onclick=()=>{HV.ok=false;hMapa();};
   document.getElementById('hz-all').onclick=()=>{const r=cv.getBoundingClientRect();hFitTodo(r.width,r.height);hMapa();};})();
 function histMaps(){const r=Math.max(0,HS.sel);
   document.getElementById('h-map-tit').textContent=r>0?`Onde fica a ${hNome(r)}`:'Trajeto todo';
-  document.getElementById('h-map-sub').textContent=r>0?`${hDesc(r)} · E ${Math.round(M.origem[0]+SECS[r-1].x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+SECS[r-1].y).toLocaleString('pt-BR')} · abre com ~300 m em volta da seção`:'cor = velocidade perdida por interações no período (km/h). Clique em uma seção da matriz para localizá-la.';
-  document.getElementById('hz-sec').hidden=r===0;HV.ok=false;hMapa();}
+  document.getElementById('h-map-sub').textContent=r>0?`${hDesc(r)} · E ${Math.round(M.origem[0]+SECS[r-1].x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+SECS[r-1].y).toLocaleString('pt-BR')} · clique em outra seção do mapa para ver o histórico dela`:'cor = velocidade perdida por interações no período (km/h). Clique em uma seção no mapa ou na matriz para ver o histórico dela.';
+  document.getElementById('hz-sec').hidden=r===0;if(HV.sel!==r)HV.ok=false;hMapa();}
 function histUpdate(){if(document.getElementById('pane-hist').hidden){HDIRTY=true;return;}histCompute();if(HS.sel>NSEC)HS.sel=-1;if(HS.sel<0){HS.sel=0;}histMatrix();histDetail();}
 (function(){const $=id=>document.getElementById(id);
   const seg=(id,k,cb)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{HS[k]=b.dataset.v;$(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));cb();});
@@ -1021,7 +1027,7 @@ const topPar=m=>{let bq=-1,bv=0;if(m)m.forEach((v,q)=>{if(v>bv){bv=v;bq=q;}});re
 function hover(e){const r=cv.getBoundingClientRect();const[wx,wy]=toW(e.clientX-r.left,e.clientY-r.top);
   if(S.unit==='sec'&&HASSEC){const si=secAt(wx,wy);if(si<0){hideTip();return;}const s=SECS[si],o=SECL[si];
     if(!o){showTip(`<div class="t">S${s.id} · ${secDesc({tipo:s.tipo,len:s.len,raio:s.raio,r0:s.r})}</div><span style="color:var(--muted)">sem leituras com estes filtros</span>`,e.clientX,e.clientY);return;}const q=topPar(o.pm);
-    showTip(`<div class="t">S${s.id} · ${secDesc(o)}</div>${row('Tempo na seção',nf(o.h,1)+' h')}${row('Leituras',o.n)}${row('Vel. real',nf(o.v,1)+' km/h')}${row('Referência',nf(o.r,1)+' km/h')}${row('Perdida por interações',nf(o.ri,1)+' km/h')}${row('Perda por interações',nf(o.pe/60,1)+' min')}${o.rampa!=null?row('Rampa média',nf(o.rampa,1)+' %'):''}${q>=0?row('Maior Razao',esc(parLab(q))):''}`,e.clientX,e.clientY);return;}
+    showTip(`<div class="t">S${s.id} · ${secDesc(o)}</div>${row('Tempo na seção',nf(o.h,1)+' h')}${row('Leituras',o.n)}${row('Vel. real',nf(o.v,1)+' km/h')}${row('Referência',nf(o.r,1)+' km/h')}${row('Perdida por interações',nf(o.ri,1)+' km/h')}${row('Perda por interações',nf(o.pe/60,1)+' min')}${o.rampa!=null?row('Rampa média',nf(o.rampa,1)+' %'):''}${q>=0?row('Maior Razao',esc(parLab(q))):''}<div style="color:var(--muted);margin-top:4px">clique para selecionar · no card ao lado, "Ver histórico"</div>`,e.clientX,e.clientY);return;}
   if(wx<0||wy<0){hideTip();return;}
   if(wy>=CW*CS||wx>=(NCELL/CW)*CS){hideTip();return;}const k=((wx/CS)|0)*CW+((wy/CS)|0);if(!A.cn[k]){hideTip();return;}const q=topPar(cellPar.get(k));
   const E_=Math.round(M.origem[0]+(k/CW|0)*CS),N_=Math.round(M.origem[1]+(k%CW)*CS);
@@ -1037,6 +1043,7 @@ if(!HASSEC)document.getElementById('m-unit').closest('.fgroup').hidden=true;unit
 document.getElementById('m-ev').onchange=e=>{S.ev=e.target.checked;sched();};
 document.getElementById('m-z').onchange=e=>{S.zones=e.target.checked;sched();};
 function zoneList(){if(S.unit==='sec'&&HASSEC)return secList();zoneList0();}
+function verHist(si){HS.sel=si+1;HV.ok=false;showTab('hist');setTimeout(()=>document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'}),60);}
 function secList(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
   document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções, carga e basculamento) · muda com a métrica e os filtros. Clique para centralizar.`;
   const lst=SECTOP.slice();let extra=null;if(S.selSec&&!lst.some(o=>o.id===S.selSec)){const si=SECS.findIndex(s=>s.id===S.selSec);if(si>=0&&SECL[si]){extra=SECL[si];lst.unshift(extra);}}
@@ -1046,7 +1053,8 @@ function secList(){const el=document.getElementById('zrows');el.innerHTML='';con
     b.innerHTML=`<span class="zid">S${o.id}</span><span class="ztipo">${secDesc(o)}</span><span class="zval" title="Valor usado para ordenar">${o.val!=null&&isFinite(o.val)?nf(o.val,D.dec)+' '+D.un:'—'}</span>
       <div class="zstats"><div class="zlost"><span class="zl">Velocidade perdida por interações</span><span class="zbig">${nf(o.ri,1)}<small>km/h</small></span></div>
         <div class="zpair"><div><span class="zl">Referência da seção</span><b>${nf(o.r,1)} km/h</b></div><div><span class="zl">Velocidade real</span><b>${nf(o.v,1)} km/h</b></div></div></div>
-      <span class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].razao)}</b> (${nf(100*o.pm.get(q)/(o.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${Math.round(M.origem[0]+o.x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+o.y).toLocaleString('pt-BR')}</span></span>`;
+      <span class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].razao)}</b> (${nf(100*o.pm.get(q)/(o.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${Math.round(M.origem[0]+o.x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+o.y).toLocaleString('pt-BR')}</span>${S.selSec===o.id?`<br><span class="linkbtn zhist" role="link" tabindex="0">Ver histórico desta seção →</span>`:''}</span>`;
+    const zh=b.querySelector('.zhist');if(zh)zh.onclick=ev=>{ev.stopPropagation();verHist(o.si);};
     b.onclick=()=>{S.selSec=o.id;T.cx=o.x;T.cy=o.y;const ext=o.r0?o.r0*4:Math.max(150,(o.len||200)*1.3);T.s=Math.max(T.s,Math.min(1.6,Math.min(W,H)/ext));zoneList();sched();box.scrollIntoView({block:'nearest',behavior:'smooth'});};
     el.appendChild(b);});}
 function zoneList0(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
