@@ -92,6 +92,7 @@ section.band{padding-block:26px;border-top:1px solid var(--line)}
 .hc b{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1.15}.hc b small{font-family:var(--f-body);font-size:12px;font-weight:500;color:var(--ink2)}.hsmall{display:block;font-size:12px;color:var(--muted);font-family:var(--f-body);font-weight:400}
 .hmapbox{position:relative;margin-top:8px}.hmapbox canvas{display:block;width:100%;height:440px;background:var(--map-bg);border-radius:8px;cursor:grab;touch-action:none}.hmapbox canvas.drag{cursor:grabbing}
 .hmaphint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:2px 6px;border-radius:4px;pointer-events:none}
+.hfilt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:4px 0 8px;font-size:12.5px;color:var(--ink2)}.hfilt .chip{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));color:var(--ink);border-radius:999px;padding:2px 4px 2px 10px;font-family:var(--f-mono);font-size:12px;font-weight:600}.hfilt .chip button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;line-height:1}.hfilt .chip button:hover{color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0;color:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .carga{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:14px;color:var(--ink2)}
 .carga[hidden]{display:none}.carga.err .spin2{display:none}.carga.err{color:var(--accent)}
@@ -458,7 +459,7 @@ body.noscroll{overflow:hidden}
       <div class="fgroup"><label for="h-tipo">Tipo de seção</label><select id="h-tipo"><option value="">Todas</option><option>Reta</option><option>Curva</option><option>Interseção</option><option>Frente de carga</option><option>Área de basculamento</option></select></div>
     </div>
     <div class="card chart"><div class="chead"><h3>Seção × período</h3><span class="note" id="h-mat-n" style="margin:0"></span></div>
-      <div class="hleg" id="h-mat-leg"></div><div id="h-mat" class="hmat"></div>
+      <div class="hfilt" id="h-filt" hidden></div><div class="hleg" id="h-mat-leg"></div><div id="h-mat" class="hmat"></div>
       <button type="button" class="linkbtn" id="h-todas" hidden></button></div>
   </section>
   <section class="band">
@@ -711,7 +712,7 @@ function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)retur
   const nOk=SECS.filter((s,si)=>SA.w[si]).length;
   document.getElementById('t-sec-note').innerHTML=`${nOk} seções com leituras nestes filtros. <b>Clique em um tipo para abrir as seções dele</b> e, dentro dele, em uma seção para vê-la no mapa. "Perdida por interações" = queda média abaixo da referência enquanto há interação selecionada ativa, dividida por todo o tempo na seção. "% da perda" = parte da perda por interações (h) que aconteceu ali.`;}
 /* ---------- aba Histórico ---------- */
-const HS={gran:'dia',met:'ri',scol:'per',dir:-1,tipo:'',todas:false,sel:-1};let HDIRTY=true,HA=null;
+const HS={gran:'dia',met:'ri',scol:'per',dir:-1,tipo:'',todas:false,sel:-1,fsel:new Set()};let HDIRTY=true,HA=null;
 const HMET={
   ri:{lab:'Velocidade perdida por interações',un:'km/h',dec:1,media:true,esc:'o'},
   pe:{lab:'Perda por interações',un:'min',dec:0,media:false,esc:'o'},
@@ -750,9 +751,9 @@ function hEscala(m,vals){vals=vals.filter(v=>v!=null&&isFinite(v)).sort((a,b)=>a
   const mx=Math.max(q(.95),m==='ri'?1:1);return{st:rampsO(),f:v=>(m==='pe'||m==='ev')?Math.sqrt(v/mx):v/mx,ticks:['0',nf(mx,m==='ri'?1:0)+(HMET[m].un?' '+HMET[m].un:'')+'+']};}
 function histMatrix(){const host=document.getElementById('h-mat');host.innerHTML='';const m=HS.met,MD=HMET[m],per=HA.per,NPER=HA.NPER;
   if(!NPER){host.innerHTML='<p class="note">Nenhum dia selecionado.</p>';return;}
-  let rows=[];for(let si=0;si<NSEC;si++){if(HS.tipo&&SECS[si].tipo!==HS.tipo)continue;let w=0;for(let j=0;j<NPER;j++)w+=HA.A.w[(si+1)*NPER+j];if(w)rows.push(si+1);}
+  const filt=HS.fsel.size>0;let rows=[];for(let si=0;si<NSEC;si++){if(filt&&!HS.fsel.has(si+1))continue;if(!filt&&HS.tipo&&SECS[si].tipo!==HS.tipo)continue;let w=0;for(let j=0;j<NPER;j++)w+=HA.A.w[(si+1)*NPER+j];if(w)rows.push(si+1);}
   if(HS.scol!=='per'&&HS.scol>=NPER)HS.scol='per';const nTot=r=>{let n=0;for(let j=0;j<NPER;j++)n+=HA.A.n[r*NPER+j];return n;};const key=r=>HS.scol==='per'?((MD.media&&nTot(r)<60)?null:hTot(r,m)):hVal(r,HS.scol,m);
-  rows.sort((a,b)=>{const ka=key(a),kb=key(b);if(ka==null&&kb==null)return SECS[a-1].id-SECS[b-1].id;if(ka==null)return 1;if(kb==null)return -1;return HS.dir<0?kb-ka:ka-kb;});const total=rows.length;if(!HS.todas)rows=rows.slice(0,25);rows=[0,...rows];
+  rows.sort((a,b)=>{const ka=key(a),kb=key(b);if(ka==null&&kb==null)return SECS[a-1].id-SECS[b-1].id;if(ka==null)return 1;if(kb==null)return -1;return HS.dir<0?kb-ka:ka-kb;});const total=rows.length;if(!HS.todas&&!filt)rows=rows.slice(0,25);rows=[0,...rows];
   const allv=[];rows.forEach(r=>{if(r===0&&(m==='pe'||m==='ev'||m==='h'))return;for(let j=0;j<NPER;j++)allv.push(hVal(r,j,m));});const sc=hEscala(m,allv);
   const Wd=Math.max(560,host.clientWidth),lw=Math.min(210,Wd*.24),tw=78,gapW=8,ngap=per.filter(p=>p.gap).length,cw=Math.max(14,(Wd-lw-tw-12-ngap*gapW)/NPER),rh=24,top=44;
   const Hh=top+rows.length*rh+6+14,s=svg(Wd,Hh);host.appendChild(s);const xs=[];let x=lw;per.forEach((p,j)=>{if(p.gap)x+=gapW;xs.push(x);x+=cw;});const xt=x+12;
@@ -778,8 +779,10 @@ function histMatrix(){const host=document.getElementById('h-mat');host.innerHTML
     g.addEventListener('click',()=>{HS.sel=r;histDetail();histMatrix();document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'});});});
   bindTips(s);
   document.getElementById('h-mat-leg').innerHTML=`<span>${MD.lab}${MD.un?' ('+MD.un+')':''}</span><span class="hramp" style="background:linear-gradient(90deg,${[0,.25,.5,.75,1].map(t=>ramp(sc.st,t)).join(',')})"></span><span class="num">${sc.ticks.join(' · ')}</span><span><i class="hsw" style="background:var(--chip)"></i>sem leitura ou pouca leitura</span><span style="color:var(--muted)">Última coluna: ${MD.media?'<b style="color:var(--ink2)">média do período</b>, ponderada pelo tempo de leitura (não é a média simples dos dias)':'<b style="color:var(--ink2)">total do período</b> (soma dos dias)'}</span>`;
-  document.getElementById('h-mat-n').textContent=(total>25&&!HS.todas?`Mostrando 25 de ${total} seções`:`${total} seções`)+` · ordenadas por ${HS.scol==='per'?(MD.media?'média':'total')+' do período':per[HS.scol].lab} (${HS.dir<0?'maior → menor':'menor → maior'}${MD.media&&HS.scol==='per'?'; seções com menos de 60 leituras no período vão para o fim':''}) · clique nos cabeçalhos para ordenar`;
-  document.getElementById('h-todas').textContent=HS.todas?'Mostrar só as 25 primeiras':`Mostrar todas (${total})`;document.getElementById('h-todas').hidden=total<=25;}
+  {const hf=document.getElementById('h-filt');hf.hidden=!filt;if(filt){hf.innerHTML='<span>Matriz filtrada pelas seções escolhidas no mapa:</span>'+[...HS.fsel].map(r=>`<span class="chip">${hNome(r)}<button type="button" data-r="${r}" aria-label="Tirar ${hNome(r)} do filtro" title="Tirar do filtro">✕</button></span>`).join('')+'<button type="button" class="linkbtn" id="h-filt-x">Limpar filtro</button>';
+    hf.querySelectorAll('.chip button').forEach(bt=>bt.onclick=()=>{HS.fsel.delete(+bt.dataset.r);histMatrix();hMapa();});document.getElementById('h-filt-x').onclick=()=>{HS.fsel.clear();histMatrix();hMapa();};}}
+  document.getElementById('h-mat-n').textContent=filt?`${total} ${total>1?'seções filtradas':'seção filtrada'} · clique nos cabeçalhos para ordenar`:(total>25&&!HS.todas?`Mostrando 25 de ${total} seções`:`${total} seções`)+` · ordenadas por ${HS.scol==='per'?(MD.media?'média':'total')+' do período':per[HS.scol].lab} (${HS.dir<0?'maior → menor':'menor → maior'}${MD.media&&HS.scol==='per'?'; seções com menos de 60 leituras no período vão para o fim':''}) · clique nos cabeçalhos para ordenar`;
+  document.getElementById('h-todas').textContent=HS.todas?'Mostrar só as 25 primeiras':`Mostrar todas (${total})`;document.getElementById('h-todas').hidden=total<=25||filt;document.getElementById('h-tipo').disabled=filt;}
 function hChart(host,per,series,opt){host.innerHTML='';const Wd=Math.max(320,host.clientWidth),Hh=opt.h||190,ml=40,mr=10,mt=12,mb=26,s=svg(Wd,Hh);host.appendChild(s);
   const NPER=per.length;if(!NPER)return;const gapW=8,ngap=per.filter(p=>p.gap).length,cw=(Wd-ml-mr-ngap*gapW)/NPER;const xs=[];let x=ml;per.forEach(p=>{if(p.gap)x+=gapW;xs.push(x);x+=cw;});
   let mx=0;if(opt.stack){for(let j=0;j<NPER;j++){let t=0;series.forEach(se=>t+=se.v[j]||0);mx=Math.max(mx,t);}}else series.forEach(se=>se.v.forEach(v=>{if(v!=null&&isFinite(v))mx=Math.max(mx,v);}));
@@ -834,6 +837,7 @@ function hMapa(){const cv=document.getElementById('h-map1');if(!cv)return;const 
     if(s.poly){g.beginPath();s.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});g.strokeStyle=col;g.lineWidth=lw;g.stroke();}
     else{const[a,b]=T_(s.x,s.y);g.beginPath();g.arc(a,b,Math.max(2,s.r*sc),0,6.283);g.strokeStyle=col;g.lineWidth=1.2;g.stroke();}});
   if(sc>0.25){g.font=`600 11px ${css('--f-mono')}`;g.fillStyle=css('--ink2');SECS.forEach(s=>{if(s===s0)return;const[a,b]=T_(s.x,s.y);if(a<10||b<10||a>Wc-10||b>Hc-10)return;g.fillText('S'+s.id,a+4,b-4);});}
+  {const acc=css('--accent');HS.fsel.forEach(r_=>{const s=SECS[r_-1];if(!s||s===s0)return;g.globalAlpha=.55;if(s.poly){g.beginPath();s.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});g.strokeStyle=acc;g.lineWidth=Math.max(3,lw);g.stroke();}else{const[a,b]=T_(s.x,s.y);g.beginPath();g.arc(a,b,Math.max(5,s.r*sc),0,6.283);g.fillStyle=acc;g.globalAlpha=.2;g.fill();g.globalAlpha=.7;g.strokeStyle=acc;g.lineWidth=2;g.stroke();}g.globalAlpha=1;const[a,b]=T_(s.x,s.y);g.font=`700 11px ${css('--f-mono')}`;g.fillStyle=acc;g.fillText('S'+s.id,a+5,b-6);});}
   if(s0){const acc=css('--accent');
     if(s0.poly){const path=()=>{g.beginPath();s0.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});};path();g.strokeStyle=css('--bg');g.lineWidth=lw+5;g.stroke();path();g.strokeStyle=acc;g.lineWidth=Math.max(4,lw);g.stroke();}
     else{const[a,b]=T_(s0.x,s0.y);g.beginPath();g.arc(a,b,Math.max(6,s0.r*sc),0,6.283);g.fillStyle=acc;g.globalAlpha=.35;g.fill();g.globalAlpha=1;g.strokeStyle=acc;g.lineWidth=2.5;g.stroke();}
@@ -848,18 +852,19 @@ function hMapa(){const cv=document.getElementById('h-map1');if(!cv)return;const 
     SECS.forEach((s,si)=>{if(s.poly){for(let i=1;i<s.poly.length;i++){const a=s.poly[i-1],b=s.poly[i],dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy||1;let u=((wx-a[0])*dx+(wy-a[1])*dy)/L2;u=Math.max(0,Math.min(1,u));const d=Math.hypot(wx-a[0]-u*dx,wy-a[1]-u*dy);if(d<bd){bd=d;best=si;}}}});
     if(best<0)SECS.forEach((s,si)=>{if(!s.poly){const d=Math.hypot(wx-s.x,wy-s.y);if(d<s.r&&(best<0||d<bd)){bd=d;best=si;}}});return best;};
   cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:HV.cx,cy:HV.cy,moved:false};cv.setPointerCapture(e.pointerId);cv.classList.add('drag');});
-  cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();if(!drag){const si=secNo(e.clientX-r.left,e.clientY-r.top);cv.style.cursor=si>=0?'pointer':'grab';if(si>=0)showTip(`<div class="t">S${SECS[si].id} · ${hDesc(si+1)}</div><span style="color:var(--muted)">clique para ver o histórico</span>`,e.clientX,e.clientY);else hideTip();return;}
+  cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();if(!drag){const si=secNo(e.clientX-r.left,e.clientY-r.top);cv.style.cursor=si>=0?'pointer':'grab';if(si>=0)showTip(`<div class="t">S${SECS[si].id} · ${hDesc(si+1)}</div><span style="color:var(--muted)">${HS.fsel.has(si+1)&&HS.sel===si+1?'clique para tirar do filtro':'clique para filtrar a matriz e ver o histórico'}</span>`,e.clientX,e.clientY);else hideTip();return;}
     if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>3)drag.moved=true;HV.cx=drag.cx-(e.clientX-drag.x)/HV.s;HV.cy=drag.cy+(e.clientY-drag.y)/HV.s;redraw();});
   cv.addEventListener('pointerleave',()=>hideTip());
   cv.addEventListener('pointerup',e=>{const d=drag;drag=null;cv.classList.remove('drag');if(d&&!d.moved){const r=cv.getBoundingClientRect();const si=secNo(e.clientX-r.left,e.clientY-r.top);
-    if(si>=0&&si+1!==HS.sel){const keep={cx:HV.cx,cy:HV.cy,s:HV.s};HS.sel=si+1;histDetail();histMatrix();HV.cx=keep.cx;HV.cy=keep.cy;HV.s=keep.s;HV.sel=si+1;HV.ok=true;hMapa();}}});
+    if(si>=0){const r_=si+1,keep={cx:HV.cx,cy:HV.cy,s:HV.s};if(HS.fsel.has(r_)&&HS.sel===r_){HS.fsel.delete(r_);HS.sel=HS.fsel.size?[...HS.fsel].pop():0;}else{HS.fsel.add(r_);HS.sel=r_;}
+      histDetail();histMatrix();HV.cx=keep.cx;HV.cy=keep.cy;HV.s=keep.s;HV.sel=HS.sel;HV.ok=true;hMapa();}}});
   const c=()=>{const r=cv.getBoundingClientRect();return[r.width/2,r.height/2];};
   document.getElementById('hz-in').onclick=()=>zoomAt(...c(),1.5);document.getElementById('hz-out').onclick=()=>zoomAt(...c(),1/1.5);
   document.getElementById('hz-sec').onclick=()=>{HV.ok=false;hMapa();};
   document.getElementById('hz-all').onclick=()=>{const r=cv.getBoundingClientRect();hFitTodo(r.width,r.height);hMapa();};})();
 function histMaps(){const r=Math.max(0,HS.sel);
   document.getElementById('h-map-tit').textContent=r>0?`Onde fica a ${hNome(r)}`:'Trajeto todo';
-  document.getElementById('h-map-sub').textContent=r>0?`${hDesc(r)} · E ${Math.round(M.origem[0]+SECS[r-1].x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+SECS[r-1].y).toLocaleString('pt-BR')} · clique em outra seção do mapa para ver o histórico dela`:'cor = velocidade perdida por interações no período (km/h). Clique em uma seção no mapa ou na matriz para ver o histórico dela.';
+  document.getElementById('h-map-sub').textContent=r>0?`${hDesc(r)} · E ${Math.round(M.origem[0]+SECS[r-1].x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+SECS[r-1].y).toLocaleString('pt-BR')} · clique em outras seções do mapa para somá-las ao filtro da matriz`:'cor = velocidade perdida por interações no período (km/h). Clique em seções no mapa para filtrar a matriz e ver o histórico delas.';
   document.getElementById('hz-sec').hidden=r===0;if(HV.sel!==r)HV.ok=false;hMapa();}
 function histUpdate(){if(document.getElementById('pane-hist').hidden){HDIRTY=true;return;}histCompute();if(HS.sel>NSEC)HS.sel=-1;if(HS.sel<0){HS.sel=0;}histMatrix();histDetail();}
 (function(){const $=id=>document.getElementById(id);
@@ -1043,7 +1048,7 @@ if(!HASSEC)document.getElementById('m-unit').closest('.fgroup').hidden=true;unit
 document.getElementById('m-ev').onchange=e=>{S.ev=e.target.checked;sched();};
 document.getElementById('m-z').onchange=e=>{S.zones=e.target.checked;sched();};
 function zoneList(){if(S.unit==='sec'&&HASSEC)return secList();zoneList0();}
-function verHist(si){HS.sel=si+1;HV.ok=false;showTab('hist');setTimeout(()=>document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'}),60);}
+function verHist(si){HS.sel=si+1;HS.fsel=new Set([si+1]);HV.ok=false;showTab('hist');setTimeout(()=>document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'}),60);}
 function secList(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
   document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções, carga e basculamento) · muda com a métrica e os filtros. Clique para centralizar.`;
   const lst=SECTOP.slice();let extra=null;if(S.selSec&&!lst.some(o=>o.id===S.selSec)){const si=SECS.findIndex(s=>s.id===S.selSec);if(si>=0&&SECL[si]){extra=SECL[si];lst.unshift(extra);}}
