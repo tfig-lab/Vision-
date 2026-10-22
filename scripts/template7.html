@@ -90,8 +90,8 @@ section.band{padding-block:26px;border-top:1px solid var(--line)}
 .hramp{display:inline-block;width:140px;height:10px;border-radius:2px}.hsw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .hcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.hc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
 .hc b{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1.15}.hc b small{font-family:var(--f-body);font-size:12px;font-weight:500;color:var(--ink2)}.hsmall{display:block;font-size:12px;color:var(--muted);font-family:var(--f-body);font-weight:400}
-.hmaps{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:6px}.hmaps canvas{display:block;width:100%;height:300px;background:var(--map-bg);border-radius:8px;margin-top:4px}
-@media (max-width:820px){.hmaps{grid-template-columns:minmax(0,1fr)}}
+.hmapbox{position:relative;margin-top:8px}.hmapbox canvas{display:block;width:100%;height:440px;background:var(--map-bg);border-radius:8px;cursor:grab;touch-action:none}.hmapbox canvas.drag{cursor:grabbing}
+.hmaphint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:2px 6px;border-radius:4px;pointer-events:none}
 .linkbtn{background:none;border:0;padding:6px 0;color:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .carga{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:14px;color:var(--ink2)}
 .carga[hidden]{display:none}.carga.err .spin2{display:none}.carga.err{color:var(--accent)}
@@ -466,7 +466,9 @@ body.noscroll{overflow:hidden}
     <div class="chead" style="margin-bottom:12px"><h2 id="h-det-tit" style="margin:0">Trajeto todo</h2><button type="button" class="linkbtn" id="h-mapa" hidden>Ver no mapa →</button></div>
     <div class="hcards" id="h-cards"></div>
     <div class="card" id="h-mapcard" style="margin-top:16px"><div class="chead"><h3 id="h-map-tit">Onde fica</h3><span class="note" id="h-map-sub" style="margin:0"></span></div>
-      <div class="hmaps"><div><div class="zl">No trajeto todo</div><canvas id="h-map1"></canvas></div><div><div class="zl">Aproximado (vizinhança de ~600 m)</div><canvas id="h-map2"></canvas></div></div></div>
+      <div class="hmapbox"><canvas id="h-map1" aria-label="Mapa da seção escolhida"></canvas>
+        <div class="mapctl"><button id="hz-in" type="button" aria-label="Aproximar">+</button><button id="hz-out" type="button" aria-label="Afastar">−</button><button id="hz-sec" type="button" aria-label="Voltar para a seção" title="Voltar para a seção" style="font-size:12px">◎</button><button id="hz-all" type="button" aria-label="Ver o trajeto todo" title="Ver o trajeto todo" style="font-size:12px">⤢</button></div>
+        <div class="hmaphint">roda do mouse ou + / − para zoom · arraste para mover</div></div></div>
     <div class="g2" style="margin-top:16px">
       <div class="card chart"><h3>Velocidade real × referência</h3><p class="sub"><span class="hkey"><i style="background:var(--ink)"></i>real</span> <span class="hkey"><i style="background:var(--ref)"></i>referência</span> · km/h, média no tempo com paradas</p><div id="h-c-vel"></div></div>
       <div class="card chart"><h3>Velocidade perdida por interações</h3><p class="sub">km/h abaixo da referência com interação selecionada ativa (rampa, carga e curva já descontadas)</p><div id="h-c-ri"></div></div>
@@ -815,32 +817,42 @@ function histDetail(){const r=Math.max(0,HS.sel),per=HA.per,NPER=HA.NPER,A_=HA.A
   document.getElementById('h-ev-leg').innerHTML=ser.map(se=>`<span><i style="background:${se.col}"></i>${se.g<0?'Outros grupos':esc(GRUPOS[se.g])}</span>`).join('');
   const mov=J.map(j=>A_.w[o(j)]?(A_.w[o(j)]-A_.st[o(j)])/3600:0),par=J.map(j=>A_.st[o(j)]/3600);
   hChart(document.getElementById('h-c-h'),per,[{v:mov,col:css('--ref')},{v:par,col:css('--o2')}],{stack:true,tip});histMaps();}
-function hMapa(cv,sel,zoom){const r=cv.getBoundingClientRect();if(!r.width)return;const dpr=window.devicePixelRatio||1;cv.width=r.width*dpr;cv.height=r.height*dpr;const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
-  const Wc=r.width,Hc=r.height;g.fillStyle=css('--map-bg');g.fillRect(0,0,Wc,Hc);
-  let x0,x1,y0,y1;const s0=sel>0?SECS[sel-1]:null;
-  if(zoom&&s0){const pts=s0.poly||[[s0.x-s0.r,s0.y-s0.r],[s0.x+s0.r,s0.y+s0.r]];x0=Math.min(...pts.map(p=>p[0]))-300;x1=Math.max(...pts.map(p=>p[0]))+300;y0=Math.min(...pts.map(p=>p[1]))-300;y1=Math.max(...pts.map(p=>p[1]))+300;}
-  else{const xs=[],ys=[];SECS.forEach(s=>{if(s.poly)s.poly.forEach(p=>{xs.push(p[0]);ys.push(p[1]);});else{xs.push(s.x);ys.push(s.y);}});xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);const q=(a,p)=>a[Math.floor(p*(a.length-1))];x0=q(xs,.005)-80;x1=q(xs,.995)+80;y0=q(ys,.005)-80;y1=q(ys,.995)+80;}
-  const sc=Math.min(Wc/(x1-x0),Hc/(y1-y0))*.94,cx=(x0+x1)/2,cy=(y0+y1)/2;const T_=(x,y)=>[(x-cx)*sc+Wc/2,Hc/2-(y-cy)*sc];
-  // cor das seções pela velocidade perdida por interações no período (trajeto) ou cinza (com seção escolhida)
-  const sco=hEscala('ri',SECS.map((s,si)=>hTot(si+1,'ri')));const lw=zoom?Math.max(4,Math.min(14,16*sc)):2.4;
+const HV={cx:0,cy:0,s:1,sel:-1};
+function hFitTodo(Wc,Hc){const xs=[],ys=[];SECS.forEach(s=>{if(s.poly)s.poly.forEach(p=>{xs.push(p[0]);ys.push(p[1]);});else{xs.push(s.x);ys.push(s.y);}});xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);
+  const q=(a,p)=>a[Math.floor(p*(a.length-1))];const x0=q(xs,.005)-80,x1=q(xs,.995)+80,y0=q(ys,.005)-80,y1=q(ys,.995)+80;HV.cx=(x0+x1)/2;HV.cy=(y0+y1)/2;HV.s=Math.min(Wc/(x1-x0),Hc/(y1-y0))*.94;}
+function hFitSec(Wc,Hc,r){const s0=SECS[r-1];const pts=s0.poly||[[s0.x-s0.r,s0.y-s0.r],[s0.x+s0.r,s0.y+s0.r]];
+  const x0=Math.min(...pts.map(p=>p[0]))-300,x1=Math.max(...pts.map(p=>p[0]))+300,y0=Math.min(...pts.map(p=>p[1]))-300,y1=Math.max(...pts.map(p=>p[1]))+300;HV.cx=(x0+x1)/2;HV.cy=(y0+y1)/2;HV.s=Math.min(Wc/(x1-x0),Hc/(y1-y0))*.94;}
+function hMapa(){const cv=document.getElementById('h-map1');if(!cv)return;const r=cv.getBoundingClientRect();if(!r.width)return;const dpr=window.devicePixelRatio||1;cv.width=r.width*dpr;cv.height=r.height*dpr;const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
+  const Wc=r.width,Hc=r.height,sel=Math.max(0,HS.sel);g.fillStyle=css('--map-bg');g.fillRect(0,0,Wc,Hc);
+  if(HV.sel!==sel||!HV.ok){HV.sel=sel;HV.ok=true;if(sel>0)hFitSec(Wc,Hc,sel);else hFitTodo(Wc,Hc);}
+  const sc=HV.s,T_=(x,y)=>[(x-HV.cx)*sc+Wc/2,Hc/2-(y-HV.cy)*sc];const s0=sel>0?SECS[sel-1]:null;
+  const sco=hEscala('ri',SECS.map((s,si)=>hTot(si+1,'ri')));const lw=Math.max(2.4,Math.min(16,16*sc));
   g.lineCap='round';g.lineJoin='round';
   SECS.forEach((s,si)=>{const v=hTot(si+1,'ri');const col=sel>0?css('--line2'):(v==null?css('--line2'):ramp(sco.st,.18+.82*Math.min(1,sco.f(Math.max(0,v)))));
     if(s.poly){g.beginPath();s.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});g.strokeStyle=col;g.lineWidth=lw;g.stroke();}
-    else{const[a,b]=T_(s.x,s.y);g.beginPath();g.arc(a,b,Math.max(zoom?5:2,s.r*sc),0,6.283);g.strokeStyle=col;g.lineWidth=1.2;g.stroke();}});
-  if(zoom&&s0){g.font=`600 11px ${css('--f-mono')}`;g.fillStyle=css('--ink2');SECS.forEach(s=>{if(s===s0)return;const[a,b]=T_(s.x,s.y);if(a<10||b<10||a>Wc-10||b>Hc-10)return;g.fillText('S'+s.id,a+4,b-4);});}
+    else{const[a,b]=T_(s.x,s.y);g.beginPath();g.arc(a,b,Math.max(2,s.r*sc),0,6.283);g.strokeStyle=col;g.lineWidth=1.2;g.stroke();}});
+  if(sc>0.25){g.font=`600 11px ${css('--f-mono')}`;g.fillStyle=css('--ink2');SECS.forEach(s=>{if(s===s0)return;const[a,b]=T_(s.x,s.y);if(a<10||b<10||a>Wc-10||b>Hc-10)return;g.fillText('S'+s.id,a+4,b-4);});}
   if(s0){const acc=css('--accent');
-    if(s0.poly){const path=()=>{g.beginPath();s0.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});};path();g.strokeStyle=css('--bg');g.lineWidth=lw+5;g.stroke();path();g.strokeStyle=acc;g.lineWidth=zoom?lw:4;g.stroke();}
+    if(s0.poly){const path=()=>{g.beginPath();s0.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});};path();g.strokeStyle=css('--bg');g.lineWidth=lw+5;g.stroke();path();g.strokeStyle=acc;g.lineWidth=Math.max(4,lw);g.stroke();}
     else{const[a,b]=T_(s0.x,s0.y);g.beginPath();g.arc(a,b,Math.max(6,s0.r*sc),0,6.283);g.fillStyle=acc;g.globalAlpha=.35;g.fill();g.globalAlpha=1;g.strokeStyle=acc;g.lineWidth=2.5;g.stroke();}
-    const[a,b]=T_(s0.x,s0.y);if(!zoom){g.beginPath();g.arc(a,b,16,0,6.283);g.strokeStyle=acc;g.lineWidth=2;g.stroke();}
+    const[a,b]=T_(s0.x,s0.y);if(sc<0.25){g.beginPath();g.arc(a,b,16,0,6.283);g.strokeStyle=acc;g.lineWidth=2;g.stroke();}
     const lab='S'+s0.id;g.font=`700 12px ${css('--f-mono')}`;const tw=g.measureText(lab).width+10;const lx=Math.min(Wc-tw-4,a+12),ly=Math.max(4,b-30);g.fillStyle=acc;g.beginPath();g.roundRect?g.roundRect(lx,ly,tw,18,4):g.rect(lx,ly,tw,18);g.fill();g.fillStyle='#fff';g.fillText(lab,lx+5,ly+13);}
-  // escala
-  const target=Wc*.22/sc,nice=[25,50,100,200,250,500,1000,2000].reduce((p,c)=>c<=target?c:p,25),L=nice*sc;g.strokeStyle=css('--ink2');g.fillStyle=css('--ink2');g.lineWidth=1.5;g.beginPath();g.moveTo(Wc-L-12,Hc-12);g.lineTo(Wc-12,Hc-12);g.stroke();g.font=`10.5px ${css('--f-mono')}`;g.textAlign='center';g.fillText(nice>=1000?nice/1000+' km':nice+' m',Wc-12-L/2,Hc-17);g.textAlign='start';}
-function histMaps(){const r=Math.max(0,HS.sel);const card=document.getElementById('h-mapcard');
+  const target=Wc*.18/sc,nice=[25,50,100,200,250,500,1000,2000,5000].reduce((p,c)=>c<=target?c:p,25),L=nice*sc;g.strokeStyle=css('--ink2');g.fillStyle=css('--ink2');g.lineWidth=1.5;g.beginPath();g.moveTo(Wc-L-12,Hc-12);g.lineTo(Wc-12,Hc-12);g.stroke();g.font=`10.5px ${css('--f-mono')}`;g.textAlign='center';g.fillText(nice>=1000?nice/1000+' km':nice+' m',Wc-12-L/2,Hc-17);g.textAlign='start';
+  g.font=`600 13px ${css('--f-body')}`;g.fillStyle=css('--ink2');g.fillText('N',Wc-62,22);g.beginPath();g.moveTo(Wc-58,28);g.lineTo(Wc-63,42);g.lineTo(Wc-53,42);g.closePath();g.fill();}
+(function(){const cv=document.getElementById('h-map1');if(!cv)return;let drag=null;let raf2=0;const redraw=()=>{if(!raf2)raf2=requestAnimationFrame(()=>{raf2=0;hMapa();});};
+  const zoomAt=(sx,sy,f)=>{const r=cv.getBoundingClientRect();const wx=(sx-r.width/2)/HV.s+HV.cx,wy=HV.cy-(sy-r.height/2)/HV.s;HV.s=Math.max(0.02,Math.min(8,HV.s*f));HV.cx=wx-(sx-r.width/2)/HV.s;HV.cy=wy+(sy-r.height/2)/HV.s;redraw();};
+  cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,Math.exp(-e.deltaY*0.0015));},{passive:false});
+  cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:HV.cx,cy:HV.cy};cv.setPointerCapture(e.pointerId);cv.classList.add('drag');});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;HV.cx=drag.cx-(e.clientX-drag.x)/HV.s;HV.cy=drag.cy+(e.clientY-drag.y)/HV.s;redraw();});
+  cv.addEventListener('pointerup',()=>{drag=null;cv.classList.remove('drag');});
+  const c=()=>{const r=cv.getBoundingClientRect();return[r.width/2,r.height/2];};
+  document.getElementById('hz-in').onclick=()=>zoomAt(...c(),1.5);document.getElementById('hz-out').onclick=()=>zoomAt(...c(),1/1.5);
+  document.getElementById('hz-sec').onclick=()=>{HV.ok=false;hMapa();};
+  document.getElementById('hz-all').onclick=()=>{const r=cv.getBoundingClientRect();hFitTodo(r.width,r.height);hMapa();};})();
+function histMaps(){const r=Math.max(0,HS.sel);
   document.getElementById('h-map-tit').textContent=r>0?`Onde fica a ${hNome(r)}`:'Trajeto todo';
-  document.getElementById('h-map-sub').textContent=r>0?`${hDesc(r)} · E ${Math.round(M.origem[0]+SECS[r-1].x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+SECS[r-1].y).toLocaleString('pt-BR')}`:'cor = velocidade perdida por interações no período (km/h). Clique em uma seção da matriz para localizá-la.';
-  card.querySelector('.hmaps').style.gridTemplateColumns=r>0?'':'minmax(0,1fr)';card.querySelectorAll('.hmaps>div')[1].hidden=r===0;card.querySelector('.hmaps .zl').textContent=r>0?'No trajeto todo':'Todas as seções';
-  document.getElementById('h-map1').style.height=r>0?'300px':'420px';
-  hMapa(document.getElementById('h-map1'),r,false);if(r>0)hMapa(document.getElementById('h-map2'),r,true);}
+  document.getElementById('h-map-sub').textContent=r>0?`${hDesc(r)} · E ${Math.round(M.origem[0]+SECS[r-1].x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+SECS[r-1].y).toLocaleString('pt-BR')} · abre com ~300 m em volta da seção`:'cor = velocidade perdida por interações no período (km/h). Clique em uma seção da matriz para localizá-la.';
+  document.getElementById('hz-sec').hidden=r===0;HV.ok=false;hMapa();}
 function histUpdate(){if(document.getElementById('pane-hist').hidden){HDIRTY=true;return;}histCompute();if(HS.sel>NSEC)HS.sel=-1;if(HS.sel<0){HS.sel=0;}histMatrix();histDetail();}
 (function(){const $=id=>document.getElementById(id);
   const seg=(id,k,cb)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{HS[k]=b.dataset.v;$(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));cb();});
