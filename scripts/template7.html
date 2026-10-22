@@ -450,12 +450,11 @@ body.noscroll{overflow:hidden}
 <div id="pane-hist" role="tabpanel" hidden>
   <section class="band" style="border-top:0;padding-top:14px">
     <div class="shead"><div><h2>Histórico das seções</h2>
-      <p>Como cada seção física se comportou ao longo do tempo. As seções são as mesmas em todos os dias, porque foram montadas uma vez com todo o período. Os filtros de cima (caminhão, carga, turno, data e grupo/Razao) valem aqui também. Clique em uma linha da matriz para ver o detalhe da seção.</p></div></div>
+      <p>Como cada seção física se comportou ao longo do tempo. As seções são as mesmas em todos os dias, porque foram montadas uma vez com todo o período. Os filtros de cima (caminhão, carga, turno, data e grupo/Razao) valem aqui também. Clique em uma linha da matriz para ver o detalhe da seção, e nos cabeçalhos (dias ou período) para ordenar.</p></div></div>
     <p class="note" id="h-semsec" hidden>Estes dados não têm seções físicas. Processe os arquivos de novo na aba "Carregar dados".</p>
     <div class="maptools">
       <div class="fgroup"><span class="flabel">Ver por</span><div class="seg" id="h-gran"><button data-v="dia" aria-pressed="true">Dia</button><button data-v="turno" aria-pressed="false">Turno</button></div></div>
       <div class="fgroup"><label for="h-met">Cor da matriz</label><select id="h-met"><option value="ri" selected>Velocidade perdida por interações (km/h)</option><option value="pe">Perda por interações (min)</option><option value="v">Velocidade real (km/h)</option><option value="r">Velocidade de referência (km/h)</option><option value="ev">Eventos (nº)</option><option value="h">Tempo na seção (h)</option><option value="st">Tempo parado (%)</option></select></div>
-      <div class="fgroup"><label for="h-ord">Ordenar seções por</label><select id="h-ord"><option value="pe" selected>Perda total no período (min)</option><option value="ri">Perdida por interações no período (km/h)</option><option value="met">Métrica da cor (período)</option><option value="id">Número da seção</option></select></div>
       <div class="fgroup"><label for="h-tipo">Tipo de seção</label><select id="h-tipo"><option value="">Todas</option><option>Reta</option><option>Curva</option><option>Interseção</option><option>Frente de carga</option><option>Área de basculamento</option></select></div>
     </div>
     <div class="card chart"><div class="chead"><h3>Seção × período</h3><span class="note" id="h-mat-n" style="margin:0"></span></div>
@@ -712,7 +711,7 @@ function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)retur
   const nOk=SECS.filter((s,si)=>SA.w[si]).length;
   document.getElementById('t-sec-note').innerHTML=`${nOk} seções com leituras nestes filtros. <b>Clique em um tipo para abrir as seções dele</b> e, dentro dele, em uma seção para vê-la no mapa. "Perdida por interações" = queda média abaixo da referência enquanto há interação selecionada ativa, dividida por todo o tempo na seção. "% da perda" = parte da perda por interações (h) que aconteceu ali.`;}
 /* ---------- aba Histórico ---------- */
-const HS={gran:'dia',met:'ri',ord:'pe',tipo:'',todas:false,sel:-1};let HDIRTY=true,HA=null;
+const HS={gran:'dia',met:'ri',scol:'per',dir:-1,tipo:'',todas:false,sel:-1};let HDIRTY=true,HA=null;
 const HMET={
   ri:{lab:'Velocidade perdida por interações',un:'km/h',dec:1,media:true,esc:'o'},
   pe:{lab:'Perda por interações',un:'min',dec:0,media:false,esc:'o'},
@@ -752,14 +751,17 @@ function hEscala(m,vals){vals=vals.filter(v=>v!=null&&isFinite(v)).sort((a,b)=>a
 function histMatrix(){const host=document.getElementById('h-mat');host.innerHTML='';const m=HS.met,MD=HMET[m],per=HA.per,NPER=HA.NPER;
   if(!NPER){host.innerHTML='<p class="note">Nenhum dia selecionado.</p>';return;}
   let rows=[];for(let si=0;si<NSEC;si++){if(HS.tipo&&SECS[si].tipo!==HS.tipo)continue;let w=0;for(let j=0;j<NPER;j++)w+=HA.A.w[(si+1)*NPER+j];if(w)rows.push(si+1);}
-  const key=r=>HS.ord==='id'?-SECS[r-1].id:HS.ord==='ri'?(hTot(r,'ri')??-1):HS.ord==='met'?(hTot(r,m)??-1e9):(hTot(r,'pe')??0);
-  rows.sort((a,b)=>key(b)-key(a));const total=rows.length;if(!HS.todas)rows=rows.slice(0,25);rows=[0,...rows];
+  if(HS.scol!=='per'&&HS.scol>=NPER)HS.scol='per';const nTot=r=>{let n=0;for(let j=0;j<NPER;j++)n+=HA.A.n[r*NPER+j];return n;};const key=r=>HS.scol==='per'?((MD.media&&nTot(r)<60)?null:hTot(r,m)):hVal(r,HS.scol,m);
+  rows.sort((a,b)=>{const ka=key(a),kb=key(b);if(ka==null&&kb==null)return SECS[a-1].id-SECS[b-1].id;if(ka==null)return 1;if(kb==null)return -1;return HS.dir<0?kb-ka:ka-kb;});const total=rows.length;if(!HS.todas)rows=rows.slice(0,25);rows=[0,...rows];
   const allv=[];rows.forEach(r=>{if(r===0&&(m==='pe'||m==='ev'||m==='h'))return;for(let j=0;j<NPER;j++)allv.push(hVal(r,j,m));});const sc=hEscala(m,allv);
   const Wd=Math.max(560,host.clientWidth),lw=Math.min(210,Wd*.24),tw=78,gapW=8,ngap=per.filter(p=>p.gap).length,cw=Math.max(14,(Wd-lw-tw-12-ngap*gapW)/NPER),rh=24,top=44;
   const Hh=top+rows.length*rh+6+14,s=svg(Wd,Hh);host.appendChild(s);const xs=[];let x=lw;per.forEach((p,j)=>{if(p.gap)x+=gapW;xs.push(x);x+=cw;});const xt=x+12;
-  const every=Math.max(1,Math.ceil(30/cw));per.forEach((p,j)=>{if(j%every===0||p.gap)txt(s,xs[j]+cw/2,top-10,p.lab,{'text-anchor':'middle',class:'num',style:'fill:var(--muted);font-size:10.5px'});
+  const arrow=c=>HS.scol===c?(HS.dir<0?' ▼':' ▲'):'';const ordena=c=>{if(HS.scol===c)HS.dir=-HS.dir;else{HS.scol=c;HS.dir=-1;}histMatrix();};
+  const every=Math.max(1,Math.ceil(30/cw));per.forEach((p,j)=>{if(j%every===0||p.gap||HS.scol===j){const tx=txt(s,xs[j]+cw/2,top-10,p.lab+arrow(j),{'text-anchor':'middle',class:'num',style:`fill:${HS.scol===j?'var(--accent)':'var(--muted)'};font-size:10.5px;${HS.scol===j?'font-weight:600':''}`});}
+    const hh=el('rect',{x:xs[j],y:top-24,width:cw,height:20,fill:'transparent',style:'cursor:pointer'},s);hh.setAttribute('data-tip',`Ordenar pelas seções em ${p.lab}`);hh.addEventListener('click',()=>ordena(j));
     if(p.gap)el('line',{x1:xs[j]-gapW/2,x2:xs[j]-gapW/2,y1:top-4,y2:top+rows.length*rh,stroke:'var(--line2)','stroke-dasharray':'3 3'},s);});
-  txt(s,xt+tw-4,top-23,MD.media?'Média do':'Total do',{'text-anchor':'end',style:'fill:var(--ink2);font-size:10.5px;font-weight:600'});txt(s,xt+tw-4,top-10,'período',{'text-anchor':'end',style:'fill:var(--ink2);font-size:10.5px;font-weight:600'});
+  const pc=HS.scol==='per'?'var(--accent)':'var(--ink2)';txt(s,xt+tw-4,top-23,MD.media?'Média do':'Total do',{'text-anchor':'end',style:`fill:${pc};font-size:10.5px;font-weight:600`});txt(s,xt+tw-4,top-10,'período'+arrow('per'),{'text-anchor':'end',style:`fill:${pc};font-size:10.5px;font-weight:600`});
+  {const hh=el('rect',{x:xt-4,y:top-36,width:tw+4,height:32,fill:'transparent',style:'cursor:pointer'},s);hh.setAttribute('data-tip','Clique para ordenar (maior → menor, de novo para inverter)');hh.addEventListener('click',()=>ordena('per'));}
   el('rect',{x:xt-4,y:top-2,width:tw+4,height:rows.length*rh+2,rx:4,fill:'var(--chip)',opacity:.6},s);
   const gray=css('--chip'),ink=css('--ink');
   rows.forEach((r,k)=>{const y=top+k*rh;const g=el('g',{class:'hrow','data-row':r,style:'cursor:pointer'},s);
@@ -776,7 +778,7 @@ function histMatrix(){const host=document.getElementById('h-mat');host.innerHTML
     g.addEventListener('click',()=>{HS.sel=r;histDetail();histMatrix();document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'});});});
   bindTips(s);
   document.getElementById('h-mat-leg').innerHTML=`<span>${MD.lab}${MD.un?' ('+MD.un+')':''}</span><span class="hramp" style="background:linear-gradient(90deg,${[0,.25,.5,.75,1].map(t=>ramp(sc.st,t)).join(',')})"></span><span class="num">${sc.ticks.join(' · ')}</span><span><i class="hsw" style="background:var(--chip)"></i>sem leitura ou pouca leitura</span><span style="color:var(--muted)">Última coluna: ${MD.media?'<b style="color:var(--ink2)">média do período</b>, ponderada pelo tempo de leitura (não é a média simples dos dias)':'<b style="color:var(--ink2)">total do período</b> (soma dos dias)'}</span>`;
-  document.getElementById('h-mat-n').textContent=total>25&&!HS.todas?`Mostrando 25 de ${total} seções.`:`${total} seções.`;
+  document.getElementById('h-mat-n').textContent=(total>25&&!HS.todas?`Mostrando 25 de ${total} seções`:`${total} seções`)+` · ordenadas por ${HS.scol==='per'?(MD.media?'média':'total')+' do período':per[HS.scol].lab} (${HS.dir<0?'maior → menor':'menor → maior'}${MD.media&&HS.scol==='per'?'; seções com menos de 60 leituras no período vão para o fim':''}) · clique nos cabeçalhos para ordenar`;
   document.getElementById('h-todas').textContent=HS.todas?'Mostrar só as 25 primeiras':`Mostrar todas (${total})`;document.getElementById('h-todas').hidden=total<=25;}
 function hChart(host,per,series,opt){host.innerHTML='';const Wd=Math.max(320,host.clientWidth),Hh=opt.h||190,ml=40,mr=10,mt=12,mb=26,s=svg(Wd,Hh);host.appendChild(s);
   const NPER=per.length;if(!NPER)return;const gapW=8,ngap=per.filter(p=>p.gap).length,cw=(Wd-ml-mr-ngap*gapW)/NPER;const xs=[];let x=ml;per.forEach(p=>{if(p.gap)x+=gapW;xs.push(x);x+=cw;});
@@ -857,7 +859,7 @@ function histUpdate(){if(document.getElementById('pane-hist').hidden){HDIRTY=tru
 (function(){const $=id=>document.getElementById(id);
   const seg=(id,k,cb)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{HS[k]=b.dataset.v;$(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));cb();});
   seg('h-gran','gran',()=>{histCompute();histMatrix();histDetail();});
-  $('h-met').onchange=e=>{HS.met=e.target.value;histMatrix();};$('h-ord').onchange=e=>{HS.ord=e.target.value;histMatrix();};
+  $('h-met').onchange=e=>{HS.met=e.target.value;histMatrix();};
   $('h-tipo').onchange=e=>{HS.tipo=e.target.value;histMatrix();};$('h-todas').onclick=()=>{HS.todas=!HS.todas;histMatrix();};
   $('h-mapa').onclick=()=>{const r=HS.sel;if(r<=0)return;showTab('trecho');focoSecao(SECS[r-1].id);};
   if(!HASSEC){$('h-semsec').hidden=false;}})();
