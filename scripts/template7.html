@@ -906,7 +906,7 @@ function locCrit(){const D=MET[S.metric];
   document.getElementById('loc-crit').innerHTML=`<b>Como os locais são escolhidos (${D.tit.toLowerCase()}):</b> (1) cada célula de 25 m recebe a métrica <i>${D.crit}</i>${D.soma?'':', só com células de pelo menos 15 leituras'}; (2) ficam as células no decil mais crítico (${D.worse>0?'≥':'≤'} ${nf(R.locTh,1)} ${D.un} com estes filtros); (3) células encostadas, inclusive na diagonal, formam um local${D.soma?'':' (com pelo menos 60 leituras, ~10 min de passagem)'}; (4) os locais são ordenados pela métrica. <b>Nome do local:</b> "Pontas (Carga / Basc.)" se houver evento <code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; "Interseção / cruzamento" se os caminhões passam por ali em 5 ou mais rumos diferentes; "Rampa" se a rampa média for ≥ 6%; senão "Estrada".`;}
 /* ---------- fundo de satélite (Sentinel-2 L2A, Copernicus Data Space) ---------- */
 const SAT=window.__SAT||(window.__SAT={id:'9e4e0ad2-8e79-4a2c-a686-705b848f5112',on:false,op:.85,layer:null,data:null,cc:null,info:'',erro:null,pronto:null});
-const SH='https://sh.dataspace.copernicus.eu/ogc/';const SATCRS='EPSG:32722';const SATDIAS=45;
+const SH='https://sh.dataspace.copernicus.eu/ogc/';const SATCRS='EPSG:32722';const SATDIAS=60;
 const isoD=d=>d.toISOString().slice(0,10);
 function satBBoxTotal(){const xs=[],ys=[];const add=(x,y)=>{xs.push(x);ys.push(y);};if(SECS.length)SECS.forEach(s=>{if(s.poly)s.poly.forEach(p=>add(p[0],p[1]));else add(s.x,s.y);});else baseCells.forEach(k=>add((k/CW|0)*CS,(k%CW)*CS));
   xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);const q=(a,p)=>a[Math.floor(p*(a.length-1))];return[M.origem[0]+q(xs,.01),M.origem[1]+q(ys,.01),M.origem[0]+q(xs,.99),M.origem[1]+q(ys,.99)];}
