@@ -60,7 +60,7 @@ Planilha de resultados em Python: `python pipeline5.py Interacoes.csv velocidade
 
 ## Abas
 
-- **Trecho:** mapa por seções físicas ou células de 25 m, ranking, tabela por tipo de seção (com cada seção aberta), interações por grupo/Razao, por caminhão e hora, estatística.
+- **Trecho:** mapa por seções físicas ou células de 25 m, ranking, tabela por tipo de seção (com cada seção aberta), interações por grupo/Razao, por caminhão e hora. A análise estatística (regressão) está desligada por enquanto; o código continua no painel (seção `#estatistica`, atributo `hidden`).
 - **Ciclo do caminhão:** linha do tempo de um ciclo, com velocidade real, referência, grade e interações.
 - **Histórico:** matriz seção × dia (ou turno) colorida pela métrica escolhida e detalhe de uma seção ao longo do tempo: real × referência, velocidade perdida por interações, eventos por grupo e tempo na seção. As seções são montadas uma vez com todo o período, então mantêm o mesmo número em todos os dias.
 - **Carregar dados:** processa novos arquivos no navegador.
@@ -76,4 +76,4 @@ Dados publicados: 15/10/2026 a 22/10/2026 (8 dias, até 22/10 16:29; 1,14 milhã
 - **Potencial de ganho:** velocidade atual + queda atribuída às interações, em média no tempo.
 - **GPS:** cada leitura vale no máximo 20 s. Acima de 25 s sem leitura, o trecho fica marcado como "sem registro" (não é assumido 0 km/h).
 - **Dia:** `Dt_Referencia`.
-- **Seções físicas:** o eixo das pistas é reconstruído a partir do GPS (grade de 4 m, as duas mãos viram uma faixa, esqueleto da faixa) e cortado em retas e curvas (raio < 150 m = curva), interseções (3 ou mais trechos, raio de 35 m), frentes de carga e áreas de basculamento (eventos `AT is in Loading` / `AT is in Dumping`). Cada leitura vai para a seção mais próxima, até 30 m. Função `secoesFisicas` em `scripts/pipeline.js`.
+- **Seções físicas:** o eixo das pistas é reconstruído a partir do GPS (grade de 4 m, as duas mãos viram uma faixa, esqueleto da faixa) e cortado em retas e curvas (raio < 150 m = curva), interseções (3 ou mais trechos, raio de 35 m), pontas (carga e basculamento juntos, a partir dos eventos `AT is in Loading` / `AT is in Dumping`). Cada leitura vai para a seção mais próxima, até 30 m. Função `secoesFisicas` em `scripts/pipeline.js`.

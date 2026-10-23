@@ -167,7 +167,8 @@ footer{padding-block:24px 40px;color:var(--muted);font-size:12px;border-top:1px 
 .crit .card p:last-child{margin:0}
 .crit code,.prose code{font-family:var(--f-mono);font-size:12px;background:var(--chip);padding:1px 5px;border-radius:4px}
 .formula{font-family:var(--f-mono);font-size:12.5px;background:var(--chip);border-radius:6px;padding:8px 10px;margin:4px 0 8px;color:var(--ink);overflow-wrap:anywhere}
-.cyctl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;padding-block:16px 6px}
+.cyctl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;padding-block:12px 10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin-inline:calc(-1 * var(--gutter,16px));padding-inline:var(--gutter,16px)}
+@media (max-width:700px){.cyctl{position:static}}
 .cyctl .nav{display:flex;gap:4px}
 .cyctl .nav button{font:600 14px var(--f-body);width:34px;height:33px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:6px;cursor:pointer}
 .cyctl .info{font-size:12.5px;color:var(--muted);flex:1 1 260px}
@@ -361,7 +362,7 @@ body.noscroll{overflow:hidden}
 
   <section class="band" id="secoes">
     <div class="shead"><div><h2>Por tipo de seção física</h2>
-      <p>O trajeto é reconstruído a partir do GPS e cortado em seções: <b>retas</b>, <b>curvas</b>, <b>interseções</b>, <b>frentes de carga</b> e <b>áreas de basculamento</b>. Cada linha soma as seções daquele tipo, com os filtros aplicados. A velocidade perdida por interações já desconta a rampa, a carga e a curvatura, porque elas fazem parte da referência.</p></div></div>
+      <p>O trajeto é reconstruído a partir do GPS e cortado em seções: <b>retas</b>, <b>curvas</b>, <b>interseções</b> e <b>pontas</b> (frentes de carga e áreas de basculamento, juntas). Cada linha soma as seções daquele tipo, com os filtros aplicados. A velocidade perdida por interações já desconta a rampa, a carga e a curvatura, porque elas fazem parte da referência.</p></div></div>
     <div class="card"><div class="tbl scroll"><table id="t-sec"><thead><tr><th>Tipo de seção</th><th class="n">Seções</th><th class="n">Extensão</th><th class="n">Tempo h</th><th class="n">Parado</th><th class="n">Referência km/h</th><th class="n">Real km/h</th><th class="n">Perdida por interações km/h</th><th class="n">Perda h</th><th class="n">% da perda</th><th>Principal Razao</th></tr></thead><tbody></tbody></table></div>
     <p class="note" id="t-sec-note" style="margin-bottom:0"></p></div>
   </section>
@@ -385,7 +386,8 @@ body.noscroll{overflow:hidden}
     </div>
   </section>
 
-  <section class="band" id="estatistica">
+  <!-- Análise estatística: desligada por enquanto (código e dados mantidos). Para voltar, tirar o atributo hidden. -->
+  <section class="band" id="estatistica" hidden>
     <div class="shead"><div><h2>Análise estatística: o que mais impacta a velocidade</h2>
       <p>Período inteiro, sem filtros. A regressão compara cada leitura só com outras no mesmo local e sentido (célula de 25 m × rumo), controlando rampa, carga e curvatura. Os erros-padrão são agrupados por caminhão.</p></div></div>
     <div class="stats" id="stats"></div>
@@ -461,7 +463,7 @@ body.noscroll{overflow:hidden}
     <div class="maptools">
       <div class="fgroup"><span class="flabel">Ver por</span><div class="seg" id="h-gran"><button data-v="dia" aria-pressed="true">Dia</button><button data-v="turno" aria-pressed="false">Turno</button></div></div>
       <div class="fgroup"><label for="h-met">Cor da matriz</label><select id="h-met"><option value="ri" selected>Velocidade perdida por interações (km/h)</option><option value="pe">Perda por interações (min)</option><option value="v">Velocidade real (km/h)</option><option value="r">Velocidade de referência (km/h)</option><option value="ev">Eventos (nº)</option><option value="h">Tempo na seção (h)</option><option value="st">Tempo parado (%)</option></select></div>
-      <div class="fgroup"><label for="h-tipo">Tipo de seção</label><select id="h-tipo"><option value="">Todas</option><option>Reta</option><option>Curva</option><option>Interseção</option><option>Frente de carga</option><option>Área de basculamento</option></select></div>
+      <div class="fgroup"><label for="h-tipo">Tipo de seção</label><select id="h-tipo"><option value="">Todas</option><option>Reta</option><option>Curva</option><option>Interseção</option><option>Pontas (Carga / Basc.)</option></select></div>
     </div>
     <div class="card chart"><div class="chead"><h3>Seção × período</h3><span class="note" id="h-mat-n" style="margin:0"></span></div>
       <div class="hfilt" id="h-filt" hidden></div><div class="hleg" id="h-mat-leg"></div><div id="h-mat" class="hmat"></div>
@@ -618,7 +620,7 @@ const SEG=[];{const seen=new Set();for(let i=1;i<N;i++){if(P.k[i]!==P.k[i-1]||P.
   const a=cellOf(i-1),b=cellOf(i);if(a===b)continue;const key=a<b?a*NCELL+b:b*NCELL+a;if(seen.has(key))continue;seen.add(key);SEG.push(P.x[i-1],P.y[i-1],P.x[i],P.y[i]);}}
 const A={cw:new Float64Array(NCELL),cvw:new Float64Array(NCELL),crw:new Float64Array(NCELL),cpe:new Float64Array(NCELL),cpn:new Float64Array(NCELL),cg:new Float64Array(NCELL),cgn:new Float64Array(NCELL),cn:new Uint32Array(NCELL),csec:new Uint8Array(NCELL),cri:new Float64Array(NCELL)};
 let cellPar=new Map(),R={},LOC=[],LOCPE=[],LOCRI=[];const GST=new Int32Array(64);
-const SECS=M.secoes||[],NSEC=SECS.length,SIDP=P.sid||null,SIDE=E.sid||null,HASSEC=!!(NSEC&&SIDP);if(!HASSEC)S.unit='cel';
+const SECS=(M.secoes||[]).map(s=>(s.tipo==='Frente de carga'||s.tipo==='Área de basculamento')?Object.assign({},s,{tipo:'Pontas (Carga / Basc.)'}):s),NSEC=SECS.length,SIDP=P.sid||null,SIDE=E.sid||null,HASSEC=!!(NSEC&&SIDP);if(!HASSEC)S.unit='cel';
 const SA={w:new Float64Array(NSEC),vw:new Float64Array(NSEC),rw:new Float64Array(NSEC),pe:new Float64Array(NSEC),ri:new Float64Array(NSEC),n:new Uint32Array(NSEC),g:new Float64Array(NSEC),gn:new Float64Array(NSEC),st:new Float64Array(NSEC),tm:new Int32Array(NSEC),ev:new Float64Array(NSEC)};
 let SPAR=[],SECL=[],SECTOP=[],SOUT={w:0,pe:0,ri:0};
 const pass=(i,ignTag)=>DAYOK[P.dr[i]]&&!(!ignTag&&S.tag>=0&&P.k[i]!==S.tag)&&!(S.carga>=0&&P.c[i]!==S.carga)&&!(S.turno>=0&&P.s[i]!==S.turno);
@@ -666,7 +668,7 @@ const MET={
  g:{tit:'Trechos mais íngremes',un:'%',worse:1,soma:false,dec:1,crit:'maior rampa média em movimento'}};
 const LOADXY=M.loadxy,DUMPXY=M.dumpxy;
 const near=(arr,x,y,d)=>arr.some(p=>Math.abs(p[0]-x)<d&&Math.abs(p[1]-y)<d&&Math.hypot(p[0]-x,p[1]-y)<d);
-function nomeLocal(o){if(near(LOADXY,o.x,o.y,80))return'Frente de carga';if(near(DUMPXY,o.x,o.y,80))return'Área de basculamento';
+function nomeLocal(o){if(near(LOADXY,o.x,o.y,80)||near(DUMPXY,o.x,o.y,80))return'Pontas (Carga / Basc.)';
   if(o.nsec>=5)return'Interseção / cruzamento';if(o.rampa!=null&&o.rampa>=6)return'Rampa';return'Estrada';}
 function agrega(m,comp){let cw=0,cvw=0,crw=0,pe=0,pn=0,gs=0,gn=0,n=0,sec=0,sx=0,sy=0,ww=0;const pm=new Map();
   for(const k of comp){cw+=A.cw[k];cvw+=A.cvw[k];crw+=A.crw[k];pe+=A.cpe[k];pn+=A.cpn[k];gs+=A.cg[k];gn+=A.cgn[k];n+=A.cn[k];sec|=A.csec[k];
@@ -696,7 +698,7 @@ function secoes(){if(!HASSEC){SECL=[];SECTOP=[];return;}const D=MET[S.metric];SE
 function locais(){LOCPE=locaisPor('pe').L;LOCRI=locaisPor('ri').L;const o=locaisPor(S.metric);LOC=o.L;R.locTh=o.th;}
 
 /* ---------- seções por tipo ---------- */
-const STIPOS=['Reta','Curva','Interseção','Frente de carga','Área de basculamento'];const SCOR={'Reta':'--t0','Curva':'--t1','Interseção':'--t6','Frente de carga':'--t2','Área de basculamento':'--t3'};
+const STIPOS=['Reta','Curva','Interseção','Pontas (Carga / Basc.)'];const SCOR={'Reta':'--t0','Curva':'--t1','Interseção':'--t6','Pontas (Carga / Basc.)':'--t2'};
 const SOPEN=new Set();
 function focoSecao(id){const s=SECS.find(x=>x.id===id);if(!s)return;S.unit='sec';unitUI();locCrit();S.selSec=id;T.cx=s.x;T.cy=s.y;const ext=s.r?s.r*4:Math.max(150,(s.len||200)*1.3);T.s=Math.min(1.6,Math.min(W,H)/ext);zoneList();sched();box.scrollIntoView({block:'center',behavior:'smooth'});}
 function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)return;const band=document.getElementById('secoes');if(!HASSEC){band.hidden=true;return;}
@@ -893,8 +895,8 @@ function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.m
   document.getElementById('k-pn-s').textContent=`tempo equivalente perdido com interação ativa · ${nf(100*r.pe/r.h,1)}% do tempo operado · ${nf(60*r.pe/r.h,1)} min por hora`;
   locCrit();}
 function locCrit(){const D=MET[S.metric];
-  if(S.unit==='sec'&&HASSEC){document.getElementById('loc-crit').innerHTML=`<b>Como as seções físicas são montadas:</b> (1) as leituras de GPS em movimento de todos os caminhões são ligadas em linhas e somadas numa grade de 4 m. As duas mãos da pista viram uma faixa só, e dessa faixa sai o eixo central da estrada. (2) O eixo vira uma rede de trechos entre pontas e cruzamentos. Onde três ou mais trechos se encontram é uma <b>Interseção</b> (raio de 35 m). (3) Cada trecho é suavizado e medido a cada 5 m. Onde o raio de curvatura fica abaixo de 150 m é <b>Curva</b>, senão <b>Reta</b>. Curvas com menos de 30 m viram reta, e retas com menos de 50 m entre duas curvas viram parte da curva. (4) Os eventos <code>AT is in Loading</code> e <code>AT is in Dumping</code> formam as <b>Frentes de carga</b> e <b>Áreas de basculamento</b>. (5) Cada leitura vai para a seção mais próxima, até 30 m. Ranking: médias (km/h) só com seções de 60 leituras ou mais (~10 min).`;return;}
-  document.getElementById('loc-crit').innerHTML=`<b>Como os locais são escolhidos (${D.tit.toLowerCase()}):</b> (1) cada célula de 25 m recebe a métrica <i>${D.crit}</i>${D.soma?'':', só com células de pelo menos 15 leituras'}; (2) ficam as células no decil mais crítico (${D.worse>0?'≥':'≤'} ${nf(R.locTh,1)} ${D.un} com estes filtros); (3) células encostadas, inclusive na diagonal, formam um local${D.soma?'':' (com pelo menos 60 leituras, ~10 min de passagem)'}; (4) os locais são ordenados pela métrica. <b>Nome do local:</b> "Frente de carga" se houver evento <code>AT is in Loading</code> a até 80 m; "Área de basculamento" se houver <code>AT is in Dumping</code> a até 80 m; "Interseção / cruzamento" se os caminhões passam por ali em 5 ou mais rumos diferentes; "Rampa" se a rampa média for ≥ 6%; senão "Estrada".`;}
+  if(S.unit==='sec'&&HASSEC){document.getElementById('loc-crit').innerHTML=`<b>Como as seções físicas são montadas:</b> (1) as leituras de GPS em movimento de todos os caminhões são ligadas em linhas e somadas numa grade de 4 m. As duas mãos da pista viram uma faixa só, e dessa faixa sai o eixo central da estrada. (2) O eixo vira uma rede de trechos entre pontas e cruzamentos. Onde três ou mais trechos se encontram é uma <b>Interseção</b> (raio de 35 m). (3) Cada trecho é suavizado e medido a cada 5 m. Onde o raio de curvatura fica abaixo de 150 m é <b>Curva</b>, senão <b>Reta</b>. Curvas com menos de 30 m viram reta, e retas com menos de 50 m entre duas curvas viram parte da curva. (4) Os eventos <code>AT is in Loading</code> e <code>AT is in Dumping</code>, agrupados juntos, formam as <b>Pontas (Carga / Basc.)</b>. As duas ficam juntas porque a mesma área muitas vezes recebe os dois eventos. (5) Cada leitura vai para a seção mais próxima, até 30 m. Ranking: médias (km/h) só com seções de 60 leituras ou mais (~10 min).`;return;}
+  document.getElementById('loc-crit').innerHTML=`<b>Como os locais são escolhidos (${D.tit.toLowerCase()}):</b> (1) cada célula de 25 m recebe a métrica <i>${D.crit}</i>${D.soma?'':', só com células de pelo menos 15 leituras'}; (2) ficam as células no decil mais crítico (${D.worse>0?'≥':'≤'} ${nf(R.locTh,1)} ${D.un} com estes filtros); (3) células encostadas, inclusive na diagonal, formam um local${D.soma?'':' (com pelo menos 60 leituras, ~10 min de passagem)'}; (4) os locais são ordenados pela métrica. <b>Nome do local:</b> "Pontas (Carga / Basc.)" se houver evento <code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; "Interseção / cruzamento" se os caminhões passam por ali em 5 ou mais rumos diferentes; "Rampa" se a rampa média for ≥ 6%; senão "Estrada".`;}
 /* ---------- mapa ---------- */
 const cv=document.getElementById('map'),box=document.getElementById('mapbox'),ctx=cv.getContext('2d');
 const T={cx:0,cy:0,s:1};let W=0,H=0,DPR=1;
@@ -1055,7 +1057,7 @@ document.getElementById('m-z').onchange=e=>{S.zones=e.target.checked;sched();};
 function zoneList(){if(S.unit==='sec'&&HASSEC)return secList();zoneList0();}
 function verHist(si){HS.sel=si+1;HS.fsel=new Set([si+1]);HV.ok=false;showTab('hist');setTimeout(()=>document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'}),60);}
 function secList(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
-  document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções, carga e basculamento) · muda com a métrica e os filtros. Clique para centralizar.`;
+  document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções e pontas) · muda com a métrica e os filtros. Clique para centralizar.`;
   const lst=SECTOP.slice();let extra=null;if(S.selSec&&!lst.some(o=>o.id===S.selSec)){const si=SECS.findIndex(s=>s.id===S.selSec);if(si>=0&&SECL[si]){extra=SECL[si];lst.unshift(extra);}}
   if(!lst.length){el.innerHTML='<p style="padding:14px;color:var(--muted)">Nada a mostrar com estes filtros.</p>';return;}
   lst.forEach(o=>{if(o===extra){const h=document.createElement('div');h.className='zl';h.style.cssText='padding:10px 14px 0';h.textContent='Seção selecionada (fora do ranking)';el.appendChild(h);}else if(extra&&o===lst[1]){const h=document.createElement('div');h.className='zl';h.style.cssText='padding:10px 14px 0';h.textContent='Ranking';el.appendChild(h);}const q=topPar(o.pm);const det=[`perda ${nf(o.pe/60,0)} min`,`${nf(o.h,1)} h na seção`,o.rampa!=null?`rampa ${nf(o.rampa,0)}%`:null].filter(Boolean).join(' · ');
@@ -1210,7 +1212,7 @@ function textos(){const q=M.q,cvr=M.cv.reduce((a,o)=>a+o.r2,0)/M.cv.length,cvm=M
     <p>Interação = o valor da coluna <code>Razao</code>. Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada por <code>Evento_Codigo</code> (base) = <code>Event Code</code> (planilha). <b>Só entram no modelo as interações com grupo</b>; os ${M.eventos_fora.toLocaleString('pt-BR')} eventos sem grupo na planilha e os ${M.eventos_sem_razao.toLocaleString('pt-BR')} com Razao em branco ficam fora (são tratados como "sem interação"). A interação fica ativa de <code>Data_Inicio − ${M.pre} s</code> até <code>Data_Termino + ${M.pos} s</code>, no mesmo caminhão (TAG). As folgas cobrem a frenagem antes e a retomada depois. Os relógios das duas bases batem: os eventos ficam, em mediana, a ~15 m da posição de GPS do mesmo instante.</p>
     <p>Para os ${q.sem_fim.toLocaleString('pt-BR')} eventos com <code>Data_Termino</code> = 1969 (sem término), usa-se a duração mediana da mesma Razao.</p></div>
   <div class="card"><h3>3 · O que é um "local"</h3>
-    <p>A base não tem zonas. As células de 25 m são criadas a partir de PosX/PosY (UTM 22S). Cada célula recebe a métrica da cor da pista, ficam as do decil mais crítico, e as que se encostam formam um local. Tudo é recalculado com os filtros.</p><p>O nome vem dos dados: frente de carga (<code>AT is in Loading</code> a até 80 m), área de basculamento (<code>AT is in Dumping</code> a até 80 m), interseção (5 ou mais rumos), rampa (≥ 6%) ou estrada.</p></div>
+    <p>A base não tem zonas. As células de 25 m são criadas a partir de PosX/PosY (UTM 22S). Cada célula recebe a métrica da cor da pista, ficam as do decil mais crítico, e as que se encostam formam um local. Tudo é recalculado com os filtros.</p><p>O nome vem dos dados: ponta, de carga ou basculamento (<code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; as duas ficam juntas porque a mesma área muitas vezes recebe os dois eventos), interseção (5 ou mais rumos), rampa (≥ 6%) ou estrada.</p></div>
   <div class="card"><h3>4 · Efeito estatístico</h3>
     <p>Regressão linear da velocidade com efeito fixo de célula de 25 m × rumo: cada leitura é comparada só com outras no mesmo trecho e sentido. Controles: rampa (separada por subida/descida e cheio/vazio), carga e curvatura. Variáveis de interesse: presença de cada Razao com pelo menos 30 eventos. Erros-padrão agrupados por caminhão; "n.s." = não significativo a 5%.</p></div>`;
   document.getElementById('quality').innerHTML=`<p><b>Dados.</b> ${q.linhas.toLocaleString('pt-BR')} linhas de interações viram ${q.eventos.toLocaleString('pt-BR')} eventos únicos com Razao preenchida, após deduplicar por <code>Id_Evento_Origem</code> × TAG; a base repete cada evento por <code>Id_Equipamento</code> e por <code>Evento_Tipo</code>. A identificação da interação vem só da coluna <code>Razao</code>; <code>Tipo_Alerta</code> aparece apenas como informação. Uma mesma Razao pode aparecer em mais de um Tipo_Alerta e é tratada como uma só interação. São ${q.pontos.toLocaleString('pt-BR')} leituras de GPS a cada ~10 s, de ${M.periodo[0]} a ${M.periodo[1]}.</p>

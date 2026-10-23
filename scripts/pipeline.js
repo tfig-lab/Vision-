@@ -297,7 +297,7 @@ function secoesFisicas(P,M,E,opt){
       while(st.length){const u=st.pop();mem.push(u);for(let b=0;b<pts.length;b++)if(!used[b]&&Math.hypot(pts[b][0]-pts[u][0],pts[b][1]-pts[u][1])<100){used[b]=1;st.push(b);}}
       let cx=0,cy=0;for(const u of mem){cx+=pts[u][0];cy+=pts[u][1];}cx/=mem.length;cy/=mem.length;let r=0;for(const u of mem)r=Math.max(r,Math.hypot(pts[u][0]-cx,pts[u][1]-cy));
       const ds=mem.map(u=>Math.hypot(pts[u][0]-cx,pts[u][1]-cy)).sort((a,b)=>a-b);const p90=ds[Math.floor(.9*(ds.length-1))];zonas.push({tipo,x:cx,y:cy,r:Math.min(140,Math.max(60,p90+40)),n:mem.length});}};
-  agrupa(M.loadxy||[],'Frente de carga');agrupa(M.dumpxy||[],'Área de basculamento');
+  agrupa([...(M.loadxy||[]),...(M.dumpxy||[])],'Pontas (Carga / Basc.)'); // carga e basculamento juntos: a mesma área costuma receber os dois eventos
   const naZona=(x,y)=>{for(let z=0;z<zonas.length;z++){const Z=zonas[z];if(Math.abs(x-Z.x)<Z.r&&Math.abs(y-Z.y)<Z.r&&Math.hypot(x-Z.x,y-Z.y)<Z.r)return z;}return -1;};
   // 2) ocupação: linhas entre leituras consecutivas do mesmo caminhão
   const hit=new Uint16Array(NX*NY);
