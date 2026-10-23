@@ -292,6 +292,8 @@ body.noscroll{overflow:hidden}
 .potleg{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--ink2)}.potleg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .ordsel{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12.5px;color:var(--ink2)}.ordsel select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:5px;padding:4px 6px}#t-raz th.ordon{color:var(--accent)}#t-raz th.ordon::after{content:' ▾'}
 .upparams label{display:flex;flex-direction:column;gap:6px}.phelp{display:block;font-size:12.5px;line-height:1.5;color:var(--ink2);font-weight:400;margin-top:2px}.phelp b{color:var(--ink);font-weight:600}
+.kpis.k2{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis .kpi[hidden]{display:none}
+@media (max-width:560px){.kpis.k2{grid-template-columns:minmax(0,1fr)}}
 </style>
 <header class="top wrap" style="padding-bottom:0">
   <div class="eyebrow" id="hdr-eyebrow">Serra Norte</div>
@@ -320,8 +322,8 @@ body.noscroll{overflow:hidden}
 </div>
 
 <main class="wrap">
-  <div class="kpis k3">
-    <div class="kpi"><div class="eyebrow">Horas em movimento × paradas</div><div class="vv"><div><div class="v" id="k-h" style="color:var(--ref)">—</div><div class="l">em movimento</div></div><div><div class="v" id="k-st" style="color:var(--o2)">—</div><div class="l">paradas</div></div></div><div class="kbar" id="k-hbar"></div><div class="s" id="k-h-s">—</div></div>
+  <div class="kpis k2">
+    <div class="kpi" hidden><div class="eyebrow">Horas em movimento × paradas</div><div class="vv"><div><div class="v" id="k-h" style="color:var(--ref)">—</div><div class="l">em movimento</div></div><div><div class="v" id="k-st" style="color:var(--o2)">—</div><div class="l">paradas</div></div></div><div class="kbar" id="k-hbar"></div><div class="s" id="k-h-s">—</div></div>
     <div class="kpi"><div class="eyebrow">Velocidade de referência × real</div><div class="vv"><div><div class="v" id="k-vr" style="color:var(--ref)">—</div><div class="l">referência média</div></div><div><div class="v" id="k-v">—</div><div class="l">real (operada)</div></div></div><div class="s" id="k-v-s">—</div></div>
     <div class="kpi hl"><div class="eyebrow">Perda por interações</div><div class="v" id="k-pe">—</div><div class="s" id="k-pn-s">—</div></div>
   </div>
