@@ -93,6 +93,7 @@ section.band{padding-block:26px;border-top:1px solid var(--line)}
 .hmapbox{position:relative;margin-top:8px}.hmapbox canvas{display:block;width:100%;height:440px;background:var(--map-bg);border-radius:8px;cursor:grab;touch-action:none}.hmapbox canvas.drag{cursor:grabbing}
 .hmaphint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:2px 6px;border-radius:4px;pointer-events:none}
 .hfilt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:4px 0 8px;font-size:12.5px;color:var(--ink2)}.hfilt .chip{display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));color:var(--ink);border-radius:999px;padding:2px 4px 2px 10px;font-family:var(--f-mono);font-size:12px;font-weight:600}.hfilt .chip button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 4px;line-height:1}.hfilt .chip button:hover{color:var(--accent)}
+.satctl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.satctl input[type=range]{width:110px;accent-color:var(--accent)}.satmsg{margin:0;color:var(--accent)}
 .linkbtn{background:none;border:0;padding:6px 0;color:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .carga{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:14px;color:var(--ink2)}
 .carga[hidden]{display:none}.carga.err .spin2{display:none}.carga.err{color:var(--accent)}
@@ -342,6 +343,7 @@ body.noscroll{overflow:hidden}
         </select></div>
       <div class="fgroup"><span class="flabel">Unidade de análise</span><div class="seg" id="m-unit"><button data-v="sec" aria-pressed="true">Seções físicas</button><button data-v="cel" aria-pressed="false">Células de 25 m</button></div></div>
       <div class="fgroup" id="m-style-g"><span class="flabel">Estilo</span><div class="seg" id="m-style"><button data-v="heat" aria-pressed="true">Mapa de calor</button><button data-v="cells" aria-pressed="false">Células</button></div></div>
+      <div class="fgroup satg"><span class="flabel">Fundo</span><div class="satctl"><label class="toggle"><input type="checkbox" class="satchk"> Satélite (Sentinel-2)</label><input type="range" class="satop" min="20" max="100" step="5" value="85" aria-label="Transparência da imagem de satélite" title="Transparência da imagem"></div><span class="satmsg note" hidden></span></div>
       <label class="toggle"><input type="checkbox" id="m-ev"> Mostrar posição das interações</label>
       <label class="toggle"><input type="checkbox" id="m-z" checked> <span id="m-z-lab">Mostrar locais L1–L15</span></label>
     </div>
@@ -475,6 +477,7 @@ body.noscroll{overflow:hidden}
     <div class="chead" style="margin-bottom:12px"><h2 id="h-det-tit" style="margin:0">Trajeto todo</h2><button type="button" class="linkbtn" id="h-mapa" hidden>Ver no mapa →</button></div>
     <div class="hcards" id="h-cards"></div>
     <div class="card" id="h-mapcard" style="margin-top:16px"><div class="chead"><h3 id="h-map-tit">Onde fica</h3><span class="note" id="h-map-sub" style="margin:0"></span></div>
+      <div class="satctl" style="margin-top:6px"><label class="toggle"><input type="checkbox" class="satchk"> Satélite (Sentinel-2)</label><input type="range" class="satop" min="20" max="100" step="5" value="85" aria-label="Transparência da imagem de satélite"><span class="satmsg note" hidden></span></div>
       <div class="hmapbox"><canvas id="h-map1" aria-label="Mapa da seção escolhida"></canvas>
         <div class="mapctl"><button id="hz-in" type="button" aria-label="Aproximar">+</button><button id="hz-out" type="button" aria-label="Afastar">−</button><button id="hz-sec" type="button" aria-label="Voltar para a seção" title="Voltar para a seção" style="font-size:12px">◎</button><button id="hz-all" type="button" aria-label="Ver o trajeto todo" title="Ver o trajeto todo" style="font-size:12px">⤢</button></div>
         <div class="hmaphint">roda do mouse ou + / − para zoom · arraste para mover</div></div></div>
@@ -839,13 +842,15 @@ function hFitSec(Wc,Hc,r){const s0=SECS[r-1];const pts=s0.poly||[[s0.x-s0.r,s0.y
 function hMapa(){const cv=document.getElementById('h-map1');if(!cv)return;const r=cv.getBoundingClientRect();if(!r.width)return;const dpr=window.devicePixelRatio||1;cv.width=r.width*dpr;cv.height=r.height*dpr;const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
   const Wc=r.width,Hc=r.height,sel=Math.max(0,HS.sel);g.fillStyle=css('--map-bg');g.fillRect(0,0,Wc,Hc);
   if(HV.sel!==sel||!HV.ok){HV.sel=sel;HV.ok=true;if(sel>0)hFitSec(Wc,Hc,sel);else hFitTodo(Wc,Hc);}
-  const sc=HV.s,T_=(x,y)=>[(x-HV.cx)*sc+Wc/2,Hc/2-(y-HV.cy)*sc];const s0=sel>0?SECS[sel-1]:null;
+  const sc=HV.s,T_=(x,y)=>[(x-HV.cx)*sc+Wc/2,Hc/2-(y-HV.cy)*sc];
+  if(SAT.on){SATH.pedir(HV.cx-Wc/2/sc,HV.cy-Hc/2/sc,HV.cx+Wc/2/sc,HV.cy+Hc/2/sc,Wc,Hc);SATH.desenhar(g,T_,Wc,Hc);}const s0=sel>0?SECS[sel-1]:null;
   const sco=hEscala('ri',SECS.map((s,si)=>hTot(si+1,'ri')));const lw=Math.max(2.4,Math.min(16,16*sc));
   g.lineCap='round';g.lineJoin='round';
-  SECS.forEach((s,si)=>{const v=hTot(si+1,'ri');const col=sel>0?css('--line2'):(v==null?css('--line2'):ramp(sco.st,.18+.82*Math.min(1,sco.f(Math.max(0,v)))));
+  const neutro=SAT.on?'rgba(255,255,255,.55)':css('--line2');
+  SECS.forEach((s,si)=>{const v=hTot(si+1,'ri');const col=sel>0?neutro:(v==null?neutro:ramp(sco.st,.18+.82*Math.min(1,sco.f(Math.max(0,v)))));
     if(s.poly){g.beginPath();s.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});g.strokeStyle=col;g.lineWidth=lw;g.stroke();}
     else{const[a,b]=T_(s.x,s.y);g.beginPath();g.arc(a,b,Math.max(2,s.r*sc),0,6.283);g.strokeStyle=col;g.lineWidth=1.2;g.stroke();}});
-  if(sc>0.25){g.font=`600 11px ${css('--f-mono')}`;g.fillStyle=css('--ink2');SECS.forEach(s=>{if(s===s0)return;const[a,b]=T_(s.x,s.y);if(a<10||b<10||a>Wc-10||b>Hc-10)return;g.fillText('S'+s.id,a+4,b-4);});}
+  if(sc>0.25){g.font=`600 11px ${css('--f-mono')}`;g.fillStyle=SAT.on?'#fff':css('--ink2');if(SAT.on){g.shadowColor='rgba(0,0,0,.8)';g.shadowBlur=3;}SECS.forEach(s=>{if(s===s0)return;const[a,b]=T_(s.x,s.y);if(a<10||b<10||a>Wc-10||b>Hc-10)return;g.fillText('S'+s.id,a+4,b-4);});g.shadowBlur=0;}
   {const acc=css('--accent');HS.fsel.forEach(r_=>{const s=SECS[r_-1];if(!s||s===s0)return;g.globalAlpha=.55;if(s.poly){g.beginPath();s.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});g.strokeStyle=acc;g.lineWidth=Math.max(3,lw);g.stroke();}else{const[a,b]=T_(s.x,s.y);g.beginPath();g.arc(a,b,Math.max(5,s.r*sc),0,6.283);g.fillStyle=acc;g.globalAlpha=.2;g.fill();g.globalAlpha=.7;g.strokeStyle=acc;g.lineWidth=2;g.stroke();}g.globalAlpha=1;const[a,b]=T_(s.x,s.y);g.font=`700 11px ${css('--f-mono')}`;g.fillStyle=acc;g.fillText('S'+s.id,a+5,b-6);});}
   if(s0){const acc=css('--accent');
     if(s0.poly){const path=()=>{g.beginPath();s0.poly.forEach((p,i)=>{const[a,b]=T_(p[0],p[1]);i?g.lineTo(a,b):g.moveTo(a,b);});};path();g.strokeStyle=css('--bg');g.lineWidth=lw+5;g.stroke();path();g.strokeStyle=acc;g.lineWidth=Math.max(4,lw);g.stroke();}
@@ -899,6 +904,44 @@ function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.m
 function locCrit(){const D=MET[S.metric];
   if(S.unit==='sec'&&HASSEC){document.getElementById('loc-crit').innerHTML=`<b>Como as seções físicas são montadas:</b> (1) as leituras de GPS em movimento de todos os caminhões são ligadas em linhas e somadas numa grade de 4 m. As duas mãos da pista viram uma faixa só, e dessa faixa sai o eixo central da estrada. (2) O eixo vira uma rede de trechos entre pontas e cruzamentos. Onde três ou mais trechos se encontram é uma <b>Interseção</b> (raio de 35 m). (3) Cada trecho é suavizado e medido a cada 5 m. Onde o raio de curvatura fica abaixo de 150 m é <b>Curva</b>, senão <b>Reta</b>. Curvas com menos de 30 m viram reta, e retas com menos de 50 m entre duas curvas viram parte da curva. (4) Os eventos <code>AT is in Loading</code> e <code>AT is in Dumping</code>, agrupados juntos, formam as <b>Pontas (Carga / Basc.)</b>. As duas ficam juntas porque a mesma área muitas vezes recebe os dois eventos. (5) Cada leitura vai para a seção mais próxima, até 30 m. Ranking: médias (km/h) só com seções de 60 leituras ou mais (~10 min).`;return;}
   document.getElementById('loc-crit').innerHTML=`<b>Como os locais são escolhidos (${D.tit.toLowerCase()}):</b> (1) cada célula de 25 m recebe a métrica <i>${D.crit}</i>${D.soma?'':', só com células de pelo menos 15 leituras'}; (2) ficam as células no decil mais crítico (${D.worse>0?'≥':'≤'} ${nf(R.locTh,1)} ${D.un} com estes filtros); (3) células encostadas, inclusive na diagonal, formam um local${D.soma?'':' (com pelo menos 60 leituras, ~10 min de passagem)'}; (4) os locais são ordenados pela métrica. <b>Nome do local:</b> "Pontas (Carga / Basc.)" se houver evento <code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; "Interseção / cruzamento" se os caminhões passam por ali em 5 ou mais rumos diferentes; "Rampa" se a rampa média for ≥ 6%; senão "Estrada".`;}
+/* ---------- fundo de satélite (Sentinel-2 L2A, Copernicus Data Space) ---------- */
+const SAT=window.__SAT||(window.__SAT={id:'9e4e0ad2-8e79-4a2c-a686-705b848f5112',on:false,op:.85,layer:null,data:null,cc:null,info:'',erro:null,pronto:null});
+const SH='https://sh.dataspace.copernicus.eu/ogc/';const SATCRS='EPSG:32722';const SATDIAS=45;
+const isoD=d=>d.toISOString().slice(0,10);
+function satBBoxTotal(){const xs=[],ys=[];const add=(x,y)=>{xs.push(x);ys.push(y);};if(SECS.length)SECS.forEach(s=>{if(s.poly)s.poly.forEach(p=>add(p[0],p[1]));else add(s.x,s.y);});else baseCells.forEach(k=>add((k/CW|0)*CS,(k%CW)*CS));
+  xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);const q=(a,p)=>a[Math.floor(p*(a.length-1))];return[M.origem[0]+q(xs,.01),M.origem[1]+q(ys,.01),M.origem[0]+q(xs,.99),M.origem[1]+q(ys,.99)];}
+async function satPreparar(){if(SAT.pronto)return SAT.pronto;SAT.pronto=(async()=>{
+  // 1) camada de cor verdadeira da configuração
+  try{const r=await fetch(`${SH}wms/${SAT.id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0`);const x=new DOMParser().parseFromString(await r.text(),'text/xml');
+    const nomes=[...x.querySelectorAll('Layer > Layer > Name, Layer Layer Name')].map(n=>n.textContent.trim()).filter(Boolean);
+    SAT.layer=nomes.find(n=>/TRUE.?COLOU?R/i.test(n))||nomes.find(n=>/NATURAL/i.test(n))||nomes[0]||'TRUE_COLOR';}catch(e){SAT.layer='TRUE_COLOR';}
+  // 2) data da imagem mais recente com pouca nuvem sobre a mina (WFS)
+  const fim=new Date(),ini=new Date(Date.now()-SATDIAS*864e5);const bb=satBBoxTotal();
+  for(const tn of['DSS2','sentinel-2-l2a','S2L2A']){try{
+    const u=`${SH}wfs/${SAT.id}?SERVICE=WFS&REQUEST=GetFeature&TYPENAMES=${tn}&BBOX=${bb.join(',')}&SRSNAME=${SATCRS}&TIME=${isoD(ini)}/${isoD(fim)}&MAXCC=100&OUTPUTFORMAT=application/json&MAXFEATURES=200`;
+    const r=await fetch(u);if(!r.ok)continue;const j=await r.json();const fs=(j.features||[]).map(f=>f.properties||{}).filter(p=>p.date);if(!fs.length)continue;
+    const porDia=new Map();fs.forEach(p=>{const d=String(p.date).slice(0,10);const a=porDia.get(d)||[];a.push(+p.cloudCoverPercentage||0);porDia.set(d,a);});
+    const dias=[...porDia.entries()].map(([d,a])=>({d,cc:a.reduce((s,v)=>s+v,0)/a.length})).sort((a,b)=>a.d<b.d?1:-1);
+    const bom=dias.find(o=>o.cc<=15)||dias.find(o=>o.cc<=30)||dias.slice().sort((a,b)=>a.cc-b.cc)[0];SAT.data=bom.d;SAT.cc=bom.cc;break;}catch(e){}}
+  SAT.info=SAT.data?`Sentinel-2 · ${SAT.data.slice(8,10)}/${SAT.data.slice(5,7)}/${SAT.data.slice(0,4)} · nuvens ${Math.round(SAT.cc)}%`:`Sentinel-2 · mais recente com pouca nuvem (últimos ${SATDIAS} dias)`;
+})();return SAT.pronto;}
+function satURL(b,w,h){const t=SAT.data?`${SAT.data}/${SAT.data}`:`${isoD(new Date(Date.now()-SATDIAS*864e5))}/${isoD(new Date())}`;
+  return`${SH}wms/${SAT.id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=${encodeURIComponent(SAT.layer||'TRUE_COLOR')}&FORMAT=image/jpeg&CRS=${SATCRS}&BBOX=${b.map(v=>Math.round(v)).join(',')}&WIDTH=${w}&HEIGHT=${h}&TIME=${t}&MAXCC=${SAT.data?100:20}&PRIORITY=${SAT.data?'mostRecent':'leastCC'}&SHOWLOGO=false`;}
+// uma camada por mapa: guarda a última imagem e pede outra quando a vista sai dela ou precisa de mais detalhe
+function satCamada(redesenhar){const L={img:null,box:null,res:0,pend:null,tmr:0,falhou:false};
+  L.desenhar=(g,toScreen,Wc,Hc)=>{if(!SAT.on)return;const ox=M.origem[0],oy=M.origem[1];
+    if(L.img){const[x0,y0,x1,y1]=L.box;const[p0x,p0y]=toScreen(x0-ox,y1-oy),[p1x,p1y]=toScreen(x1-ox,y0-oy);g.save();g.globalAlpha=SAT.op;g.drawImage(L.img,p0x,p0y,p1x-p0x,p1y-p0y);g.restore();}
+    if(SAT.info){g.save();g.font=`10.5px ${css('--f-mono')}`;const t=SAT.info+' · contém dados Copernicus modificados';const tw=g.measureText(t).width;g.fillStyle='rgba(0,0,0,.55)';g.fillRect(8,8,tw+12,17);g.fillStyle='#fff';g.fillText(t,14,20);g.restore();}};
+  L.pedir=(vx0,vy0,vx1,vy1,Wc,Hc)=>{if(!SAT.on)return;const ox=M.origem[0],oy=M.origem[1];const v=[ox+vx0,oy+vy0,ox+vx1,oy+vy1];const resV=(v[2]-v[0])/Wc; // m/px na tela
+    const dentro=L.box&&v[0]>=L.box[0]&&v[1]>=L.box[1]&&v[2]<=L.box[2]&&v[3]<=L.box[3];const alvo=Math.max(resV,4);
+    if(dentro&&L.res<=alvo*1.6)return;clearTimeout(L.tmr);L.tmr=setTimeout(async()=>{await satPreparar();
+      const mx=(v[2]-v[0])*.3,my=(v[3]-v[1])*.3;const b=[v[0]-mx,v[1]-my,v[2]+mx,v[3]+my];let w=Math.round((b[2]-b[0])/alvo),h=Math.round((b[3]-b[1])/alvo);const k=Math.min(1,2400/Math.max(w,h));w=Math.max(64,Math.round(w*k));h=Math.max(64,Math.round(h*k));
+      const img=new Image();const pedido={};L.pend=pedido;img.onload=()=>{if(L.pend!==pedido)return;L.img=img;L.box=b;L.res=(b[2]-b[0])/w;L.falhou=false;redesenhar();};
+      img.onerror=()=>{if(L.pend!==pedido)return;L.falhou=true;SAT.erro='Não foi possível carregar a imagem de satélite.';satAviso();};img.src=satURL(b,w,h);},350);};
+  return L;}
+function satAviso(){document.querySelectorAll('.satmsg').forEach(e=>{e.textContent=SAT.erro||'';e.hidden=!SAT.erro;});}
+function satUI(){document.querySelectorAll('.satchk').forEach(c=>c.checked=SAT.on);document.querySelectorAll('.satop').forEach(r=>{r.value=Math.round(SAT.op*100);r.disabled=!SAT.on;});}
+
 /* ---------- mapa ---------- */
 const cv=document.getElementById('map'),box=document.getElementById('mapbox'),ctx=cv.getContext('2d');
 const T={cx:0,cy:0,s:1};let W=0,H=0,DPR=1;
@@ -968,11 +1011,12 @@ function drawHeat(ord,sc){const w=Math.round(W*DPR),h=Math.round(H*DPR);if(!w||!
   const im=g.getImageData(0,0,w,h),d=im.data,L=lut();for(let p=0;p<d.length;p+=4){const a=d[p];if(a<14){d[p+3]=0;continue;}d[p]=L[a*3];d[p+1]=L[a*3+1];d[p+2]=L[a*3+2];d[p+3]=Math.min(240,25+a*.9);}
   g.putImageData(im,0,0);ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(HC,0,0);ctx.restore();}
 function draw(){if(!W)return;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle=css('--map-bg');ctx.fillRect(0,0,W,H);
-  const sz=Math.max(2.2,CS*T.s*1.08),road=css('--road');
+  if(SAT.on){const[a0,b1]=toW(0,0),[a1,b0]=toW(W,H);SATM.pedir(a0,b0,a1,b1,W,H);SATM.desenhar(ctx,toS,W,H);}
+  const sz=Math.max(2.2,CS*T.s*1.08),road=SAT.on?'rgba(255,255,255,.28)':css('--road');
   ctx.strokeStyle=road;ctx.lineWidth=Math.max(1.6,14*T.s);ctx.lineCap='round';ctx.beginPath();
   for(let j=0;j<SEG.length;j+=4){const[ax,ay]=toS(SEG[j],SEG[j+1]),[bx,by]=toS(SEG[j+2],SEG[j+3]);if((ax<0&&bx<0)||(ay<0&&by<0)||(ax>W&&bx>W)||(ay>H&&by>H))continue;ctx.moveTo(ax,ay);ctx.lineTo(bx,by);}
   ctx.stroke();ctx.fillStyle=road;
-  if(!(S.unit==='sec'&&HASSEC))for(const k of baseCells){const[sx,sy]=toS((k/CW|0)*CS,(k%CW)*CS+CS);if(sx<-sz||sy<-sz||sx>W||sy>H)continue;ctx.fillRect(sx,sy,sz,sz);}
+  if(!(S.unit==='sec'&&HASSEC)&&!SAT.on)for(const k of baseCells){const[sx,sy]=toS((k/CW|0)*CS,(k%CW)*CS+CS);if(sx<-sz||sy<-sz||sx>W||sy>H)continue;ctx.fillRect(sx,sy,sz,sz);}
   const SEC=S.unit==='sec'&&HASSEC;
   SCALE=SEC?secScale():heatOn()?heatScale():metricScale();const ord=[];
   for(const k of baseCells){const v=cellVal(k);if(v==null)continue;if((S.metric==='pe'||S.metric==='pn')&&v<=0)continue;ord.push([v,k]);}
@@ -1046,6 +1090,9 @@ function hover(e){const r=cv.getBoundingClientRect();const[wx,wy]=toW(e.clientX-
   if(wy>=CW*CS||wx>=(NCELL/CW)*CS){hideTip();return;}const k=((wx/CS)|0)*CW+((wy/CS)|0);if(!A.cn[k]){hideTip();return;}const q=topPar(cellPar.get(k));
   const E_=Math.round(M.origem[0]+(k/CW|0)*CS),N_=Math.round(M.origem[1]+(k%CW)*CS);
   showTip(`<div class="t">Célula de 25 m</div>${row('Leituras',A.cn[k])}${row('Vel. média',nf(A.cvw[k]/A.cw[k],1)+' km/h')}${row('Referência',nf(A.crw[k]/A.cw[k],1)+' km/h')}${row('Perda atribuída',nf(A.cpe[k]/60,1)+' min')}${q>=0?row('Maior Razao',esc(parLab(q))):''}${A.cgn[k]?row('Rampa média',nf(A.cg[k]/A.cgn[k],1)+' %'):''}<div style="color:var(--muted);margin-top:4px;font-family:var(--f-mono);font-size:10.5px">UTM 22S E ${E_.toLocaleString('pt-BR')} · N ${N_.toLocaleString('pt-BR')}</div>`,e.clientX,e.clientY);}
+const SATM=satCamada(()=>sched()),SATH=satCamada(()=>{if(!document.getElementById('pane-hist').hidden)hMapa();});
+document.querySelectorAll('.satchk').forEach(c=>c.onchange=()=>{SAT.on=c.checked;SAT.erro=null;satAviso();satUI();if(SAT.on)satPreparar().then(()=>{sched();hMapa();});sched();hMapa();});
+document.querySelectorAll('.satop').forEach(r=>r.oninput=()=>{SAT.op=r.value/100;satUI();sched();hMapa();});satUI();
 const mm=document.getElementById('m-metric');mm.value=S.metric;
 const setMetric=v=>{S.metric=v;mm.value=v;S.selZone=0;S.selSec=0;locais();secoes();locCrit();zoneList();sched();};
 mm.onchange=e=>setMetric(e.target.value);
