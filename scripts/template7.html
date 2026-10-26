@@ -349,7 +349,7 @@ body.noscroll{overflow:hidden}
           <option value="pe">Tempo perdido por interações (min)</option>
           <option value="v">Velocidade média observada (km/h)</option>
           <option value="r">Velocidade de referência (km/h)</option>
-          <option value="g">Rampa média (|%|)</option>
+          <option value="g">Rampa média em módulo, subida ou descida (|%|)</option>
         </select></div>
       <div class="fgroup"><span class="flabel">Unidade de análise</span><div class="seg" id="m-unit"><button data-v="sec" aria-pressed="true">Seções físicas</button><button data-v="cel" aria-pressed="false">Células de 25 m</button></div></div>
       <div class="fgroup" id="m-style-g"><span class="flabel">Estilo</span><div class="seg" id="m-style"><button data-v="heat" aria-pressed="true">Mapa de calor</button><button data-v="cells" aria-pressed="false">Células</button></div></div>
@@ -911,7 +911,9 @@ function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.m
   document.getElementById('k-pe').innerHTML=`${nf(r.pe/3600,1)}<small>h</small>`;
   document.getElementById('k-pn-s').textContent=`tempo equivalente perdido com interação ativa · ${nf(100*r.pe/r.h,1)}% do tempo operado · ${nf(60*r.pe/r.h,1)} min por hora`;
   locCrit();}
-function locCrit(){const D=MET[S.metric];
+const NOTA_GRADE=`<b>Como a rampa (grade) é calculada.</b> Em cada leitura de GPS, a rampa é a diferença de cota (<code>PosZ</code>) entre a leitura anterior e a seguinte do mesmo caminhão, dividida pela distância percorrida entre elas (de 20 a 400 m), em %. Ela tem sinal no sentido do deslocamento: <b>positivo = subida, negativo = descida</b>. Valores acima de ±20% são descartados como erro de GPS. Leituras sem cota válida recebem a mediana dos caminhões que passaram no mesmo quadrado de 20 m e no mesmo sentido (ou a do sentido oposto, com o sinal trocado).<br><b>No mapa e nos rankings</b> aparece a rampa média <b>em módulo (|%|)</b>, só com o caminhão andando (≥ 3 km/h): a mesma pista é subida num sentido e descida no outro, e com sinal as duas se anulariam. Então 8% quer dizer "8% de inclinação", seja subindo ou descendo.<br><b>Na velocidade de referência</b> a rampa entra com sinal e junto com cheio/vazio: o modelo sabe que um caminhão cheio subindo anda mais devagar que um vazio descendo, e essa diferença não conta como perda. Na aba Ciclo, o gráfico de grade mostra a rampa com sinal, no sentido do caminhão.`;
+function locCrit(){locCrit0();if(S.metric==='g')document.getElementById('loc-crit').insertAdjacentHTML('beforeend','<br><br>'+NOTA_GRADE);}
+function locCrit0(){const D=MET[S.metric];
   if(S.unit==='sec'&&HASSEC){document.getElementById('loc-crit').innerHTML=`<b>Como as seções físicas são montadas:</b> (1) as leituras de GPS em movimento de todos os caminhões são ligadas em linhas e somadas numa grade de 4 m. As duas mãos da pista viram uma faixa só, e dessa faixa sai o eixo central da estrada. (2) O eixo vira uma rede de trechos entre pontas e cruzamentos. Onde três ou mais trechos se encontram é uma <b>Interseção</b> (raio de 35 m). (3) Cada trecho é suavizado e medido a cada 5 m. Onde o raio de curvatura fica abaixo de 150 m é <b>Curva</b>, senão <b>Reta</b>. Curvas com menos de 30 m viram reta, e retas com menos de 50 m entre duas curvas viram parte da curva. (4) Os eventos <code>AT is in Loading</code> e <code>AT is in Dumping</code>, agrupados juntos, formam as <b>Pontas (Carga / Basc.)</b>. As duas ficam juntas porque a mesma área muitas vezes recebe os dois eventos. (5) Cada leitura vai para a seção mais próxima, até 30 m. Ranking: médias (km/h) só com seções de 60 leituras ou mais (~10 min).`;return;}
   document.getElementById('loc-crit').innerHTML=`<b>Como os locais são escolhidos (${D.tit.toLowerCase()}):</b> (1) cada célula de 25 m recebe a métrica <i>${D.crit}</i>${D.soma?'':', só com células de pelo menos 15 leituras'}; (2) ficam as células no decil mais crítico (${D.worse>0?'≥':'≤'} ${nf(R.locTh,1)} ${D.un} com estes filtros); (3) células encostadas, inclusive na diagonal, formam um local${D.soma?'':' (com pelo menos 60 leituras, ~10 min de passagem)'}; (4) os locais são ordenados pela métrica. <b>Nome do local:</b> "Pontas (Carga / Basc.)" se houver evento <code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; "Interseção / cruzamento" se os caminhões passam por ali em 5 ou mais rumos diferentes; "Rampa" se a rampa média for ≥ 6%; senão "Estrada".`;}
 /* ---------- fundo de satélite (Sentinel-2 L2A, Copernicus Data Space) ---------- */
@@ -972,7 +974,7 @@ function secScale(){const m=S.metric,D=MET[m],vals=SECL.filter(o=>o&&o.val!=null
   if(m==='ri'){const mx=Math.max(q(.95),1);return{stops:rampsO(),f:v=>v/mx,lab:'km/h perdidos por interações (média na seção)',ticks:['0',nf(mx/2,1),nf(mx,1)+'+']};}
   if(m==='red')return{stops:rampsD(),f:v=>(v+10)/20,lab:'km/h abaixo (+) ou acima (−) da referência',ticks:['−10','0','+10']};
   if(m==='v'||m==='r')return{stops:rampsB(),f:v=>v/40,lab:m==='v'?'velocidade média observada na seção (km/h)':'velocidade de referência da seção (km/h)',ticks:['0','20','40']};
-  return{stops:rampsB(),f:v=>v/12,lab:'rampa média da seção |%|',ticks:['0','6','12+']};}
+  return{stops:rampsB(),f:v=>v/12,lab:'rampa média da seção em módulo |%| · subida e descida contam igual (ver nota abaixo do mapa)',ticks:['0','6','12+']};}
 function drawSecs(){const D=MET[S.metric],lw=Math.max(5,22*T.s),gray=css('--line2'),ink=css('--ink');
   const col=o=>o&&o.val!=null&&isFinite(o.val)&&(D.soma?true:o.n>=15)?ramp(SCALE.stops,.18+.82*Math.max(0,Math.min(1,SCALE.f(D.soma&&o.val<=0?0:o.val)))):gray;
   const path=s=>{ctx.beginPath();s.poly.forEach((p,i)=>{const[sx,sy]=toS(p[0],p[1]);i?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);});};
@@ -1002,7 +1004,7 @@ function metricScale(){const m=S.metric,vals=[];for(const k of baseCells){const 
   if(m==='ri'){const mx=Math.max(q(.97),1);return{stops:rampsO(),f:v=>v/mx,lab:'km/h perdidos por interações (média no trecho)',ticks:['0',nf(mx/2,1),nf(mx,1)]};}
   if(m==='red')return{stops:rampsD(),f:v=>(v+10)/20,lab:'km/h abaixo (+) ou acima (−) da referência',ticks:['−10','0','+10']};
   if(m==='v'||m==='r')return{stops:rampsB(),f:v=>v/40,lab:m==='v'?'velocidade média observada (km/h)':'velocidade de referência (km/h)',ticks:['0','20','40']};
-  return{stops:rampsB(),f:v=>v/12,lab:'rampa média |%| (em movimento)',ticks:['0','6','12+']};}
+  return{stops:rampsB(),f:v=>v/12,lab:'rampa média em módulo |%| (em movimento) · subida e descida contam igual (ver nota abaixo do mapa)',ticks:['0','6','12+']};}
 /* mapa de calor: densidade suavizada (raio ~40 m) colorida por uma escala amarelo → vermelho escuro */
 const HEATSTOPS=[[0,[255,240,150]],[0.18,[254,204,92]],[0.38,[253,141,60]],[0.58,[240,59,32]],[0.78,[189,0,38]],[1,[88,0,36]]];
 const HEATM=['ri','pe','pn','red'];const heatOn=()=>S.heat&&HEATM.includes(S.metric);
