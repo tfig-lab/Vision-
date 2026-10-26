@@ -189,6 +189,8 @@ footer{padding-block:24px 40px;color:var(--muted);font-size:12px;border-top:1px 
 .lg-inline span{display:inline-flex;align-items:center;gap:5px}
 .lg-inline i{display:inline-block;width:14px;height:3px;border-radius:2px}
 .scroll{max-height:440px;overflow:auto}
+.scroll thead th{position:sticky;top:0;background:var(--panel);z-index:1}
+.potkey{display:flex;flex-wrap:wrap;gap:4px 14px;margin:2px 0 4px;font-size:11.5px;color:var(--muted)}.potkey span{display:inline-flex;align-items:center;gap:5px}.potkey i{width:10px;height:10px;border-radius:2px;display:inline-block}
 @media (max-width:1100px){.cygrid{grid-template-columns:minmax(0,1fr)}}
 .dsel{display:flex;gap:4px;flex-wrap:wrap}
 .dsel select{padding-right:24px}
@@ -438,7 +440,7 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
     <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></span>Interações por grupo e Razao</h2>
       <p>Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada pelo código do evento. Use o botão Grupo / Razao em cada quadro. "Perda" é o tempo equivalente perdido em relação à referência. Exemplo: 60 s a 50% da referência = 30 s perdidos. Todas as interações da base entram (Razao + código), com ou sem grupo na planilha. A perda de cada leitura vai para as interações <b>selecionadas no filtro</b> que estavam ativas nela, dividida em partes iguais entre elas; as não selecionadas não levam parte. Então, ao tirar uma interação do filtro, a perda dela passa para as outras ativas no mesmo momento, ou some, se nenhuma outra estava ativa.</p></div></div>
     <div class="g2w">
-      <div class="card chart"><div class="chead"><h3 id="c-tipo-tit">Perda por grupo</h3><div class="vtog" data-vt="trecho"><button data-v="grupo" aria-pressed="true">Grupo</button><button data-v="razao" aria-pressed="false">Razao</button></div></div><p class="sub" id="c-tipo-sub">horas equivalentes · filtros aplicados</p><div id="c-tipo"></div><div class="note" id="c-tipo-note"></div></div>
+      <div class="card chart"><div class="chead"><h3 id="c-tipo-tit">Perda por grupo</h3><div class="vtog" data-vt="trecho"><button data-v="grupo" aria-pressed="true">Grupo</button><button data-v="razao" aria-pressed="false">Razao</button></div></div><p class="sub" id="c-tipo-sub">horas equivalentes · filtros aplicados</p><div id="c-tipo" class="scroll" style="max-height:420px"></div><div class="note" id="c-tipo-note"></div></div>
       <div class="card"><div class="chead"><h3 id="t-raz-tit">Razao com mais perda</h3><label class="ordsel">Ordenar por<select id="t-raz-ord"><option value="perda">Perda (h)</option><option value="queda">Queda (km/h)</option><option value="sev">Perda por evento (s)</option><option value="ev">Eventos</option><option value="tm">Caminhões</option></select></label></div><p class="sub" id="t-raz-sub">s/evento = perda média por ocorrência · queda = referência − real enquanto ativa · clique no cabeçalho para ordenar</p><div class="tbl scroll"><table id="t-raz"><thead><tr><th id="t-raz-h">Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span></th><th class="n" data-k="ev">Eventos</th><th class="n" data-k="tm">Camin.</th><th class="n" data-k="perda">Perda h</th><th class="n" data-k="sev">s/evento</th><th class="n" data-k="queda">Queda km/h</th></tr></thead><tbody></tbody></table></div></div>
     </div>
   </section>
@@ -448,8 +450,8 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
       <p>Potencial de ganho de velocidade: a barra cinza é a velocidade atual e a parte colorida é o que seria ganho sem as quedas causadas pelas interações selecionadas. Altura total = velocidade potencial. Média no tempo, paradas incluídas (exceto paradas longas). Clique em um caminhão para filtrar o painel.</p>
       <div class="potleg"><span><i style="background:var(--bar)"></i>Velocidade atual</span><span><i style="background:var(--accent)"></i>Ganho potencial sem as interações</span></div></div></div>
     <div class="g2">
-      <div class="card chart"><h3>Caminhões</h3><p class="sub">velocidade atual e potencial (km/h) · ordenado pelo ganho</p><div id="c-truck"></div></div>
-      <div class="card chart"><h3>Hora do dia</h3><p class="sub">velocidade atual e potencial (km/h)</p><div id="c-hour"></div></div>
+      <div class="card chart"><h3>Caminhões</h3><p class="sub">velocidade atual e potencial (km/h) · ordenado pelo ganho</p><div class="evkey potkey"><span><i style="background:var(--bar)"></i>Real</span><span><i style="background:var(--accent)"></i>Ganho sem as interações</span><span><i style="background:var(--ref)"></i>Real acima da referência</span></div><div id="c-truck"></div></div>
+      <div class="card chart"><h3>Hora do dia</h3><p class="sub">velocidade atual e potencial (km/h)</p><div class="evkey potkey"><span><i style="background:var(--bar)"></i>Real</span><span><i style="background:var(--accent)"></i>Ganho sem as interações</span><span><i style="background:var(--ref)"></i>Real acima da referência</span></div><div id="c-hour"></div></div>
     </div>
   </section>
 
@@ -736,18 +738,18 @@ function compute(){
   for(const k in A)A[k].fill(0);cellPar=new Map();for(const k in SA)SA[k].fill(0);SPAR=SECS.map(()=>new Map());SOUT={w:0,pe:0,ri:0};
   const r={stop:0,semreg:0,h:0,lp:0,mw:0,vw:0,rw:0,pe:0,pn:0,
     parL:new Float64Array(NP),grL:new Float64Array(NG),grQ:new Float64Array(NG),grW:new Float64Array(NG),grTm:new Uint32Array(NG),grEv:new Float64Array(NG),parQ:new Float64Array(NP),parW:new Float64Array(NP),parTm:new Uint32Array(NP),
-    dM:new Float64Array(DIAS.length),dV:new Float64Array(DIAS.length),dR:new Float64Array(DIAS.length),dP:new Float64Array(DIAS.length),dW:new Float64Array(DIAS.length),tL:new Float64Array(TAGS.length),tH:new Float64Array(TAGS.length),tV:new Float64Array(TAGS.length),tD:new Float64Array(TAGS.length),hL:new Float64Array(24),hH:new Float64Array(24),hV:new Float64Array(24),hD:new Float64Array(24)};
+    dM:new Float64Array(DIAS.length),dV:new Float64Array(DIAS.length),dR:new Float64Array(DIAS.length),dP:new Float64Array(DIAS.length),dW:new Float64Array(DIAS.length),tL:new Float64Array(TAGS.length),tH:new Float64Array(TAGS.length),tV:new Float64Array(TAGS.length),tR:new Float64Array(TAGS.length),hR:new Float64Array(24),tD:new Float64Array(TAGS.length),hL:new Float64Array(24),hH:new Float64Array(24),hV:new Float64Array(24),hD:new Float64Array(24)};
   for(let i=0;i<N;i++){
     if(!pass(i,true))continue;
     const w=P.w[i],ps=P.p[i]/10,lp=P.lp[i],a0=P.eo[i],a1=P.eo[i+1],n=a1-a0;
     // a perda de uma leitura vai para as interações SELECIONADAS ativas nela, divididas igualmente entre elas
     let nsel=0;if(n)for(let j=a0;j<a1;j++)if(selPar(P.el[j]))nsel++;const pe=(nsel&&!lp)?ps:0;
     let dsel=0;if(nsel&&!lp){const dd=P.r[i]/10-P.v[i]/10;if(dd>M.tol)dsel=dd*w;}
-    if(!lp){r.tH[P.k[i]]+=w;r.tL[P.k[i]]+=pe;r.tV[P.k[i]]+=P.v[i]/10*w;r.tD[P.k[i]]+=dsel;}
+    if(!lp){r.tH[P.k[i]]+=w;r.tL[P.k[i]]+=pe;r.tV[P.k[i]]+=P.v[i]/10*w;r.tR[P.k[i]]+=P.r[i]/10*w;r.tD[P.k[i]]+=dsel;}
     if(S.tag>=0&&P.k[i]!==S.tag)continue;
     if(lp){r.lp+=w;continue;}
     if(P.v[i]<10)r.stop+=w;if(i+1<N&&P.k[i+1]===P.k[i]){const gp=P.t[i+1]-P.t[i]-w;if(gp>0)r.semreg+=gp;}
-    const hr=Math.floor(((P.t[i]/3600)+H0)%24);r.h+=w;r.hH[hr]+=w;r.hL[hr]+=pe;r.hV[hr]+=P.v[i]/10*w;r.hD[hr]+=dsel;
+    const hr=Math.floor(((P.t[i]/3600)+H0)%24);r.h+=w;r.hH[hr]+=w;r.hL[hr]+=pe;r.hV[hr]+=P.v[i]/10*w;r.hR[hr]+=P.r[i]/10*w;r.hD[hr]+=dsel;
     const v=P.v[i]/10,rf=P.r[i]/10;
     const dd_=P.dr[i];if(v>=2){r.mw+=w;r.vw+=v*w;r.rw+=rf*w;r.dM[dd_]+=w;r.dV[dd_]+=v*w;r.dR[dd_]+=rf*w;}
     r.pe+=pe;r.dP[dd_]+=pe;r.dW[dd_]+=w;if(!n)r.pn+=ps;
@@ -1288,8 +1290,8 @@ function chartTipo(){const r=R;const tot=r.parL.reduce((a,b)=>a+b,0);let it;
     it=[...Array(NG).keys()].filter(g=>r.grL[g]>0).sort((a,b)=>r.grL[b]-r.grL[a]).map(g=>({g,lab:GRUPOS[g].length>26?GRUPOS[g].slice(0,25)+'…':GRUPOS[g],v:r.grL[g]/3600,col:gcol(g)}));
     it.forEach(o=>{o.ext=tot>0?` · ${nf(100*o.v*3600/tot,0)}%`:'';const us=RORD.filter(q=>GI[q]===o.g&&r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).slice(0,5);
       o.tip=`<div class="t">${esc(GRUPOS[o.g])}</div>${row('Perda',nf(o.v,2)+' h')}${row('Tempo com o grupo ativo',nf(r.grW[o.g]/3600,1)+' h')}<div style="margin-top:4px;color:var(--ink2)">Principais Razao:</div>`+us.map(q=>row(esc(PARES[q].nome),nf(r.parL[q]/3600,2)+' h')).join('');});}
-  else{document.getElementById('c-tipo-tit').textContent='Perda por Razao';document.getElementById('c-tipo-sub').textContent='15 maiores · horas equivalentes · filtros aplicados';
-    it=[...Array(NP).keys()].filter(q=>r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).slice(0,15).map(q=>({q,lab:PARES[q].nome.length>24?PARES[q].nome.slice(0,23)+'…':PARES[q].nome,v:r.parL[q]/3600,col:rcol(q)}));
+  else{document.getElementById('c-tipo-tit').textContent='Perda por Razao';document.getElementById('c-tipo-sub').textContent='todas as Razao com perda · role para ver as demais · horas equivalentes · filtros aplicados';
+    it=[...Array(NP).keys()].filter(q=>r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).map(q=>({q,lab:PARES[q].nome.length>24?PARES[q].nome.slice(0,23)+'…':PARES[q].nome,v:r.parL[q]/3600,col:rcol(q)}));
     it.forEach(o=>{o.ext=tot>0?` · ${nf(100*o.v*3600/tot,0)}%`:'';o.tip=`<div class="t">${esc(PARES[o.q].nome)}</div>${row('Grupo · Tipo_Alerta',tipoTxt(o.q))}${row('Perda',nf(o.v,2)+' h')}${row('Tempo com a Razao ativa',nf(r.parW[o.q]/3600,1)+' h')}`;});}
   hbars(document.getElementById('c-tipo'),it,' h',1);
   document.getElementById('c-tipo-note').innerHTML='';}
@@ -1302,9 +1304,9 @@ function tableRaz(){const tb=document.querySelector('#t-raz tbody');tb.innerHTML
   else{document.getElementById('t-raz-h').innerHTML='Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span>';
     rows=[...Array(NP).keys()].filter(q=>r.parL[q]>0).map(q=>{const n=r.evCount[q];return {nome:esc(PARES[q].nome),sub:esc(tipoTxt(q)),cor:rvar(q),ev:n,tm:cnt(r.parTm[q]),perda:r.parL[q]/3600,sev:n?r.parL[q]/n:null,queda:r.parW[q]?r.parQ[q]/r.parW[q]:null};});}
   if(media)rows=rows.filter(o=>o.ev>=MINEV&&o[ORD]!=null);
-  rows.sort((a,b)=>(b[ORD]-a[ORD])||(b.perda-a.perda));if(S.view!=='grupo')rows=rows.slice(0,25);
+  rows.sort((a,b)=>(b[ORD]-a[ORD])||(b.perda-a.perda));
   document.getElementById('t-raz-tit').textContent=(S.view==='grupo'?'Grupos':'Razao')+' com mais '+ORDT[ORD];
-  document.getElementById('t-raz-sub').textContent=(S.view==='grupo'?'':'top 25 · ')+(media?`só com ${MINEV} eventos ou mais · `:'')+'s/evento = perda média por ocorrência · queda = referência − real enquanto ativa · clique no cabeçalho para ordenar';
+  document.getElementById('t-raz-sub').textContent=(S.view==='grupo'?'':rows.length+' Razao · role para ver todas · ')+(media?`só com ${MINEV} eventos ou mais · `:'')+'s/evento = perda média por ocorrência · queda = referência − real enquanto ativa · clique no cabeçalho para ordenar';
   document.getElementById('t-raz-ord').value=ORD;
   document.querySelectorAll('#t-raz th[data-k]').forEach(th=>{const on=th.dataset.k===ORD;th.classList.toggle('ordon',on);th.setAttribute('aria-sort',on?'descending':'none');});
   rows.forEach(o=>{const tr=document.createElement('tr');
@@ -1324,23 +1326,24 @@ function vbars(host,labels,vals,hours,opt){host.innerHTML='';const Wd=Math.max(3
     if(opt.rot)txt(s,x+inner/2,Hh-mb+12,lb,{'text-anchor':'end',transform:`rotate(-50 ${x+inner/2} ${Hh-mb+12})`,style:'font-size:10.5px'});
     else if(i%opt.every===0)txt(s,x+inner/2,Hh-6,lb,{'text-anchor':'middle',class:'num',style:'fill:var(--muted)'});});
   el('line',{x1:ml,x2:Wd,y1:y(0),y2:y(0),class:'axis'},s);bindTips(s);}
-function potbars(host,labels,cur,gain,hours,opt){host.innerHTML='';const Wd=Math.max(300,host.clientWidth),Hh=240,ml=34,mb=opt.rot?40:24,mt=18,s=svg(Wd,Hh);host.appendChild(s);
+function potbars(host,labels,cur,gain,hours,opt){const ref=opt.ref||cur.map(c=>c);host.innerHTML='';const Wd=Math.max(300,host.clientWidth),Hh=240,ml=34,mb=opt.rot?40:24,mt=18,s=svg(Wd,Hh);host.appendChild(s);
   const n=labels.length,bw=(Wd-ml-6)/n,inner=Math.max(3,bw-Math.max(2,bw*.28)),mx=Math.max(...cur.map((c,i)=>c+gain[i]),1)*1.12,y=v=>mt+(Hh-mt-mb)*(1-v/mx);
   const step=mx>60?20:mx>30?10:mx>16?5:mx>8?2:1;for(let t=0;t<=mx;t+=step){el('line',{x1:ml,x2:Wd,y1:y(t),y2:y(t),class:'grid'},s);txt(s,ml-6,y(t)+4,t,{'text-anchor':'end',class:'num',style:'fill:var(--muted)'});}
-  const col=css('--bar'),acc=css('--accent');
-  labels.forEach((lb,i)=>{const x=ml+i*bw+(bw-inner)/2,c=cur[i],gn=gain[i],p=c+gn,dim=opt.sel>=0&&opt.idx[i]!==opt.sel;const g=el('g',{opacity:dim?.3:1},s);
-    const tipH=hours[i]?`<div class="t">${opt.tipT(lb)}</div>${row('Velocidade atual',nf(c,1)+' km/h')}${row('Velocidade potencial',nf(p,1)+' km/h')}${row('Ganho potencial',`+${nf(gn,2)} km/h (${nf(p?100*gn/c:0,1)}%)`)}${row('Horas consideradas',nf(hours[i]/3600,1)+' h')}`:`<div class="t">${opt.tipT(lb)}</div>sem leituras`;
-    if(hours[i]){rbar(g,x,y(c),inner,y(0)-y(c),col,false,tipH);if(gn>0)el('rect',{x,y:y(p),width:inner,height:Math.max(1,y(c)-y(p)),fill:acc},g);}
+  const col=css('--bar'),acc=css('--accent'),blu=css('--ref')||'#2f6fdb';
+  labels.forEach((lb,i)=>{const x=ml+i*bw+(bw-inner)/2,c=cur[i],gn=gain[i],p=c+gn,ac=hours[i]?Math.max(0,c-ref[i]):0,dim=opt.sel>=0&&opt.idx[i]!==opt.sel;const g=el('g',{opacity:dim?.3:1},s);
+    const tipH=hours[i]?`<div class="t">${opt.tipT(lb)}</div>${row('Velocidade atual',nf(c,1)+' km/h')}${row('Velocidade potencial',nf(p,1)+' km/h')}${row('Velocidade de referência',nf(ref[i],1)+' km/h')}${ac>0?row('Acima da referência',`+${nf(ac,2)} km/h`):''}${row('Ganho potencial',`+${nf(gn,2)} km/h (${nf(p?100*gn/c:0,1)}%)`)}${row('Horas consideradas',nf(hours[i]/3600,1)+' h')}`:`<div class="t">${opt.tipT(lb)}</div>sem leituras`;
+    if(hours[i]){rbar(g,x,y(c),inner,y(0)-y(c),col,false,tipH);if(ac>0.05)el('rect',{x,y:y(c),width:inner,height:Math.max(1.5,y(c-ac)-y(c)),fill:blu},g);if(gn>0)el('rect',{x,y:y(p),width:inner,height:Math.max(1,y(c)-y(p)),fill:acc},g);}
     const hit=el('rect',{x:ml+i*bw,y:mt,width:bw,height:Hh-mt-mb,fill:'transparent'},g);hit.setAttribute('data-tip',tipH);if(opt.click){hit.style.cursor='pointer';hit.onclick=()=>opt.click(i);}
     if(opt.valLab&&hours[i]&&gn>0&&bw>=22)txt(g,x+inner/2,y(p)-4,'+'+nf(gn,1),{'text-anchor':'middle',class:'num',style:'font-size:10px;fill:var(--accent)'});
+    else if(opt.valLab&&ac>0.05&&bw>=22)txt(g,x+inner/2,y(c)-4,'+'+nf(ac,1),{'text-anchor':'middle',class:'num',style:'font-size:10px;fill:'+blu});
     if(opt.rot)txt(s,x+inner/2,Hh-mb+12,lb,{'text-anchor':'end',transform:`rotate(-50 ${x+inner/2} ${Hh-mb+12})`,style:'font-size:10.5px'});
     else if(i%opt.every===0)txt(s,x+inner/2,Hh-6,lb,{'text-anchor':'middle',class:'num',style:'fill:var(--muted)'});});
   el('line',{x1:ml,x2:Wd,y1:y(0),y2:y(0),class:'axis'},s);bindTips(s);}
 function chartTruck(){const r=R;const idx=TAGS.map((t,i)=>i).filter(i=>r.tH[i]>1800).sort((a,b)=>r.tD[b]/r.tH[b]-r.tD[a]/r.tH[a]);
-  potbars(document.getElementById('c-truck'),idx.map(i=>TAGS[i]),idx.map(i=>r.tV[i]/r.tH[i]),idx.map(i=>r.tD[i]/r.tH[i]),idx.map(i=>r.tH[i]),{rot:true,sel:S.tag,idx,valLab:true,tipT:lb=>'Caminhão '+lb,
+  potbars(document.getElementById('c-truck'),idx.map(i=>TAGS[i]),idx.map(i=>r.tV[i]/r.tH[i]),idx.map(i=>r.tD[i]/r.tH[i]),idx.map(i=>r.tH[i]),{ref:idx.map(i=>r.tR[i]/r.tH[i]),rot:true,sel:S.tag,idx,valLab:true,tipT:lb=>'Caminhão '+lb,
     click:k=>{const t=idx[k];S.tag=S.tag===t?-1:t;ftag.value=S.tag;update();}});}
 function chartHour(){const r=R,hs=[...Array(24).keys()];
-  potbars(document.getElementById('c-hour'),hs.map(h=>String(h).padStart(2,'0')),hs.map(h=>r.hH[h]?r.hV[h]/r.hH[h]:0),hs.map(h=>r.hH[h]?r.hD[h]/r.hH[h]:0),hs.map(h=>r.hH[h]),{sel:-1,idx:hs,every:3,valLab:true,tipT:lb=>lb+':00 – '+lb+':59'});}
+  potbars(document.getElementById('c-hour'),hs.map(h=>String(h).padStart(2,'0')),hs.map(h=>r.hH[h]?r.hV[h]/r.hH[h]:0),hs.map(h=>r.hH[h]?r.hD[h]/r.hH[h]:0),hs.map(h=>r.hH[h]),{ref:hs.map(h=>r.hH[h]?r.hR[h]/r.hH[h]:0),sel:-1,idx:hs,every:3,valLab:true,tipT:lb=>lb+':00 – '+lb+':59'});}
 
 /* ---------- estatística (fixa) ---------- */
 function statics(){const sh=M.shap;
