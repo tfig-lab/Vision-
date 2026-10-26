@@ -285,7 +285,7 @@ const meta={exclusoes:EXCL,origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota
   dumpxy:CICLO.filter(e=>e.razao==='AT is in Dumping'&&isFinite(e.X)).map(e=>[Math.round(e.X-x0),Math.round(e.Y-y0)]),
   eventos_fora:eventosFora,periodo:[fmt(tmin),fmt(tmax)],tol:TOL,pre:PRE,pos:POS,cv:cvs,
   q:{linhas:linhasInter,eventos:EM.length,sem_fim:EM.filter(e=>!e.fv).length,pontos:N,horas:horas/3600,pts_limpos:LIMPO.reduce((a,b)=>a+b,0),pts_com_evento:NAT.reduce((a,b)=>a+(b>0),0),n_reg:regPar.n||0,pares:pares.length},
-  reg_pista:regPista,reg_par:regPar.tab,shap,curva,ciclos,usa_grupo:usaGrupo};
+  reg_pista:regPista,reg_par:regPar.tab,shap,curva,ciclos,usa_grupo:usaGrupo,depara:gmap||null};
 log('Reconstruindo as seções físicas da pista',.97);
 {const SF=secoesFisicas(P,meta,E);meta.secoes=SF.secoes;P.sid=SF.sid;E.sid=SF.eid;}
 log('Pronto',1);
