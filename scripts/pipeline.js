@@ -35,13 +35,13 @@ log('Lendo interações',0.02);
 let linhasInter=0;const vistos=new Set();const EV=[];let frota='';
 const diaDe=(s,t)=>{const m=/^(\d{4}-\d{2}-\d{2})/.exec(String(s||'').trim());if(m)return m[1];if(isNaN(t))return'';const d=new Date(t);return d.toISOString().slice(0,10);};
 listaI.forEach((txt,fi)=>{const LI=linhas(txt);const hI=campos(LI[0]).map(s=>s.trim());const ci=n=>{const k=hI.indexOf(n);if(k<0)throw new Error(`Coluna "${n}" não encontrada no arquivo de interações ${listaI.length>1?'nº '+(fi+1):''}.`);return k;};
-const cId=ci('Id_Evento_Origem'),cTag=ci('TAG'),cIni=ci('Data_Inicio'),cFim=ci('Data_Termino'),cLon=ci('Longitude'),cLat=ci('Latitude'),cTipo=ci('Tipo_Alerta'),cRaz=ci('Razao'),cCod=ci('Evento_Codigo');
+const cId=ci('Id_Evento_Origem'),cTag=ci('TAG'),cIni=ci('Data_Inicio'),cFim=ci('Data_Termino'),cLon=ci('Longitude'),cLat=ci('Latitude'),cTipo=ci('Tipo_Alerta'),cRaz=ci('Razao'),cDesc=hI.indexOf('Evento_Descricao'),cCod=ci('Evento_Codigo');
 const cTurnoI=hI.indexOf('Turno'),cFrota=hI.indexOf('Frota'),cDR=hI.indexOf('Dt_Referencia');
 for(let i=1;i<LI.length;i++){if(!LI[i])continue;linhasInter++;const c=campos(LI[i]);const key=c[cId]+'|'+c[cTag];if(vistos.has(key))continue;vistos.add(key);
   if(!frota&&cFrota>=0&&!vazio(c[cFrota]))frota=String(c[cFrota]).trim();
   const ini=tms(c[cIni]),fim=tms(c[cFim]);const fv=!isNaN(fim)&&new Date(fim).getUTCFullYear()>2000&&fim>=ini;
   const lon=num(c[cLon]),lat=num(c[cLat]);const[X,Y]=(isFinite(lon)&&isFinite(lat))?utm22s(lon,lat):[NaN,NaN];
-  EV.push({id:c[cId],tag:String(c[cTag]).trim(),ini,fim,fv,dur:fv?(fim-ini)/1000:0,X,Y,tipo:String(c[cTipo]||'').trim(),razao:vazio(c[cRaz])?null:String(c[cRaz]).trim(),cod:String(c[cCod]||'').trim().toUpperCase(),turno:cTurnoI>=0?String(c[cTurnoI]).trim():'',dia:diaDe(cDR>=0?c[cDR]:'',ini)});}});
+  EV.push({id:c[cId],tag:String(c[cTag]).trim(),ini,fim,fv,dur:fv?(fim-ini)/1000:0,X,Y,tipo:String(c[cTipo]||'').trim(),razao:!vazio(c[cRaz])?String(c[cRaz]).trim():(cDesc>=0&&!vazio(c[cDesc])?String(c[cDesc]).trim():'(sem Razao)'),cod:String(c[cCod]||'').trim().toUpperCase(),turno:cTurnoI>=0?String(c[cTurnoI]).trim():'',dia:diaDe(cDR>=0?c[cDR]:'',ini)});}});
 if(!EV.length)throw new Error('O arquivo de interações não tem linhas de dados.');
 
 /* ---------- 2. velocidade ---------- */
