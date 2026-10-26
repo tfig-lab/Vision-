@@ -53,6 +53,7 @@ for(let i=1;i<LV.length;i++){if(!LV[i])continue;const c=campos(LV[i]);const t=tm
   const tag=String(c[vTag]).trim();const key=tag+'|'+t;if(vistosV.has(key))continue;vistosV.add(key);
   if(!local&&vLoc>=0)local=String(c[vLoc]).trim();
   rows.push({tag,t,X,Y,z:num(c[vZ])/10,v:num(c[vV]),hd:num(c[vH]),turno:vNT>=0?String(c[vNT]).trim().split(/\s+/).pop():'',dia:diaDe(vDR>=0?c[vDR]:'',t)});}});
+for(let i=0;i<listaI.length;i++)listaI[i]=null;for(let i=0;i<listaV.length;i++)listaV[i]=null; // libera o texto dos CSVs (memória)
 if(!rows.length)throw new Error('O arquivo de velocidade não tem linhas de dados.');
 rows.sort((a,b)=>a.tag<b.tag?-1:a.tag>b.tag?1:a.t-b.t);
 const N=rows.length;const col=k=>Float64Array.from(rows,r=>r[k]);
@@ -92,10 +93,10 @@ const CARGA=new Int8Array(N).fill(2); // 0 cheio, 1 vazio, 2 indefinido
 /* ---------- 5. interações do modelo (Razao com grupo) ---------- */
 log('Associando interações às leituras',0.26);
 const comRazao=EV.filter(e=>e.razao);const semRazao=EV.length-comRazao.length;
-comRazao.forEach(e=>{e.grupo=gmap?(gmap[e.cod]||SEM_GRUPO):SEM_GRUPO;e.par=e.grupo+' | '+e.razao;});
+comRazao.forEach(e=>{e.grupo=gmap?(gmap[e.cod]||SEM_GRUPO):SEM_GRUPO;e.par=e.grupo+' | '+(e.cod||'—')+' | '+e.razao;});
 const usaGrupo=!!gmap;
-const EM=usaGrupo?comRazao.filter(e=>e.grupo!==SEM_GRUPO):comRazao; // sem de-para: todas as Razao entram (grupo único)
-const eventosFora=usaGrupo?comRazao.length-EM.length:0;
+const EM=comRazao; // todas as interações (Razao + código) entram; as sem grupo no de-para ficam em SEM_GRUPO
+const eventosFora=0;
 const contPar=new Map();EM.forEach(e=>contPar.set(e.par,(contPar.get(e.par)||0)+1));
 const pares=[...contPar.keys()].sort((a,b)=>contPar.get(b)-contPar.get(a)||(a<b?-1:1));const pi=Object.fromEntries(pares.map((p,k)=>[p,k]));
 {const md=new Map();EM.forEach(e=>{if(e.fv)(md.get(e.par)||md.set(e.par,[]).get(e.par)).push(e.dur);});const mm=new Map();md.forEach((a,k)=>mm.set(k,median(a)));
@@ -226,7 +227,7 @@ const gruposReg=grupos.filter(g=>g.n>=10).map(g=>g.nome);
 const dumGr=gruposReg.map(g=>{const qs=new Set(pares.map((p,q)=>parGrupo[q]===g?q:-1).filter(q=>q>=0));const a=new Float64Array(nR);for(let r=0;r<nR;r++)if(ATIVOS[RI[r]].some(q=>qs.has(q)))a[r]=1;return a;});
 log('Rodando regressões (grupos)',0.84);
 const regGrupo=gruposReg.length?feReg(dumGr,gruposReg):{tab:[]};
-const topPares=pares.filter(p=>contPar.get(p)>=30);
+const topPares=pares.filter(p=>contPar.get(p)>=30).slice(0,60); // limita a regressão às 60 interações mais frequentes (memória)
 log('Rodando regressões (Razao)',0.88);
 const dumPar=topPares.map(p=>parSet(pi[p]));
 const regPar=topPares.length?feReg(dumPar,topPares):{tab:[],n:okIdx.length};
@@ -268,11 +269,11 @@ EM.filter(e=>e.tag in ti).sort((a,b)=>a.ini-b.ini).forEach(e=>{const k=ti[e.tag]
   let c=2,dr=diaIdx[e.dia]??-1;{let l=tagStart[k],h=tagStart[k+1];while(l<h){const m=(l+h)>>1;if(T[m]<e.ini)l=m+1;else h=m;}let best=-1,bd=60001;for(const j of[l-1,l])if(j>=tagStart[k]&&j<tagStart[k+1]){const d=Math.abs(T[j]-e.ini);if(d<bd){bd=d;best=j;}}if(best>=0){c=CARGA[best];if(dr<0)dr=diaIdx[DIAV[best]];}}
   E.tp.push(tipos.indexOf(e.tipo));E.k.push(k);E.t.push(Math.round((e.ini-T0)/100)/10);E.d.push(Math.round(e.du*10)/10);E.f.push(e.fv?1:0);E.q.push(e.pi);
   E.x.push(Math.round(e.X-x0));E.y.push(Math.round(e.Y-y0));E.s.push(turnoCod(e.turno));E.c.push(c);E.dr.push(dr<0?0:dr);});
-const tiposPar=pares.map(p=>[...new Set(EM.filter(e=>e.par===p).map(e=>e.tipo))].sort());
+const tiposPar=(()=>{const m=new Map();EM.forEach(e=>{let s=m.get(e.par);if(!s){s=new Set();m.set(e.par,s);}s.add(e.tipo);});return pares.map(p=>[...(m.get(p)||[])].sort());})();
 let tmin=Infinity,tmax=-Infinity;for(let i=0;i<N;i++){if(T[i]<tmin)tmin=T[i];if(T[i]>tmax)tmax=T[i];}
 let horas=0;for(let i=0;i<N;i++)horas+=W[i];
 const meta={origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota,dias,arquivos:{inter:listaI.length,vel:listaV.length},
-  pares:pares.map((p,q)=>({razao:p.split(' | ').slice(1).join(' | '),grupo:parGrupo[q],tipos:tiposPar[q],n:contPar.get(p)})),
+  pares:pares.map((p,q)=>({razao:p.split(' | ').slice(2).join(' | '),cod:p.split(' | ')[1],grupo:parGrupo[q],tipos:tiposPar[q],n:contPar.get(p)})),
   grupos,sem_grupo:SEM_GRUPO,reg_grupo:regGrupo.tab,eventos_sem_razao:semRazao,
   loadxy:CICLO.filter(e=>e.razao==='AT is in Loading'&&isFinite(e.X)).map(e=>[Math.round(e.X-x0),Math.round(e.Y-y0)]),
   dumpxy:CICLO.filter(e=>e.razao==='AT is in Dumping'&&isFinite(e.X)).map(e=>[Math.round(e.X-x0),Math.round(e.Y-y0)]),

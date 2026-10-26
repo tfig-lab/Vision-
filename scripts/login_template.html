@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{--bg:#f5f4f0;--panel:#fdfcfa;--ink:#1c1b18;--ink2:#55524b;--muted:#85817a;--line:#e3e0d8;--line2:#cfcbc1;--accent:#8f3a1d;--accent-ink:#fff8f3;--err:#b3261e;--focus:rgba(143,58,29,.18);color-scheme:light}
+:root{--bg:#f3f3f1;--panel:#ffffff;--ink:#1c1b18;--ink2:#55524b;--muted:#85817a;--line:#e3e0d8;--line2:#cfcbc1;--accent:#e2700c;--accent-ink:#fff8f3;--err:#b3261e;--focus:rgba(143,58,29,.18);color-scheme:light}
  *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:grid;grid-template-rows:auto 1fr auto;min-height:100vh}
-.logo{display:block;width:min(300px,70%);height:auto;border-radius:14px;background:#000;margin-bottom:22px}.logo[src=""]{display:none}
-.piloto{background:repeating-linear-gradient(135deg,#1c1b18 0 22px,#2b2925 22px 44px);color:#fff;text-align:center;padding:16px;border-bottom:4px solid #f08a1c}.piloto b{display:inline-block;font:700 clamp(28px,5vw,48px)/1.05 "Barlow Condensed",sans-serif;letter-spacing:.06em;color:#ffb347}.piloto span{display:block;font-size:13px;color:#e8e2d6;margin-top:4px}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:grid;grid-template-rows:1fr auto auto;min-height:100vh}
+.logo{display:block;width:min(260px,64%);height:auto;margin-bottom:18px}.logo[src=""]{display:none}
+.piloto{margin:0 auto 4px;max-width:1080px;width:calc(100% - 48px);display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:#1d1d1f;color:#e8e2d6;border-radius:8px;padding:7px 14px;font-size:12px}.piloto b{font:700 13px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;color:#ffb347}.piloto span{color:#d7d2c8}
 main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);max-width:1080px;width:100%;margin:0 auto;padding:48px 24px;gap:56px;align-items:center}
 .eyebrow{font:500 11.5px/1.4 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 h1{font:700 clamp(40px,6vw,64px)/1.0 "Barlow Condensed",sans-serif;letter-spacing:-.01em;margin:14px 0 18px}
@@ -44,7 +44,6 @@ footer{padding:18px 24px;text-align:center;font:400 11.5px "IBM Plex Mono",monos
 </style>
 </head>
 <body>
-__PILOTO__
 <main>
   <section>
     <img class="logo" src="__LOGO__" alt="Vision+">
@@ -62,6 +61,7 @@ __PILOTO__
     <p class="note">O painel está criptografado e só abre com usuário e senha válidos. Para pedir acesso, fale com o responsável pelo painel.</p>
   </form>
 </main>
+__PILOTO__
 <footer>Painel criptografado (AES-256-GCM)</footer>
 <script id="cfg" type="application/json">__CFG__</script>
 <script>

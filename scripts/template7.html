@@ -8,11 +8,11 @@
 <style>
 /* Layout: painel operacional — barra de filtros fixa, mapa do trecho como peça central, análises abaixo em faixas. */
 :root{
-  --bg:#f5f4f0; --panel:#fdfcfa; --ink:#1c1b18; --ink2:#55524b; --muted:#85817a; --line:#e3e0d8; --line2:#cfcbc1;
-  --accent:#8f3a1d; --accent-ink:#fff8f3; --chip:#ece9e2;
-  --map-bg:#ebe8e1; --road:#c8c3b8;
+  --bg:#f3f3f1; --panel:#ffffff; --ink:#1d1d1f; --ink2:#4b4b50; --muted:#86868c; --line:#e7e6e2; --line2:#d6d5d0;
+  --accent:#e2700c; --accent-ink:#ffffff; --chip:#f1f0ec;
+  --map-bg:#ecebe7; --road:#cfcec8;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --gray-series:#a7a39a;
-  --o0:#fbe6d9; --o1:#f6b893; --o2:#eb6834; --o3:#b8441a; --o4:#6e260c;
+  --o0:#fde6cc; --o1:#f8b56a; --o2:#ef8624; --o3:#d2560c; --o4:#9a3008;
   --b0:#dbe9fb; --b1:#9ec5f4; --b2:#5598e7; --b3:#256abf; --b4:#0d366b;
   --dv-neg:#2a78d6; --dv-mid:#e9e7e1; --dv-pos:#d03b3b;
   --good:#0ca30c; --crit:#d03b3b;
@@ -230,6 +230,7 @@ body.noscroll{overflow:hidden}
 .upnow th,.upnow td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:12.5px}.upnow th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
 .upnow td.n{text-align:right;font-family:var(--f-mono);white-space:nowrap}.upnow td.f{font-family:var(--f-mono);font-size:12px;word-break:break-all}.upnow tr:last-child td{border-bottom:0}
 .upfiles{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}.upfiles li{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:6px}
+.uprm{float:right;border:0;background:none;color:var(--muted);font:500 11.5px var(--f-mono);cursor:pointer;padding:0 0 0 8px}.uprm:hover{color:var(--accent)}.uptodos{text-align:right}
 .upfiles li b{font-family:var(--f-mono);font-weight:600;color:var(--ink);word-break:break-all}.upfiles li span{display:block;font-family:var(--f-mono);font-size:11.5px;color:var(--ink2)}.upfiles li .lendo{color:var(--muted)}
 .upgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .upcard{position:relative;display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1.5px dashed var(--line2);border-radius:10px;padding:16px;cursor:pointer;min-width:0;transition:border-color .15s,background .15s}
@@ -302,18 +303,70 @@ body.noscroll{overflow:hidden}
 .piloto{background:repeating-linear-gradient(135deg,#1c1b18 0 22px,#2b2925 22px 44px);color:#fff;text-align:center;padding:14px 16px;border-bottom:4px solid #f08a1c}
 .piloto b{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4vw,40px);letter-spacing:.06em;color:#ffb347;line-height:1.05}
 .piloto span{display:block;font-size:12.5px;color:#e8e2d6;margin-top:4px}
+
+/* ===== identidade Vision+ ===== */
+header.top{background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax);padding-top:16px}
+.brand{display:flex;align-items:center;gap:20px}
+.brandlogo{width:auto;height:58px;background:none;border-radius:0;box-shadow:none}
+.brandsep{width:1px;align-self:stretch;background:var(--line2);margin:6px 0}
+.brandtx h1{margin:2px 0 0;font-size:clamp(28px,3.3vw,40px)}
+.hdrchip{margin-left:auto;display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:10px;padding:8px 14px;color:var(--ink);font:500 13px var(--f-body);background:#fff;white-space:nowrap}
+.hdrchip small{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:var(--f-mono)}
+.tabs{border-bottom:0;margin-top:8px}
+.filters{background:#fff}
+.fctl{display:flex;align-items:center;gap:6px;min-width:0}
+.fctl>details,.fctl>select{flex:1;min-width:0}
+.ficon{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid var(--line2);border-radius:8px;color:var(--ink2);flex:none;background:#fff}
+select{border-radius:8px;padding:7px 30px 7px 10px}
+.seg{border-radius:8px}.seg button{padding:7px 14px}
+.btn-reset{color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;align-self:center}
+.kpis.k3v{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;background:none;border:0;overflow:visible;margin-block:18px}
+.kpi.kc{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.kico{color:var(--accent);flex:none;padding-top:16px}.kico.gray{color:var(--muted)}
+.kbody{min-width:0;flex:1}
+.krow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:2px}
+.kpi.kc .v,.kpi.kc.hl .v{font-size:40px;font-weight:700;color:var(--ink)}
+.ksp svg{display:block}.ksp.wide{margin-left:auto}
+.kdelta{display:flex;flex-direction:column;font:600 13px var(--f-body);line-height:1.25}.kdelta .up{color:#1a9b4b}.kdelta .dn{color:#d23b2b}.kdelta small{font-weight:400;color:var(--muted);font-size:11.5px}
+.spk0{font-size:11px;color:var(--muted)}
+@media (max-width:1100px){.kpis.k3v{grid-template-columns:minmax(0,1fr)}}
+section.band{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-block:16px}
+.hico{display:inline-grid;place-items:center;color:var(--accent);margin-right:10px;vertical-align:-3px}
+.mapbox{border-radius:12px;overflow:hidden}
+.mapctl button{border-radius:10px;border:0;box-shadow:0 1px 4px rgba(0,0,0,.2);width:36px;height:36px}
+.legend{background:rgba(24,24,26,.86);color:#fff;border:0;border-radius:10px}.legend .ticks{color:#ddd}
+.zlist{border-radius:12px}
+.shd,.srow{display:grid;grid-template-columns:30px 52px minmax(0,1fr) 72px 38px 12px;gap:8px;align-items:center}
+.shd{padding:8px 14px;font:500 10px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);background:var(--chip)}
+.srow{width:100%;padding:9px 14px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;font:inherit;cursor:pointer;color:var(--ink)}
+.srow:hover{background:#faf9f7}.srow.sel{background:#fff4e8}
+.srk{display:flex;align-items:center;gap:6px;font:600 12.5px var(--f-mono);color:var(--muted)}.srk::before{content:"";width:4px;height:22px;border-radius:2px;background:var(--c);flex:none}
+.sid{font:700 13px var(--f-mono);color:var(--accent)}
+.sdesc{font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbar{height:8px;background:var(--chip);border-radius:4px;overflow:hidden}.sbar i{display:block;height:100%;border-radius:4px}
+.sval{font:600 13px var(--f-mono);text-align:right}
+.schev{color:var(--muted);font-size:18px;line-height:1;transition:transform .15s}.srow.sel .schev{transform:rotate(90deg)}
+.sdet{padding:10px 14px 14px 52px;border-bottom:1px solid var(--line);background:#fff4e8;display:flex;flex-direction:column;gap:8px}
+.docwrap .prose p{max-width:none}.doctoc{display:flex;flex-wrap:wrap;gap:8px}.doctoc a{font-size:13px;color:var(--ink2);border:1px solid var(--line2);border-radius:999px;padding:4px 12px;text-decoration:none}.doctoc a:hover{border-color:var(--accent);color:var(--accent)}
+.doctab td:first-child{font-weight:600;white-space:nowrap;vertical-align:top}.doctab td{vertical-align:top}
+.piloto{margin:0}
+.pilotobadge{margin-left:auto;align-self:center;font:700 11px var(--f-mono);letter-spacing:.14em;color:var(--accent);border:1.5px solid var(--accent);border-radius:6px;padding:4px 9px;background:#fff7ef;cursor:help}
+.pilotobadge+.hdrchip{margin-left:12px}
+.satop:disabled{display:none}
+.shd,.srow{grid-template-columns:30px 48px minmax(0,1fr) 60px 36px 12px}
+@media (max-width:700px){.hdrchip{display:none}.brandlogo{height:42px}}
 </style>
-<!--PILOTO-->
 <header class="top wrap" style="padding-bottom:0">
-  <div class="brand"><img class="brandlogo" src="__LOGO__" alt="Vision+"><div class="brandtx">
+  <div class="brand"><img class="brandlogo" src="__LOGO__" alt="Vision+"><span class="brandsep" aria-hidden="true"></span><div class="brandtx">
   <div class="eyebrow" id="hdr-eyebrow"></div>
   <h1>Análise de Performance de Velocidade</h1>
-  </div></div>
+  </div><!--PILOTO--><div class="hdrchip" id="hdr-chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="hdr-chip-t"></span></div></div>
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-trecho" aria-selected="true" aria-controls="pane-trecho">Trecho</button>
     <button role="tab" id="tab-ciclo" aria-selected="false" aria-controls="pane-ciclo">Ciclo do caminhão</button>
     <button role="tab" id="tab-hist" aria-selected="false" aria-controls="pane-hist">Histórico</button>
     <button role="tab" id="tab-dados" aria-selected="false" aria-controls="pane-dados">Carregar dados</button>
+    <button role="tab" id="tab-doc" aria-selected="false" aria-controls="pane-doc">Documentação</button>
     <button type="button" class="fsbtn" id="fs-page" style="margin-left:auto;align-self:center" aria-label="Painel em tela cheia">⛶ Tela cheia</button>
   </div>
 </header>
@@ -321,26 +374,27 @@ body.noscroll{overflow:hidden}
 <div id="pane-trecho" role="tabpanel">
 <div class="filters" role="region" aria-label="Filtros">
   <div class="wrap">
-    <div class="fgroup"><label for="f-tag">Caminhão</label><select id="f-tag"></select></div>
-    <div class="fgroup"><span class="flabel">Carga</span><div class="seg" id="f-carga"><button data-v="-1" aria-pressed="true">Todos</button><button data-v="0" aria-pressed="false">Cheio</button><button data-v="1" aria-pressed="false">Vazio</button></div></div>
-    <div class="fgroup"><span class="flabel">Turno</span><div class="seg" id="f-turno"><button data-v="-1" aria-pressed="true">Todos</button><button data-v="0" aria-pressed="false">Diurno</button><button data-v="1" aria-pressed="false">Noturno</button></div></div>
-    <div class="fgroup" style="min-width:200px"><span class="flabel">Data (dia de referência)</span><details class="msel" id="f-datbox"><summary id="f-datsum">Todas as datas</summary><div class="mpanel" style="width:min(320px,calc(100vw - 32px))"><div class="mbtns"><button type="button" id="f-datall">Todas as datas</button></div><div class="mlist" id="f-datlist"></div></div></details></div>
+    <div class="fgroup"><label for="f-tag">Caminhão</label><div class="fctl"><span class="ficon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h10v8H3z"/><path d="M13 10h4l3 3v2h-7"/><circle cx="7" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/></svg></span><select id="f-tag"></select></div></div>
+    <div class="fgroup"><span class="flabel">Carga</span><div class="fctl"><span class="ficon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18l6-9 4 5 3-3 5 7z"/></svg></span><div class="seg" id="f-carga"><button data-v="-1" aria-pressed="true">Todos</button><button data-v="0" aria-pressed="false">Cheio</button><button data-v="1" aria-pressed="false">Vazio</button></div></div></div>
+    <div class="fgroup"><span class="flabel">Turno</span><div class="fctl"><span class="ficon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span><div class="seg" id="f-turno"><button data-v="-1" aria-pressed="true">Todos</button><button data-v="0" aria-pressed="false">Diurno</button><button data-v="1" aria-pressed="false">Noturno</button></div></div></div>
+    <div class="fgroup" style="min-width:200px"><span class="flabel">Data (dia de referência)</span><div class="fctl"><span class="ficon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><details class="msel" id="f-datbox"><summary id="f-datsum">Todas as datas</summary><div class="mpanel" style="width:min(320px,calc(100vw - 32px))"><div class="mbtns"><button type="button" id="f-datall">Todas as datas</button></div><div class="mlist" id="f-datlist"></div></div></details></div></div>
     <div class="fgroup" style="flex:1 1 300px;max-width:460px"><span class="flabel">Grupo / Razao considerados</span>
-      <details class="msel" id="f-razbox"><summary id="f-razsum">Todas</summary>
-        <div class="mpanel"><input type="search" id="f-razq" placeholder="Buscar grupo ou Razao…" aria-label="Buscar grupo ou Razao"><div class="mbtns"><button type="button" id="f-razall">Marcar todas</button><button type="button" id="f-raznone">Desmarcar todas</button><button type="button" id="f-razonly">Só as da busca</button></div><div class="mlist" id="f-razlist"></div></div></details></div>
-    <button class="btn-reset" id="f-reset" type="button">Limpar filtros</button>
+      <div class="fctl"><span class="ficon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v5M12 12l-6 5M12 12l6 5"/></svg></span><details class="msel" id="f-razbox"><summary id="f-razsum">Todas</summary>
+        <div class="mpanel"><input type="search" id="f-razq" placeholder="Buscar grupo ou Razao…" aria-label="Buscar grupo ou Razao"><div class="mbtns"><button type="button" id="f-razall">Marcar todas</button><button type="button" id="f-raznone">Desmarcar todas</button><button type="button" id="f-razonly">Só as da busca</button></div><div class="mlist" id="f-razlist"></div></div></details></div></div>
+    <button class="btn-reset" id="f-reset" type="button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7"/><path d="M4 4v4h4"/></svg>Limpar filtros</button>
   </div>
 </div>
 
 <main class="wrap">
-  <div class="kpis k2">
+  <div class="kpis k3v">
     <div class="kpi" hidden><div class="eyebrow">Horas em movimento × paradas</div><div class="vv"><div><div class="v" id="k-h" style="color:var(--ref)">—</div><div class="l">em movimento</div></div><div><div class="v" id="k-st" style="color:var(--o2)">—</div><div class="l">paradas</div></div></div><div class="kbar" id="k-hbar"></div><div class="s" id="k-h-s">—</div></div>
-    <div class="kpi"><div class="eyebrow">Velocidade de referência × real</div><div class="vv"><div><div class="v" id="k-vr" style="color:var(--ref)">—</div><div class="l">referência média</div></div><div><div class="v" id="k-v">—</div><div class="l">real (operada)</div></div></div><div class="s" id="k-v-s">—</div></div>
-    <div class="kpi hl"><div class="eyebrow">Perda por interações</div><div class="v" id="k-pe">—</div><div class="s" id="k-pn-s">—</div></div>
+    <div class="kpi kc"><div class="kico"><svg viewBox="0 0 48 48" width="46" height="46" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M8 34a17 17 0 1 1 32 0"/><path d="M24 30l8-10"/><circle cx="24" cy="30" r="2.6" fill="currentColor"/></svg></div><div class="kbody"><div class="eyebrow">Velocidade de referência</div><div class="krow"><div class="v" id="k-vr">—</div><div class="ksp" id="k-sp-r"></div><div class="kdelta" id="k-d-r"></div></div><div class="s">referência média, em movimento: o que a pista permitiria sem interações</div></div></div>
+    <div class="kpi kc"><div class="kico gray"><svg viewBox="0 0 48 48" width="46" height="46" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M8 34a17 17 0 1 1 32 0"/><path d="M24 30l8-10"/><circle cx="24" cy="30" r="2.6" fill="currentColor"/></svg></div><div class="kbody"><div class="eyebrow">Velocidade real (operada)</div><div class="krow"><div class="v" id="k-v">—</div><div class="ksp" id="k-sp-v"></div><div class="kdelta" id="k-d-v"></div></div><div class="s" id="k-v-s">—</div></div></div>
+    <div class="kpi kc hl"><div class="kico"><svg viewBox="0 0 48 48" width="46" height="46" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><circle cx="24" cy="24" r="17"/><path d="M24 14v10l7 4"/></svg></div><div class="kbody"><div class="eyebrow">Perda por interações</div><div class="krow"><div class="v" id="k-pe">—</div><div class="ksp wide" id="k-sp-p"></div></div><div class="s" id="k-pn-s">—</div></div></div>
   </div>
 
   <section class="band" id="mapa">
-    <div class="shead"><div><h2>Mapa de reduções do trecho</h2></div></div>
+    <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg></span>Mapa de reduções do trecho</h2></div></div>
     <div class="fswrap fsable" id="fs-trecho">
     <div class="maptools">
       <div class="fgroup"><label for="m-metric">Métrica do mapa e dos trechos</label>
@@ -353,7 +407,7 @@ body.noscroll{overflow:hidden}
         </select></div>
       <div class="fgroup"><span class="flabel">Unidade de análise</span><div class="seg" id="m-unit"><button data-v="sec" aria-pressed="true">Seções físicas</button><button data-v="cel" aria-pressed="false">Células de 25 m</button></div></div>
       <div class="fgroup" id="m-style-g"><span class="flabel">Estilo</span><div class="seg" id="m-style"><button data-v="heat" aria-pressed="true">Mapa de calor</button><button data-v="cells" aria-pressed="false">Células</button></div></div>
-      <div class="fgroup satg"><span class="flabel">Fundo</span><div class="satctl"><label class="toggle"><input type="checkbox" class="satchk"> Satélite (Sentinel-2)</label><input type="range" class="satop" min="20" max="100" step="5" value="85" aria-label="Transparência da imagem de satélite" title="Transparência da imagem"></div><span class="satmsg note" hidden></span></div>
+      <div class="fgroup satg"><label>Fundo</label><div class="satctl"><select class="satsel" aria-label="Fundo do mapa"><option value="mapa">Mapa simples</option><option value="sat">Satélite (Sentinel-2)</option></select><input type="range" class="satop" min="20" max="100" step="5" value="85" aria-label="Transparência da imagem de satélite" title="Transparência da imagem"></div><span class="satmsg note" hidden></span></div>
       <label class="toggle"><input type="checkbox" id="m-ev"> Mostrar posição das interações</label>
       <label class="toggle"><input type="checkbox" id="m-z" checked> <span id="m-z-lab">Mostrar locais L1–L15</span></label>
     </div>
@@ -375,15 +429,15 @@ body.noscroll{overflow:hidden}
   </section>
 
   <section class="band" id="secoes">
-    <div class="shead"><div><h2>Por tipo de seção física</h2>
+    <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span>Por tipo de seção física</h2>
       <p>O trajeto é reconstruído a partir do GPS e cortado em seções: <b>retas</b>, <b>curvas</b>, <b>interseções</b> e <b>pontas</b> (frentes de carga e áreas de basculamento, juntas). Cada linha soma as seções daquele tipo, com os filtros aplicados. A velocidade perdida por interações já desconta a rampa, a carga e a curvatura, porque elas fazem parte da referência.</p></div></div>
     <div class="card"><div class="tbl scroll"><table id="t-sec"><thead><tr><th>Tipo de seção</th><th class="n">Seções</th><th class="n">Extensão</th><th class="n">Tempo h</th><th class="n">Parado</th><th class="n">Referência km/h</th><th class="n">Real km/h</th><th class="n">Perdida por interações km/h</th><th class="n">Perda h</th><th class="n">% da perda</th><th>Principal Razao</th></tr></thead><tbody></tbody></table></div>
     <p class="note" id="t-sec-note" style="margin-bottom:0"></p></div>
   </section>
 
   <section class="band" id="interacoes">
-    <div class="shead"><div><h2>Interações por grupo e Razao</h2>
-      <p>Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada pelo código do evento. Use o botão Grupo / Razao em cada quadro. "Perda" é o tempo equivalente perdido em relação à referência. Exemplo: 60 s a 50% da referência = 30 s perdidos. Quando há mais de uma interação ativa ao mesmo tempo, a perda da leitura é dividida em partes iguais entre elas.</p></div></div>
+    <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></span>Interações por grupo e Razao</h2>
+      <p>Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada pelo código do evento. Use o botão Grupo / Razao em cada quadro. "Perda" é o tempo equivalente perdido em relação à referência. Exemplo: 60 s a 50% da referência = 30 s perdidos. Todas as interações da base entram (Razao + código), com ou sem grupo na planilha. A perda de cada leitura vai para as interações <b>selecionadas no filtro</b> que estavam ativas nela, dividida em partes iguais entre elas; as não selecionadas não levam parte. Então, ao tirar uma interação do filtro, a perda dela passa para as outras ativas no mesmo momento, ou some, se nenhuma outra estava ativa.</p></div></div>
     <div class="g2w">
       <div class="card chart"><div class="chead"><h3 id="c-tipo-tit">Perda por grupo</h3><div class="vtog" data-vt="trecho"><button data-v="grupo" aria-pressed="true">Grupo</button><button data-v="razao" aria-pressed="false">Razao</button></div></div><p class="sub" id="c-tipo-sub">horas equivalentes · filtros aplicados</p><div id="c-tipo"></div><div class="note" id="c-tipo-note"></div></div>
       <div class="card"><div class="chead"><h3 id="t-raz-tit">Razao com mais perda</h3><label class="ordsel">Ordenar por<select id="t-raz-ord"><option value="perda">Perda (h)</option><option value="queda">Queda (km/h)</option><option value="sev">Perda por evento (s)</option><option value="ev">Eventos</option><option value="tm">Caminhões</option></select></label></div><p class="sub" id="t-raz-sub">s/evento = perda média por ocorrência · queda = referência − real enquanto ativa · clique no cabeçalho para ordenar</p><div class="tbl scroll"><table id="t-raz"><thead><tr><th id="t-raz-h">Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span></th><th class="n" data-k="ev">Eventos</th><th class="n" data-k="tm">Camin.</th><th class="n" data-k="perda">Perda h</th><th class="n" data-k="sev">s/evento</th><th class="n" data-k="queda">Queda km/h</th></tr></thead><tbody></tbody></table></div></div>
@@ -391,7 +445,7 @@ body.noscroll{overflow:hidden}
   </section>
 
   <section class="band" id="caminhoes">
-    <div class="shead"><div><h2>Por caminhão e por hora</h2>
+    <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Por caminhão e por hora</h2>
       <p>Potencial de ganho de velocidade: a barra cinza é a velocidade atual e a parte colorida é o que seria ganho sem as quedas causadas pelas interações selecionadas. Altura total = velocidade potencial. Média no tempo, paradas incluídas (exceto paradas longas). Clique em um caminhão para filtrar o painel.</p>
       <div class="potleg"><span><i style="background:var(--bar)"></i>Velocidade atual</span><span><i style="background:var(--accent)"></i>Ganho potencial sem as interações</span></div></div></div>
     <div class="g2">
@@ -415,11 +469,6 @@ body.noscroll{overflow:hidden}
     </div>
   </section>
 
-  <section class="band" id="metodo">
-    <div class="shead"><div><h2>Critérios usados</h2></div></div>
-    <div class="crit" id="crit"></div>
-    <div class="prose" id="quality"></div>
-  </section>
 </main>
 </div>
 
@@ -471,7 +520,7 @@ body.noscroll{overflow:hidden}
 </div>
 <div id="pane-hist" role="tabpanel" hidden>
   <section class="band" style="border-top:0;padding-top:14px">
-    <div class="shead"><div><h2>Histórico das seções</h2>
+    <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Histórico das seções</h2>
       <p>Como cada seção física se comportou ao longo do tempo. As seções são as mesmas em todos os dias, porque foram montadas uma vez com todo o período. Os filtros de cima (caminhão, carga, turno, data e grupo/Razao) valem aqui também. Clique em uma linha da matriz para ver o detalhe da seção, e nos cabeçalhos (dias ou período) para ordenar.</p></div></div>
     <p class="note" id="h-semsec" hidden>Estes dados não têm seções físicas. Processe os arquivos de novo na aba "Carregar dados".</p>
     <div class="maptools">
@@ -500,21 +549,64 @@ body.noscroll{overflow:hidden}
     <p class="note">Médias (km/h) só aparecem com pelo menos 15 leituras (~2,5 min) no dia ou turno. A linha tracejada vertical marca um salto de datas. A tendência compara a média da velocidade perdida por interações na segunda metade dos dias/turnos com a da primeira.</p>
   </section>
 </div>
+<div id="pane-doc" role="tabpanel" hidden>
+<main class="wrap docwrap">
+  <section class="band" style="margin-top:18px">
+    <div class="shead"><div><h2><span class="hico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h8"/></svg></span>Documentação</h2>
+      <p>O que o painel mostra, como ler cada aba e como cada número é calculado.</p></div></div>
+    <nav class="doctoc"><a href="#doc-visao">Visão geral</a><a href="#doc-abas">Como ler cada aba</a><a href="#doc-gloss">Glossário</a><a href="#doc-secoes">Seções físicas</a><a href="#doc-rampa">Rampa (grade)</a><a href="#metodo">Critérios de cálculo</a><a href="#doc-dados">Dados e atualização</a><a href="#doc-lim">Limitações</a></nav>
+  </section>
+  <section class="band" id="doc-visao"><div class="shead"><div><h2>Visão geral</h2></div></div>
+    <div class="prose"><p>O Vision+ mostra <b>onde</b> e <b>quanto</b> a velocidade dos caminhões autônomos cai por causa das interações registradas pelo sistema (eventos com Razao e código), já descontando o que a própria pista explica: rampa, curva, carga (cheio ou vazio) e local.</p>
+    <p>A ideia central é a <b>velocidade de referência</b>: a velocidade que o caminhão costuma ter naquele ponto, naquele sentido e naquelas condições quando nenhuma interação está ativa. A diferença entre a referência e a velocidade real, enquanto uma interação está ativa, é a perda atribuída a ela.</p></div></section>
+  <section class="band" id="doc-abas"><div class="shead"><div><h2>Como ler cada aba</h2></div></div>
+    <div class="prose"><p><b>Trecho.</b> Cards com a velocidade de referência, a real e a perda por interações, com a evolução por dia. Mapa da mina dividido em seções físicas e colorido pela métrica escolhida, com o ranking das seções ao lado (clique numa linha para ver o detalhe). Abaixo: tabela por tipo de seção, interações por grupo e Razao e os gráficos por caminhão e hora.</p>
+    <p><b>Ciclo do caminhão.</b> Um ciclo de cada vez (de um carregamento ao próximo): velocidade real e de referência no tempo, a rampa no sentido do caminhão, as interações ativas e o trajeto no mapa.</p>
+    <p><b>Histórico.</b> Matriz seção × dia (ou turno) e o detalhe de uma seção ao longo do tempo. Clique numa seção da matriz ou do mapa para filtrar e comparar.</p>
+    <p><b>Carregar dados.</b> Processa novos arquivos de interações e de velocidade no próprio navegador.</p>
+    <p><b>Filtros.</b> Caminhão, carga, turno, data e grupo/Razao valem para Trecho e Histórico. As interações <b>selecionadas</b> no filtro são as que recebem a perda; as não selecionadas não levam parte.</p></div></section>
+  <section class="band" id="doc-gloss"><div class="shead"><div><h2>Glossário</h2></div></div>
+    <div class="tbl"><table class="doctab"><thead><tr><th>Termo</th><th>O que é</th></tr></thead><tbody>
+      <tr><td>Interação</td><td>Evento da base de telemetria, identificado pela Razao e pelo código (<code>Evento_Codigo</code>), por exemplo <code>Narrow road speed limitation · 80B5</code>.</td></tr>
+      <tr><td>Grupo</td><td>Agrupamento da coluna L (<code>Consolidação Operação</code>) da planilha de-para. Códigos que não estão na planilha ficam em "Sem grupo na planilha".</td></tr>
+      <tr><td>Velocidade de referência</td><td>Velocidade esperada sem interações, para o mesmo local, sentido, rampa, carga e curvatura. Vale 0 durante carga e basculamento.</td></tr>
+      <tr><td>Velocidade real</td><td>Velocidade lida no GPS.</td></tr>
+      <tr><td>Velocidade perdida por interações</td><td>Queda média abaixo da referência enquanto há interação selecionada ativa, dividida por todo o tempo no trecho (km/h).</td></tr>
+      <tr><td>Perda (h ou min)</td><td>Tempo equivalente perdido: tempo da leitura × (referência − real) / referência, somado nas leituras com interação selecionada ativa.</td></tr>
+      <tr><td>Seção física</td><td>Pedaço da pista reconstruído do GPS: reta, curva, interseção ou ponta (carga/basculamento).</td></tr>
+      <tr><td>Rampa (grade)</td><td>Inclinação da pista em %, positiva na subida e negativa na descida, no sentido do caminhão.</td></tr>
+      <tr><td>Cheio / vazio</td><td>Cheio depois de um <code>AT is in Loading</code>; vazio depois de um <code>AT is in Dumping</code>.</td></tr>
+      <tr><td>Ciclo</td><td>Do início de um carregamento até o início do próximo, no mesmo caminhão.</td></tr>
+    </tbody></table></div></section>
+  <section class="band" id="doc-secoes"><div class="shead"><div><h2>Seções físicas</h2></div></div><div class="prose" id="doc-secoes-t"></div></section>
+  <section class="band" id="doc-rampa"><div class="shead"><div><h2>Rampa (grade)</h2></div></div><div class="prose" id="doc-rampa-t"></div></section>
+  <section class="band" id="metodo">
+    <div class="shead"><div><h2>Critérios de cálculo</h2></div></div>
+    <div class="crit" id="crit"></div>
+    <div class="prose" id="quality"></div>
+  </section>
+  <section class="band" id="doc-dados"><div class="shead"><div><h2>Dados e atualização</h2></div></div><div class="prose" id="doc-dados-t"></div></section>
+  <section class="band" id="doc-lim"><div class="shead"><div><h2>Limitações</h2></div></div>
+    <div class="prose"><p>A referência é um modelo: leitura a leitura ela erra alguns km/h; na média de uma seção ou de um dia o erro se dilui. Seções com pouca leitura (menos de 60 leituras, ~10 min) ficam fora dos rankings de média.</p>
+    <p>Leituras a mais de 30 m de qualquer seção (pistas pouco usadas, pátios) entram nos totais mas não nas seções. As seções são remontadas a cada processamento, então os números (S…) podem mudar entre cargas de dados diferentes.</p>
+    <p>Lacunas de GPS acima de 25 s aparecem como "sem registro" e não são tratadas como velocidade zero. Paradas contínuas acima de 10 min ficam fora da perda.</p></div></section>
+</main>
+</div>
 <div id="pane-dados" role="tabpanel" hidden>
 <main class="wrap">
   <section class="band" style="border-top:0">
     <div class="shead"><div><h2>Carregar novos dados</h2>
-      <p>Escolha os arquivos no mesmo formato dos que usamos aqui, e o painel inteiro é refeito com eles. Para vários dias, selecione (ou arraste) vários arquivos de interações e vários de velocidade de uma vez; registros repetidos entre arquivos são descartados. O processamento roda no seu navegador: os arquivos não são enviados para lugar nenhum e não ficam salvos. Ao recarregar a página, o painel volta para os dados publicados.</p></div></div>
+      <p>Escolha os arquivos no mesmo formato dos que usamos aqui, e o painel inteiro é refeito com eles. Para vários dias, adicione (ou arraste) vários arquivos de interações e vários de velocidade; cada novo arquivo se soma aos já escolhidos, um arquivo com o mesmo nome substitui o anterior e <b>✕ remover</b> tira um arquivo da lista. Registros repetidos entre arquivos são descartados. O processamento roda no seu navegador: os arquivos não são enviados para lugar nenhum e não ficam salvos. Ao recarregar a página, o painel volta para os dados publicados.</p></div></div>
     <div class="upnow" id="up-now"></div>
     <div class="upgrid">
       <label class="upcard" id="up-c-inter" for="up-inter"><span class="upnum">1</span><span class="uptit">Interações <em>obrigatório · 1 ou mais arquivos</em></span>
         <span class="updesc">CSV separado por ponto e vírgula. Colunas usadas: <code>Id_Evento_Origem</code>, <code>TAG</code>, <code>Data_Inicio</code>, <code>Data_Termino</code>, <code>Latitude</code>, <code>Longitude</code>, <code>Tipo_Alerta</code>, <code>Razao</code>, <code>Evento_Codigo</code>.</span>
-        <input type="file" id="up-inter" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-inter">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-inter"></ul></label>
+        <input type="file" id="up-inter" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Adicionar arquivos</span><span class="upst" id="up-s-inter">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-inter"></ul></label>
       <label class="upcard" id="up-c-vel" for="up-vel"><span class="upnum">2</span><span class="uptit">Velocidade por trecho <em>obrigatório · 1 ou mais arquivos</em></span>
         <span class="updesc">CSV separado por ponto e vírgula. Colunas usadas: <code>TAG</code>, <code>Data_Leitura</code>, <code>PosX</code>, <code>PosY</code>, <code>PosZ</code>, <code>Velocidade</code>, <code>Direcao</code>, <code>NomeTurno</code>.</span>
-        <input type="file" id="up-vel" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-vel">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-vel"></ul></label>
+        <input type="file" id="up-vel" accept=".csv,.txt,text/csv" multiple><span class="upbtn">Adicionar arquivos</span><span class="upst" id="up-s-vel">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-vel"></ul></label>
       <label class="upcard" id="up-c-dp" for="up-dp"><span class="upnum">3</span><span class="uptit">De-para de códigos <em>opcional</em></span>
-        <span class="updesc">Planilha Excel com <code>Event Code</code> e a coluna L <code>Consolidação Operação</code>. Só as interações com grupo entram no modelo. Sem esta planilha, todas as Razao entram, sem grupo.</span>
+        <span class="updesc">Planilha Excel com <code>Event Code</code> e a coluna L <code>Consolidação Operação</code>. Todas as interações entram no modelo; as que não estão na planilha ficam no grupo "Sem grupo na planilha". Sem esta planilha, todas ficam sem grupo.</span>
         <input type="file" id="up-dp" accept=".xlsx,.xls,.csv"><span class="upbtn">Escolher arquivo</span><span class="upst" id="up-s-dp">Nenhum arquivo escolhido</span><ul class="upfiles" id="up-f-dp"></ul></label>
     </div>
     <details class="upadv"><summary>Parâmetros da análise</summary>
@@ -542,7 +634,7 @@ const PRISTINE={trecho:document.getElementById('pane-trecho').innerHTML,ciclo:do
 function BOOT(D){
 const GEN=window.__gen=(window.__gen||0)+1;const vivo=()=>GEN===window.__gen;
 const M=D.meta,P=D.P,E=D.E,N=P.x.length,NE=E.k.length;
-const TAGS=M.tags,TIPOS=M.tipos,PARES=M.pares,NP=PARES.length;
+const TAGS=M.tags,TIPOS=M.tipos,PARES=M.pares,NP=PARES.length;PARES.forEach(p=>{p.nome=p.razao+(p.cod&&p.cod!=='—'?' · '+p.cod:'');});
 const RCOL=new Int8Array(NP).fill(-1);
 const rcol=q=>RCOL[q]>=0?css('--t'+RCOL[q]):css('--gray-series');
 const rvar=q=>RCOL[q]>=0?'var(--t'+RCOL[q]+')':'var(--gray-series)';
@@ -555,7 +647,7 @@ const gvar=g=>GCOL[g]>=0?'var(--t'+GCOL[g]+')':'var(--gray-series)';
 const nf=(x,d=1)=>(x==null||!isFinite(x))?'—':x.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const tcol=i=>css('--t'+i);
-const parLab=q=>PARES[q].razao;
+const parLab=q=>PARES[q].nome;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const T0=M.t0;const H0=+T0.slice(11,13);const t0ms=Date.UTC(+T0.slice(0,4),+T0.slice(5,7)-1,+T0.slice(8,10),+T0.slice(11,13),+T0.slice(14,16));
 const clock=(s,sec)=>{const d=new Date(t0ms+s*1000);const p=n=>String(n).padStart(2,'0');return p(d.getUTCHours())+':'+p(d.getUTCMinutes())+(sec?':'+p(d.getUTCSeconds()):'');};
@@ -563,10 +655,10 @@ const day=s=>{const d=new Date(t0ms+s*1000);return String(d.getUTCDate()).padSta
 const row=(a,b)=>`<div class="r"><span>${a}</span><span>${b}</span></div>`;
 
 /* ---------- abas ---------- */
-const tabs={trecho:[document.getElementById('tab-trecho'),document.getElementById('pane-trecho')],ciclo:[document.getElementById('tab-ciclo'),document.getElementById('pane-ciclo')],dados:[document.getElementById('tab-dados'),document.getElementById('pane-dados')],hist:[document.getElementById('tab-hist'),document.getElementById('pane-hist')]};let TAB='trecho';
+const tabs={trecho:[document.getElementById('tab-trecho'),document.getElementById('pane-trecho')],ciclo:[document.getElementById('tab-ciclo'),document.getElementById('pane-ciclo')],dados:[document.getElementById('tab-dados'),document.getElementById('pane-dados')],hist:[document.getElementById('tab-hist'),document.getElementById('pane-hist')],doc:[document.getElementById('tab-doc'),document.getElementById('pane-doc')]};let TAB='trecho';
 function showTab(k){TAB=k;for(const n in tabs){tabs[n][0].setAttribute('aria-selected',n===k);tabs[n][1].hidden=n!==k;}filtrosNoLugar(fsActive());
   if(k==='ciclo')drawCycle();else if(k==='trecho'){resize();sched();}else if(k==='hist'&&HASSEC){if(HDIRTY)histCompute();histMatrix();histDetail();}}
-tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');tabs.hist[0].onclick=()=>showTab('hist');window.__showTab=showTab;
+tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');tabs.hist[0].onclick=()=>showTab('hist');tabs.doc[0].onclick=()=>showTab('doc');window.__showTab=showTab;
 
 /* ---------- estado e filtros ---------- */
 const S={ano:'',mes:'',dia:'',view:'grupo',sview:'grupo',tag:-1,carga:-1,turno:-1,raz:new Set(PARES.map((p,q)=>q)),metric:'ri',heat:true,sel:false,area:null,ev:false,zones:true,selZone:0,unit:'sec',selSec:0};
@@ -605,7 +697,7 @@ const RORD=PARES.map((p,q)=>q).sort((a,b)=>PARES[b].n-PARES[a].n);
 const GORD=[...Array(NG).keys()].sort((a,b)=>(GRUPOS[a]===SEMG)-(GRUPOS[b]===SEMG)||M.grupos[b].n-M.grupos[a].n);
 const UNITS=g=>RORD.filter(q=>GI[q]===g);const OPEN=new Set();
 function razList(){const s=fq.value.trim().toLowerCase();fl.innerHTML='';
-  GORD.forEach(g=>{const all=UNITS(g);const gm=GRUPOS[g].toLowerCase().includes(s);const us=all.filter(q=>!s||gm||PARES[q].razao.toLowerCase().includes(s));if(!us.length)return;
+  GORD.forEach(g=>{const all=UNITS(g);const gm=GRUPOS[g].toLowerCase().includes(s);const us=all.filter(q=>!s||gm||PARES[q].nome.toLowerCase().includes(s));if(!us.length)return;
     const nsel=all.filter(q=>S.raz.has(q)).length;const head=document.createElement('label');head.className='ghead';
     head.innerHTML=`<input type="checkbox"><span><b>${esc(GRUPOS[g])}</b><br><small>${all.length} Razao · ${M.grupos[g].n} eventos</small></span><button type="button" class="gtog" aria-label="Abrir grupo">${OPEN.has(g)||s?'▾':'▸'}</button>`;
     const cb=head.querySelector('input');cb.checked=nsel===all.length;cb.indeterminate=nsel>0&&nsel<all.length;
@@ -613,12 +705,12 @@ function razList(){const s=fq.value.trim().toLowerCase();fl.innerHTML='';
     head.querySelector('.gtog').onclick=e=>{e.preventDefault();OPEN.has(g)?OPEN.delete(g):OPEN.add(g);razList();};
     fl.appendChild(head);
     if(OPEN.has(g)||s)us.forEach(q=>{const l=document.createElement('label');l.className='gitem';
-      l.innerHTML=`<input type="checkbox" ${S.raz.has(q)?'checked':''}><span>${esc(PARES[q].razao)}<br><small>${PARES[q].tipos.join(', ')}</small></span><small>${PARES[q].n}</small>`;
+      l.innerHTML=`<input type="checkbox" ${S.raz.has(q)?'checked':''}><span>${esc(PARES[q].nome)}<br><small>${PARES[q].tipos.join(', ')}</small></span><small>${PARES[q].n}</small>`;
       l.querySelector('input').onchange=e=>{e.target.checked?S.raz.add(q):S.raz.delete(q);razList();razSum();update();};fl.appendChild(l);});});}
 function razSum(){const gs=GORD.filter(g=>UNITS(g).every(q=>S.raz.has(q))).length,some=GORD.filter(g=>UNITS(g).some(q=>S.raz.has(q))).length;
   document.getElementById('f-razsum').textContent=S.raz.size===NP?`Todos os grupos e Razao`:S.raz.size===0?'Nenhuma':S.raz.size===1?PARES[[...S.raz][0]].razao:(some===1&&gs===1?GRUPOS[GORD.find(g=>UNITS(g).every(q=>S.raz.has(q)))]:`${S.raz.size} Razao em ${some} grupo${some>1?'s':''}`);}
 fq.oninput=razList;
-const vis=()=>{const s=fq.value.trim().toLowerCase();return RORD.filter(q=>!s||PARES[q].razao.toLowerCase().includes(s)||PARES[q].grupo.toLowerCase().includes(s));};
+const vis=()=>{const s=fq.value.trim().toLowerCase();return RORD.filter(q=>!s||PARES[q].nome.toLowerCase().includes(s)||PARES[q].grupo.toLowerCase().includes(s));};
 document.getElementById('f-razall').onclick=()=>{vis().forEach(q=>S.raz.add(q));razList();razSum();update();};
 document.getElementById('f-raznone').onclick=()=>{vis().forEach(q=>S.raz.delete(q));razList();razSum();update();};
 document.getElementById('f-razonly').onclick=()=>{S.raz=new Set(vis());razList();razSum();update();};
@@ -645,27 +737,28 @@ function compute(){
   for(const k in A)A[k].fill(0);cellPar=new Map();for(const k in SA)SA[k].fill(0);SPAR=SECS.map(()=>new Map());SOUT={w:0,pe:0,ri:0};
   const r={stop:0,semreg:0,h:0,lp:0,mw:0,vw:0,rw:0,pe:0,pn:0,
     parL:new Float64Array(NP),grL:new Float64Array(NG),grQ:new Float64Array(NG),grW:new Float64Array(NG),grTm:new Uint32Array(NG),grEv:new Float64Array(NG),parQ:new Float64Array(NP),parW:new Float64Array(NP),parTm:new Uint32Array(NP),
-    tL:new Float64Array(TAGS.length),tH:new Float64Array(TAGS.length),tV:new Float64Array(TAGS.length),tD:new Float64Array(TAGS.length),hL:new Float64Array(24),hH:new Float64Array(24),hV:new Float64Array(24),hD:new Float64Array(24)};
+    dM:new Float64Array(DIAS.length),dV:new Float64Array(DIAS.length),dR:new Float64Array(DIAS.length),dP:new Float64Array(DIAS.length),dW:new Float64Array(DIAS.length),tL:new Float64Array(TAGS.length),tH:new Float64Array(TAGS.length),tV:new Float64Array(TAGS.length),tD:new Float64Array(TAGS.length),hL:new Float64Array(24),hH:new Float64Array(24),hV:new Float64Array(24),hD:new Float64Array(24)};
   for(let i=0;i<N;i++){
     if(!pass(i,true))continue;
     const w=P.w[i],ps=P.p[i]/10,lp=P.lp[i],a0=P.eo[i],a1=P.eo[i+1],n=a1-a0;
-    let pe=0;if(n&&!lp){const sh=ps/n;for(let j=a0;j<a1;j++)if(selPar(P.el[j]))pe+=sh;}
-    let dsel=0;if(n&&!lp){const dd=P.r[i]/10-P.v[i]/10;if(dd>M.tol){let ns=0;for(let j=a0;j<a1;j++)if(selPar(P.el[j]))ns++;dsel=dd*w*ns/n;}}
+    // a perda de uma leitura vai para as interações SELECIONADAS ativas nela, divididas igualmente entre elas
+    let nsel=0;if(n)for(let j=a0;j<a1;j++)if(selPar(P.el[j]))nsel++;const pe=(nsel&&!lp)?ps:0;
+    let dsel=0;if(nsel&&!lp){const dd=P.r[i]/10-P.v[i]/10;if(dd>M.tol)dsel=dd*w;}
     if(!lp){r.tH[P.k[i]]+=w;r.tL[P.k[i]]+=pe;r.tV[P.k[i]]+=P.v[i]/10*w;r.tD[P.k[i]]+=dsel;}
     if(S.tag>=0&&P.k[i]!==S.tag)continue;
     if(lp){r.lp+=w;continue;}
     if(P.v[i]<10)r.stop+=w;if(i+1<N&&P.k[i+1]===P.k[i]){const gp=P.t[i+1]-P.t[i]-w;if(gp>0)r.semreg+=gp;}
     const hr=Math.floor(((P.t[i]/3600)+H0)%24);r.h+=w;r.hH[hr]+=w;r.hL[hr]+=pe;r.hV[hr]+=P.v[i]/10*w;r.hD[hr]+=dsel;
     const v=P.v[i]/10,rf=P.r[i]/10;
-    if(v>=2){r.mw+=w;r.vw+=v*w;r.rw+=rf*w;}
-    r.pe+=pe;if(!n)r.pn+=ps;
-    const gstamp=i+1;for(let j=a0;j<a1;j++){const q=P.el[j];if(!selPar(q))continue;const gg=GI[q];r.grL[gg]+=ps/n;if(GST[gg]!==gstamp){GST[gg]=gstamp;r.grQ[gg]+=(rf-v)*w;r.grW[gg]+=w;r.grTm[gg]|=(1<<P.k[i]);}
-      r.parL[q]+=ps/n;r.parQ[q]+=(rf-v)*w;r.parW[q]+=w;r.parTm[q]|=(1<<P.k[i]);}
+    const dd_=P.dr[i];if(v>=2){r.mw+=w;r.vw+=v*w;r.rw+=rf*w;r.dM[dd_]+=w;r.dV[dd_]+=v*w;r.dR[dd_]+=rf*w;}
+    r.pe+=pe;r.dP[dd_]+=pe;r.dW[dd_]+=w;if(!n)r.pn+=ps;
+    const gstamp=i+1;for(let j=a0;j<a1;j++){const q=P.el[j];if(!selPar(q))continue;const gg=GI[q];r.grL[gg]+=ps/nsel;if(GST[gg]!==gstamp){GST[gg]=gstamp;r.grQ[gg]+=(rf-v)*w;r.grW[gg]+=w;r.grTm[gg]|=(1<<P.k[i]);}
+      r.parL[q]+=ps/nsel;r.parQ[q]+=(rf-v)*w;r.parW[q]+=w;r.parTm[q]|=(1<<P.k[i]);}
     const k=cellOf(i);A.cn[k]++;A.cw[k]+=w;A.cvw[k]+=v*w;A.crw[k]+=rf*w;
-    let riC=0;if(n&&rf-v>M.tol){let ns=0;for(let j=a0;j<a1;j++)if(selPar(P.el[j]))ns++;if(ns){riC=(rf-v)*w*ns/n;A.cri[k]+=riC;}}
+    let riC=0;if(nsel&&rf-v>M.tol){riC=(rf-v)*w;A.cri[k]+=riC;}
     const si=HASSEC?SIDP[i]:-1;if(si>=0){SA.n[si]++;SA.w[si]+=w;SA.vw[si]+=v*w;SA.rw[si]+=rf*w;SA.ri[si]+=riC;SA.pe[si]+=pe;if(P.v[i]<10)SA.st[si]+=w;SA.tm[si]|=(1<<P.k[i]);
-      if(pe){const m=SPAR[si];for(let j=a0;j<a1;j++){const q=P.el[j];if(selPar(q))m.set(q,(m.get(q)||0)+ps/n);}}if(P.g[i]>-990&&v>=3){SA.g[si]+=Math.abs(P.g[i]/10);SA.gn[si]++;}}else if(HASSEC){SOUT.w+=w;SOUT.pe+=pe;SOUT.ri+=riC;}
-    if(pe){A.cpe[k]+=pe;let m=cellPar.get(k);if(!m){m=new Map();cellPar.set(k,m);}for(let j=a0;j<a1;j++){const q=P.el[j];if(selPar(q))m.set(q,(m.get(q)||0)+ps/n);}}
+      if(pe){const m=SPAR[si];for(let j=a0;j<a1;j++){const q=P.el[j];if(selPar(q))m.set(q,(m.get(q)||0)+ps/nsel);}}if(P.g[i]>-990&&v>=3){SA.g[si]+=Math.abs(P.g[i]/10);SA.gn[si]++;}}else if(HASSEC){SOUT.w+=w;SOUT.pe+=pe;SOUT.ri+=riC;}
+    if(pe){A.cpe[k]+=pe;let m=cellPar.get(k);if(!m){m=new Map();cellPar.set(k,m);}for(let j=a0;j<a1;j++){const q=P.el[j];if(selPar(q))m.set(q,(m.get(q)||0)+ps/nsel);}}
     if(!n)A.cpn[k]+=ps;
     const g=P.g[i];if(g>-990&&v>=3){A.cg[k]+=Math.abs(g/10);A.cgn[k]++;}if(v>=3)A.csec[k]|=(1<<P.sc[i]);
   }
@@ -720,7 +813,7 @@ function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)retur
   const G={};let totPe=0;for(const tp of STIPOS)G[tp]={n:0,len:0,w:0,vw:0,rw:0,ri:0,pe:0,st:0,pm:new Map(),ss:[]};
   SECS.forEach((s,si)=>{const g=G[s.tipo];if(!g||!SA.w[si])return;g.n++;if(s.poly)g.len+=s.len||0;g.w+=SA.w[si];g.vw+=SA.vw[si];g.rw+=SA.rw[si];g.ri+=SA.ri[si];g.pe+=SA.pe[si];g.st+=SA.st[si];SPAR[si].forEach((v,q)=>g.pm.set(q,(g.pm.get(q)||0)+v));g.ss.push(si);});
   for(const tp of STIPOS)totPe+=G[tp].pe;totPe+=SOUT.pe;tb.innerHTML='';
-  const razTxt=(pm,pe)=>{const q=topPar(pm);return q>=0?`${esc(PARES[q].razao)} <span style="color:var(--muted)">(${nf(100*pm.get(q)/(pe||1),0)}%)</span>`:'—';};
+  const razTxt=(pm,pe)=>{const q=topPar(pm);return q>=0?`${esc(PARES[q].nome)} <span style="color:var(--muted)">(${nf(100*pm.get(q)/(pe||1),0)}%)</span>`:'—';};
   for(const tp of STIPOS){const g=G[tp];if(!g.w)continue;const open=SOPEN.has(tp);const tr=document.createElement('tr');tr.className='tp';tr.setAttribute('aria-expanded',open);tr.tabIndex=0;tr.title=open?'Fechar as seções':'Abrir as seções deste tipo';
     tr.innerHTML=`<td><span class="car">▶</span><span class="secsw" style="background:var(${SCOR[tp]})"></span><b style="font-weight:600">${tp}</b></td><td class="n">${g.n}</td><td class="n">${g.len?nf(g.len/1000,1)+' km':'—'}</td><td class="n">${nf(g.w/3600,1)}</td><td class="n">${nf(100*g.st/g.w,0)}%</td><td class="n">${nf(g.rw/g.w,1)}</td><td class="n">${nf(g.vw/g.w,1)}</td><td class="n"><b style="color:var(--accent)">${nf(g.ri/g.w,1)}</b></td><td class="n">${nf(g.pe/3600,1)}</td><td class="n">${totPe?nf(100*g.pe/totPe,0):0}%</td><td>${razTxt(g.pm,g.pe)}</td>`;
     const tog=()=>{open?SOPEN.delete(tp):SOPEN.add(tp);tableSec();};tr.onclick=tog;tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog();}};tb.appendChild(tr);
@@ -754,7 +847,7 @@ function histCompute(){const per=hPeriodos(),NPER=per.length,NR=NSEC+1;const pid
   const Z=()=>new Float64Array(NR*NPER);const A_={w:Z(),vw:Z(),rw:Z(),ri:Z(),pe:Z(),st:Z(),n:Z(),ev:Z(),evg:new Float64Array(NR*NPER*NG)};
   for(let i=0;i<N;i++){if(!pass(i)||P.lp[i])continue;const j=pidx[P.dr[i]*2+P.s[i]];if(j<0)continue;
     const w=P.w[i],v=P.v[i]/10,rf=P.r[i]/10,ps=P.p[i]/10,a0=P.eo[i],a1=P.eo[i+1],n=a1-a0;
-    let pe=0,riC=0;if(n){let ns=0;for(let q=a0;q<a1;q++)if(selPar(P.el[q]))ns++;if(ns){pe=ps*ns/n;if(rf-v>M.tol)riC=(rf-v)*w*ns/n;}}
+    let pe=0,riC=0;if(n){let ns=0;for(let q=a0;q<a1;q++)if(selPar(P.el[q]))ns++;if(ns){pe=ps;if(rf-v>M.tol)riC=(rf-v)*w;}}
     const si=SIDP?SIDP[i]:-1;for(const row of(si>=0?[si+1,0]:[0])){const o=row*NPER+j;A_.w[o]+=w;A_.vw[o]+=v*w;A_.rw[o]+=rf*w;A_.ri[o]+=riC;A_.pe[o]+=pe;A_.n[o]++;if(P.v[i]<10)A_.st[o]+=w;}}
   for(let q=0;q<NE;q++){if(!passE(q))continue;const j=pidx[E.dr[q]*2+E.s[q]];if(j<0)continue;const si=SIDE?SIDE[q]:-1;const g=GI[E.q[q]];
     for(const row of(si>=0?[si+1,0]:[0])){A_.ev[row*NPER+j]++;A_.evg[(row*NPER+j)*NG+g]++;}}
@@ -900,6 +993,14 @@ function histUpdate(){if(document.getElementById('pane-hist').hidden){HDIRTY=tru
   if(!HASSEC){$('h-semsec').hidden=false;}})();
 
 /* ---------- KPIs ---------- */
+function spark(id,vals,kind,col,ds,un){const el=document.getElementById(id);if(!el)return;el.innerHTML='';if(vals.length<2){el.innerHTML='<span class="spk0">1 dia</span>';return;}
+  const W_=kind==='bars'?150:84,H_=34,mx=Math.max(...vals),mn=kind==='bars'?0:Math.min(...vals),sp=(mx-mn)||1,s=svg(W_,H_);s.setAttribute('width',W_);s.setAttribute('height',H_);el.appendChild(s);
+  const x=i=>2+i*(W_-4)/(vals.length-1),y=v=>H_-3-(v-mn)/sp*(H_-8),lab=i=>{const d=DIAS[ds[i]];return d.slice(8,10)+'/'+d.slice(5,7);};
+  if(kind==='bars'){const bw=Math.max(2,(W_-4)/vals.length-2);vals.forEach((v,i)=>{const r_=el_svg('rect',{x:2+i*(W_-4)/vals.length,y:y(v),width:bw,height:Math.max(1,H_-3-y(v)),fill:col,rx:1},s);r_.setAttribute('data-tip',`<div class="t">${lab(i)}</div>${row('Perda',nf(v,1)+(un||''))}`);});}
+  else{let d='';vals.forEach((v,i)=>d+=(i?'L':'M')+x(i)+','+y(v));el_svg('path',{d,fill:'none',stroke:col,'stroke-width':1.8,'stroke-linejoin':'round'},s);
+    vals.forEach((v,i)=>{const c=el_svg('circle',{cx:x(i),cy:y(v),r:i===vals.length-1?2.6:5,fill:i===vals.length-1?col:'transparent'},s);c.setAttribute('data-tip',`<div class="t">${lab(i)}</div>${row('Média',nf(v,1)+' km/h')}`);});}
+  bindTips(s);}
+const el_svg=(tg,a,p)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tg);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
 function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.max(0,hOp-hSt);
   document.getElementById('k-h').innerHTML=`${nf(hMov,0)}<small>h</small>`;document.getElementById('k-st').innerHTML=`${nf(hSt,0)}<small>h</small>`;
   const pc=x=>hOp?100*x/hOp:0;
@@ -907,12 +1008,26 @@ function kpis(){const r=R,hOp=(r.h+r.lp)/3600,hSt=(r.stop+r.lp)/3600,hMov=Math.m
   document.getElementById('k-h-s').textContent=`${nf(pc(hMov),0)}% em movimento · ${nf(pc(hSt),0)}% parado (velocidade < 1 km/h)`;
   const vm=r.vw/r.mw,vr=r.rw/r.mw;
   document.getElementById('k-vr').innerHTML=`${nf(vr,1)}<small>km/h</small>`;document.getElementById('k-v').innerHTML=`${nf(vm,1)}<small>km/h</small>`;
-  document.getElementById('k-v-s').textContent=`média em movimento · ${vr>vm?'abaixo':'acima'} da referência em ${nf(Math.abs(vr-vm),1)} km/h (${nf(100*Math.abs(vr-vm)/vr,0)}%)`;
+  const ds=DIAS.map((d,k)=>k).filter(k=>DAYOK[k]&&r.dM[k]>0);
+  spark('k-sp-r',ds.map(k=>r.dR[k]/r.dM[k]),'line',css('--ref'),ds);spark('k-sp-v',ds.map(k=>r.dV[k]/r.dM[k]),'line',css('--o2'),ds);spark('k-sp-p',ds.map(k=>r.dP[k]/3600),'bars',css('--accent'),ds,' h');
+  const dif=vr-vm,pct=vr?100*dif/vr:0;
+  document.getElementById('k-d-r').innerHTML=`<span class="${dif>=0?'up':'dn'}">${dif>=0?'▲':'▼'} ${dif>=0?'+':'−'}${nf(Math.abs(dif),1)} km/h</span><small>(${dif>=0?'+':'−'}${nf(Math.abs(pct),0)}%) vs real</small>`;
+  document.getElementById('k-d-v').innerHTML=`<span class="${dif>=0?'dn':'up'}">${dif>=0?'▼':'▲'} ${dif>=0?'−':'+'}${nf(Math.abs(dif),1)} km/h</span><small>(${dif>=0?'−':'+'}${nf(Math.abs(pct),0)}%) vs ref.</small>`;
+  document.getElementById('k-v-s').textContent=`real média, em movimento: ${vr>vm?'abaixo':'acima'} da referência em ${nf(Math.abs(vr-vm),1)} km/h`;
   document.getElementById('k-pe').innerHTML=`${nf(r.pe/3600,1)}<small>h</small>`;
-  document.getElementById('k-pn-s').textContent=`tempo equivalente perdido com interação ativa · ${nf(100*r.pe/r.h,1)}% do tempo operado · ${nf(60*r.pe/r.h,1)} min por hora`;
+  document.getElementById('k-pn-s').textContent=`${nf(100*r.pe/r.h,1)}% do tempo operado · ${nf(60*r.pe/r.h,1)} min por hora · por dia ao lado`;
   locCrit();}
 const NOTA_GRADE=`<b>Como a rampa (grade) é calculada.</b> Em cada leitura de GPS, a rampa é a diferença de cota (<code>PosZ</code>) entre a leitura anterior e a seguinte do mesmo caminhão, dividida pela distância percorrida entre elas (de 20 a 400 m), em %. Ela tem sinal no sentido do deslocamento: <b>positivo = subida, negativo = descida</b>. Valores acima de ±20% são descartados como erro de GPS. Leituras sem cota válida recebem a mediana dos caminhões que passaram no mesmo quadrado de 20 m e no mesmo sentido (ou a do sentido oposto, com o sinal trocado).<br><b>No mapa e nos rankings</b> aparece a rampa média <b>em módulo (|%|)</b>, só com o caminhão andando (≥ 3 km/h): a mesma pista é subida num sentido e descida no outro, e com sinal as duas se anulariam. Então 8% quer dizer "8% de inclinação", seja subindo ou descendo.<br><b>Na velocidade de referência</b> a rampa entra com sinal e junto com cheio/vazio: o modelo sabe que um caminhão cheio subindo anda mais devagar que um vazio descendo, e essa diferença não conta como perda. Na aba Ciclo, o gráfico de grade mostra a rampa com sinal, no sentido do caminhão.`;
-function locCrit(){locCrit0();if(S.metric==='g')document.getElementById('loc-crit').insertAdjacentHTML('beforeend','<br><br>'+NOTA_GRADE);}
+function locCrit(){const el=document.getElementById('loc-crit');const sec=S.unit==='sec'&&HASSEC;
+  el.innerHTML=`${sec?'Seções físicas: retas, curvas, interseções e pontas reconstruídas a partir do GPS.':'Locais: grupos de células de 25 m no decil mais crítico da métrica.'}${S.metric==='g'?' A rampa aparece em módulo (subida e descida contam igual).':''} <button type="button" class="linkbtn" id="loc-doc">Como é calculado →</button>`;
+  document.getElementById('loc-doc').onclick=()=>{showTab('doc');setTimeout(()=>document.getElementById(S.metric==='g'?'doc-rampa':(sec?'doc-secoes':'metodo')).scrollIntoView({behavior:'smooth',block:'start'}),50);};
+}
+function docTextos(){const hold=document.getElementById('loc-crit');const S0=S.unit,M0=S.metric;
+  const cap=fn=>{const d=document.createElement('p');d.id='loc-crit';hold.id='loc-crit-x';document.body.appendChild(d);fn();const h=d.innerHTML;d.remove();hold.id='loc-crit';return h;};
+  S.unit='sec';const hs=HASSEC?cap(locCrit0):'';S.unit='cel';const hc=cap(locCrit0);S.unit=S0;S.metric=M0;
+  document.getElementById('doc-secoes-t').innerHTML=(hs?`<p>${hs}</p>`:'')+`<p>${hc}</p>`;
+  document.getElementById('doc-rampa-t').innerHTML=`<p>${NOTA_GRADE.replace(/<br>/g,'</p><p>')}</p>`;
+  const A=M.arquivos_det;document.getElementById('doc-dados-t').innerHTML=`<p>Período em uso: <b>${M.periodo[0]} a ${M.periodo[1]}</b> (${(M.dias||[]).length} dias), ${M.q.pontos.toLocaleString('pt-BR')} leituras de GPS de ${TAGS.length} caminhões e ${M.q.eventos.toLocaleString('pt-BR')} interações.</p>${A?`<p>Arquivos: ${[...(A.inter||[]),...(A.vel||[])].map(x=>`<code>${esc(x.nome)}</code>`).join(', ')}${A.dp?` e o de-para <code>${esc(A.dp.nome)}</code>`:''}.</p>`:''}<p>Para atualizar: exporte as bases do banco (script <code>exportar.py</code>) e carregue os arquivos na aba Carregar dados, ou peça uma nova publicação do painel com o período desejado.</p>`;}
 function locCrit0(){const D=MET[S.metric];
   if(S.unit==='sec'&&HASSEC){document.getElementById('loc-crit').innerHTML=`<b>Como as seções físicas são montadas:</b> (1) as leituras de GPS em movimento de todos os caminhões são ligadas em linhas e somadas numa grade de 4 m. As duas mãos da pista viram uma faixa só, e dessa faixa sai o eixo central da estrada. (2) O eixo vira uma rede de trechos entre pontas e cruzamentos. Onde três ou mais trechos se encontram é uma <b>Interseção</b> (raio de 35 m). (3) Cada trecho é suavizado e medido a cada 5 m. Onde o raio de curvatura fica abaixo de 150 m é <b>Curva</b>, senão <b>Reta</b>. Curvas com menos de 30 m viram reta, e retas com menos de 50 m entre duas curvas viram parte da curva. (4) Os eventos <code>AT is in Loading</code> e <code>AT is in Dumping</code>, agrupados juntos, formam as <b>Pontas (Carga / Basc.)</b>. As duas ficam juntas porque a mesma área muitas vezes recebe os dois eventos. (5) Cada leitura vai para a seção mais próxima, até 30 m. Ranking: médias (km/h) só com seções de 60 leituras ou mais (~10 min).`;return;}
   document.getElementById('loc-crit').innerHTML=`<b>Como os locais são escolhidos (${D.tit.toLowerCase()}):</b> (1) cada célula de 25 m recebe a métrica <i>${D.crit}</i>${D.soma?'':', só com células de pelo menos 15 leituras'}; (2) ficam as células no decil mais crítico (${D.worse>0?'≥':'≤'} ${nf(R.locTh,1)} ${D.un} com estes filtros); (3) células encostadas, inclusive na diagonal, formam um local${D.soma?'':' (com pelo menos 60 leituras, ~10 min de passagem)'}; (4) os locais são ordenados pela métrica. <b>Nome do local:</b> "Pontas (Carga / Basc.)" se houver evento <code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; "Interseção / cruzamento" se os caminhões passam por ali em 5 ou mais rumos diferentes; "Rampa" se a rampa média for ≥ 6%; senão "Estrada".`;}
@@ -952,7 +1067,7 @@ function satCamada(redesenhar){const L={img:null,box:null,res:0,pend:null,tmr:0,
       img.onerror=()=>{if(L.pend!==pedido)return;L.falhou=true;SAT.erro='Não foi possível carregar a imagem de satélite.';satAviso();};img.src=satURL(b,w,h);},350);};
   return L;}
 function satAviso(){document.querySelectorAll('.satmsg').forEach(e=>{e.textContent=SAT.erro||'';e.hidden=!SAT.erro;});}
-function satUI(){document.querySelectorAll('.satchk').forEach(c=>c.checked=SAT.on);document.querySelectorAll('.satop').forEach(r=>{r.value=Math.round(SAT.op*100);r.disabled=!SAT.on;});}
+function satUI(){document.querySelectorAll('.satchk').forEach(c=>c.checked=SAT.on);document.querySelectorAll('.satsel').forEach(c=>c.value=SAT.on?'sat':'mapa');document.querySelectorAll('.satop').forEach(r=>{r.value=Math.round(SAT.op*100);r.disabled=!SAT.on;});}
 
 /* ---------- mapa ---------- */
 const cv=document.getElementById('map'),box=document.getElementById('mapbox'),ctx=cv.getContext('2d');
@@ -1076,7 +1191,7 @@ function areaCard(){const el=document.getElementById('zarea');const z=areaStats(
       <div class="zlost"><span class="zl">Velocidade perdida por interações</span><span class="zbig">${nf(z.ri,1)}<small>km/h</small></span></div>
       <div class="zpair"><div><span class="zl">Referência da área</span><b>${nf(z.r,1)} km/h</b></div><div><span class="zl">Velocidade real</span><b>${nf(z.v,1)} km/h</b></div></div>
       <div class="facts" style="border:0;padding:0"><span>Tempo na área <b>${nf(z.h,1)} h</b></span><span>Parado <b>${nf(z.h?100*z.hs/z.h:0,0)}%</b></span><span>Perda por interações <b>${nf(z.pe/60,0)} min</b></span><span>Caminhões <b>${z.nt}</b></span><span>Eventos <b>${z.ne}</b></span>${z.rampa!=null?`<span>Rampa <b>${nf(z.rampa,1)}%</b></span>`:''}</div>
-      ${top.length?`<div class="zl" style="margin-top:2px">Onde mais perdeu (min)</div>`+top.map(([q,v])=>`<div class="rb"><span title="${esc(PARES[q].razao)} · ${esc(PARES[q].grupo)}">${esc(PARES[q].razao)} <span style="color:var(--muted)">· ${esc(PARES[q].grupo)}</span></span><b>${nf(v/60,1)}</b><i style="width:${100*v/mx}%"></i></div>`).join('')+`<div style="font-size:11.5px;color:var(--ink2)">Grupos: ${topG.map(([g,v])=>`${esc(GRUPOS[g])} ${nf(100*v/tot,0)}%`).join(' · ')}</div>`:'<div class="note" style="margin:0">Sem perda por interações nesta área.</div>'}`;}
+      ${top.length?`<div class="zl" style="margin-top:2px">Onde mais perdeu (min)</div>`+top.map(([q,v])=>`<div class="rb"><span title="${esc(PARES[q].nome)} · ${esc(PARES[q].grupo)}">${esc(PARES[q].nome)} <span style="color:var(--muted)">· ${esc(PARES[q].grupo)}</span></span><b>${nf(v/60,1)}</b><i style="width:${100*v/mx}%"></i></div>`).join('')+`<div style="font-size:11.5px;color:var(--ink2)">Grupos: ${topG.map(([g,v])=>`${esc(GRUPOS[g])} ${nf(100*v/tot,0)}%`).join(' · ')}</div>`:'<div class="note" style="margin:0">Sem perda por interações nesta área.</div>'}`;}
   document.getElementById('za-x').onclick=()=>{S.area=null;areaCard();sched();};}
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:T.cx,cy:T.cy,moved:false};cv.setPointerCapture(e.pointerId);cv.classList.add('drag');});
 cv.addEventListener('pointermove',e=>{if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;T.cx=drag.cx-dx/T.s;T.cy=drag.cy+dy/T.s;sched();hideTip();return;}hover(e);});
@@ -1103,6 +1218,7 @@ function hover(e){const r=cv.getBoundingClientRect();const[wx,wy]=toW(e.clientX-
   const E_=Math.round(M.origem[0]+(k/CW|0)*CS),N_=Math.round(M.origem[1]+(k%CW)*CS);
   showTip(`<div class="t">Célula de 25 m</div>${row('Leituras',A.cn[k])}${row('Vel. média',nf(A.cvw[k]/A.cw[k],1)+' km/h')}${row('Referência',nf(A.crw[k]/A.cw[k],1)+' km/h')}${row('Perda atribuída',nf(A.cpe[k]/60,1)+' min')}${q>=0?row('Maior Razao',esc(parLab(q))):''}${A.cgn[k]?row('Rampa média',nf(A.cg[k]/A.cgn[k],1)+' %'):''}<div style="color:var(--muted);margin-top:4px;font-family:var(--f-mono);font-size:10.5px">UTM 22S E ${E_.toLocaleString('pt-BR')} · N ${N_.toLocaleString('pt-BR')}</div>`,e.clientX,e.clientY);}
 const SATM=satCamada(()=>sched()),SATH=satCamada(()=>{if(!document.getElementById('pane-hist').hidden)hMapa();});
+document.querySelectorAll('.satsel').forEach(c=>c.onchange=()=>{SAT.on=c.value==='sat';SAT.erro=null;satAviso();satUI();if(SAT.on)satPreparar().then(()=>{sched();hMapa();});sched();hMapa();});
 document.querySelectorAll('.satchk').forEach(c=>c.onchange=()=>{SAT.on=c.checked;SAT.erro=null;satAviso();satUI();if(SAT.on)satPreparar().then(()=>{sched();hMapa();});sched();hMapa();});
 document.querySelectorAll('.satop').forEach(r=>r.oninput=()=>{SAT.op=r.value/100;satUI();sched();hMapa();});satUI();
 const mm=document.getElementById('m-metric');mm.value=S.metric;
@@ -1118,18 +1234,24 @@ document.getElementById('m-z').onchange=e=>{S.zones=e.target.checked;sched();};
 function zoneList(){if(S.unit==='sec'&&HASSEC)return secList();zoneList0();}
 function verHist(si){HS.sel=si+1;HS.fsel=new Set([si+1]);HV.ok=false;showTab('hist');setTimeout(()=>document.getElementById('h-det-tit').scrollIntoView({block:'start',behavior:'smooth'}),60);}
 function secList(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
-  document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções e pontas) · muda com a métrica e os filtros. Clique para centralizar.`;
+  document.getElementById('zl-tit').textContent=D.tit.replace(/^(Trechos|Locais)/,'Seções');document.getElementById('zl-sub').textContent=`Valor em ${D.un} · seções físicas (retas, curvas, interseções e pontas) · muda com a métrica e os filtros. Clique numa linha para ver o detalhe e centralizar.`;
   const lst=SECTOP.slice();let extra=null;if(S.selSec&&!lst.some(o=>o.id===S.selSec)){const si=SECS.findIndex(s=>s.id===S.selSec);if(si>=0&&SECL[si]){extra=SECL[si];lst.unshift(extra);}}
   if(!lst.length){el.innerHTML='<p style="padding:14px;color:var(--muted)">Nada a mostrar com estes filtros.</p>';return;}
-  lst.forEach(o=>{if(o===extra){const h=document.createElement('div');h.className='zl';h.style.cssText='padding:10px 14px 0';h.textContent='Seção selecionada (fora do ranking)';el.appendChild(h);}else if(extra&&o===lst[1]){const h=document.createElement('div');h.className='zl';h.style.cssText='padding:10px 14px 0';h.textContent='Ranking';el.appendChild(h);}const q=topPar(o.pm);const det=[`perda ${nf(o.pe/60,0)} min`,`${nf(o.h,1)} h na seção`,o.rampa!=null?`rampa ${nf(o.rampa,0)}%`:null].filter(Boolean).join(' · ');
-    const b=document.createElement('button');b.type='button';b.className='zrow'+(S.selSec===o.id?' sel':'');
-    b.innerHTML=`<span class="zid">S${o.id}</span><span class="ztipo">${secDesc(o)}</span><span class="zval" title="Valor usado para ordenar">${o.val!=null&&isFinite(o.val)?nf(o.val,D.dec)+' '+D.un:'—'}</span>
-      <div class="zstats"><div class="zlost"><span class="zl">Velocidade perdida por interações</span><span class="zbig">${nf(o.ri,1)}<small>km/h</small></span></div>
+  const vals=SECTOP.map(o=>o.val).filter(v=>v!=null&&isFinite(v));const vmx=Math.max(...vals.map(Math.abs),1e-9);const sc=secScale();
+  el.insertAdjacentHTML('beforeend',`<div class="shd"><span>#</span><span>Seção</span><span>Trecho / descrição</span><span style="grid-column:span 2;text-align:right">${D.un==='%'?'Rampa':'Valor'} (${D.un})</span><span></span></div>`);
+  lst.forEach((o,ix)=>{const rk=o===extra?'—':(SECTOP.indexOf(o)+1);const v=o.val;const col=(v!=null&&isFinite(v))?ramp(sc.stops,.25+.75*Math.max(0,Math.min(1,sc.f(Math.max(0,v))))):'var(--line2)';
+    const sel=S.selSec===o.id;const q=topPar(o.pm);const det=[`perda ${nf(o.pe/60,0)} min`,`${nf(o.h,1)} h na seção`,o.rampa!=null?`rampa ${nf(o.rampa,0)}%`:null].filter(Boolean).join(' · ');
+    const b=document.createElement('button');b.type='button';b.className='srow'+(sel?' sel':'');b.setAttribute('aria-expanded',sel);
+    b.innerHTML=`<span class="srk" style="--c:${col}">${rk}</span><span class="sid">S${o.id}</span><span class="sdesc" title="${secDesc(o)}">${o.tipo==="Pontas (Carga / Basc.)"?"Ponta":o.tipo}${o.len&&!o.r0?` · ${nf(o.len,0)} m`:""}</span><span class="sbar"><i style="width:${v!=null&&isFinite(v)?Math.max(4,100*Math.abs(v)/vmx):0}%;background:${col}"></i></span><span class="sval">${v!=null&&isFinite(v)?nf(v,D.dec):'—'}</span><span class="schev" aria-hidden="true">›</span>`;
+    b.onclick=()=>{S.selSec=sel?0:o.id;if(!sel){T.cx=o.x;T.cy=o.y;const ext=o.r0?o.r0*4:Math.max(150,(o.len||200)*1.3);T.s=Math.max(T.s,Math.min(1.6,Math.min(W,H)/ext));}zoneList();sched();};
+    el.appendChild(b);
+    if(sel){const d=document.createElement('div');d.className='sdet';
+      d.innerHTML=`<div style="font-weight:600;font-size:13px">${secDesc(o)}</div><div class="zstats"><div class="zlost"><span class="zl">Velocidade perdida por interações</span><span class="zbig">${nf(o.ri,1)}<small>km/h</small></span></div>
         <div class="zpair"><div><span class="zl">Referência da seção</span><b>${nf(o.r,1)} km/h</b></div><div><span class="zl">Velocidade real</span><b>${nf(o.v,1)} km/h</b></div></div></div>
-      <span class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].razao)}</b> (${nf(100*o.pm.get(q)/(o.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${Math.round(M.origem[0]+o.x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+o.y).toLocaleString('pt-BR')}</span>${S.selSec===o.id?`<br><span class="linkbtn zhist" role="link" tabindex="0">Ver histórico desta seção →</span>`:''}</span>`;
-    const zh=b.querySelector('.zhist');if(zh)zh.onclick=ev=>{ev.stopPropagation();verHist(o.si);};
-    b.onclick=()=>{S.selSec=o.id;T.cx=o.x;T.cy=o.y;const ext=o.r0?o.r0*4:Math.max(150,(o.len||200)*1.3);T.s=Math.max(T.s,Math.min(1.6,Math.min(W,H)/ext));zoneList();sched();box.scrollIntoView({block:'nearest',behavior:'smooth'});};
-    el.appendChild(b);});}
+        <div class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].nome)}</b> (${nf(100*o.pm.get(q)/(o.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${Math.round(M.origem[0]+o.x).toLocaleString('pt-BR')} · N ${Math.round(M.origem[1]+o.y).toLocaleString('pt-BR')}</span></div>
+        <button type="button" class="linkbtn zhist">Ver histórico desta seção →</button>`;
+      d.querySelector('.zhist').onclick=ev=>{ev.stopPropagation();verHist(o.si);};el.appendChild(d);}});
+  const s_=el.querySelector('.srow.sel');if(s_)s_.scrollIntoView({block:'nearest'});}
 function zoneList0(){const el=document.getElementById('zrows');el.innerHTML='';const D=MET[S.metric];
   document.getElementById('zl-tit').textContent=D.tit;document.getElementById('zl-sub').textContent=`Valor em ${D.un} · muda junto com a cor do mapa e com os filtros. Clique para centralizar.`;
   if(!LOC.length){el.innerHTML='<p style="padding:14px;color:var(--muted)">Nada a mostrar com estes filtros.</p>';return;}
@@ -1142,7 +1264,7 @@ function zoneList0(){const el=document.getElementById('zrows');el.innerHTML='';c
     b.innerHTML=`<span class="zid">L${z.id}</span><span class="ztipo">${z.nome}</span><span class="zval" title="Valor usado para ordenar">${nf(z.val,D.dec)} ${D.un}</span>
       <div class="zstats"><div class="zlost"><span class="zl">Velocidade perdida por interações</span><span class="zbig">${nf(z.ri,1)}<small>km/h</small></span></div>
         <div class="zpair"><div><span class="zl">Referência do trecho</span><b>${nf(z.r,1)} km/h</b></div><div><span class="zl">Velocidade real</span><b>${nf(z.v,1)} km/h</b></div></div></div>
-      <span class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].razao)}</b> (${nf(100*z.pm.get(q)/(z.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${E_.toLocaleString('pt-BR')} · N ${N_.toLocaleString('pt-BR')}</span></span>`;
+      <span class="zcause">${q>=0?`<b style="font-weight:600;color:var(--ink)">${esc(PARES[q].nome)}</b> (${nf(100*z.pm.get(q)/(z.pe||1),0)}% da perda)<br>`:''}${det}<br><span style="font-family:var(--f-mono);font-size:10.5px;color:var(--muted)">E ${E_.toLocaleString('pt-BR')} · N ${N_.toLocaleString('pt-BR')}</span></span>`;
     b.onclick=()=>{S.selZone=z.id;T.cx=z.x;T.cy=z.y;T.s=Math.max(T.s,Math.min(1.6,Math.min(W,H)/(z.raio*6)));zoneList();sched();box.scrollIntoView({block:'nearest',behavior:'smooth'});};
     el.appendChild(b);});}
 
@@ -1166,10 +1288,10 @@ function chartTipo(){const r=R;const tot=r.parL.reduce((a,b)=>a+b,0);let it;
   if(S.view==='grupo'){document.getElementById('c-tipo-tit').textContent='Perda por grupo';document.getElementById('c-tipo-sub').textContent='horas equivalentes · filtros aplicados';
     it=[...Array(NG).keys()].filter(g=>r.grL[g]>0).sort((a,b)=>r.grL[b]-r.grL[a]).map(g=>({g,lab:GRUPOS[g].length>26?GRUPOS[g].slice(0,25)+'…':GRUPOS[g],v:r.grL[g]/3600,col:gcol(g)}));
     it.forEach(o=>{o.ext=tot>0?` · ${nf(100*o.v*3600/tot,0)}%`:'';const us=RORD.filter(q=>GI[q]===o.g&&r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).slice(0,5);
-      o.tip=`<div class="t">${esc(GRUPOS[o.g])}</div>${row('Perda',nf(o.v,2)+' h')}${row('Tempo com o grupo ativo',nf(r.grW[o.g]/3600,1)+' h')}<div style="margin-top:4px;color:var(--ink2)">Principais Razao:</div>`+us.map(q=>row(esc(PARES[q].razao),nf(r.parL[q]/3600,2)+' h')).join('');});}
+      o.tip=`<div class="t">${esc(GRUPOS[o.g])}</div>${row('Perda',nf(o.v,2)+' h')}${row('Tempo com o grupo ativo',nf(r.grW[o.g]/3600,1)+' h')}<div style="margin-top:4px;color:var(--ink2)">Principais Razao:</div>`+us.map(q=>row(esc(PARES[q].nome),nf(r.parL[q]/3600,2)+' h')).join('');});}
   else{document.getElementById('c-tipo-tit').textContent='Perda por Razao';document.getElementById('c-tipo-sub').textContent='15 maiores · horas equivalentes · filtros aplicados';
-    it=[...Array(NP).keys()].filter(q=>r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).slice(0,15).map(q=>({q,lab:PARES[q].razao.length>24?PARES[q].razao.slice(0,23)+'…':PARES[q].razao,v:r.parL[q]/3600,col:rcol(q)}));
-    it.forEach(o=>{o.ext=tot>0?` · ${nf(100*o.v*3600/tot,0)}%`:'';o.tip=`<div class="t">${esc(PARES[o.q].razao)}</div>${row('Grupo · Tipo_Alerta',tipoTxt(o.q))}${row('Perda',nf(o.v,2)+' h')}${row('Tempo com a Razao ativa',nf(r.parW[o.q]/3600,1)+' h')}`;});}
+    it=[...Array(NP).keys()].filter(q=>r.parL[q]>0).sort((a,b)=>r.parL[b]-r.parL[a]).slice(0,15).map(q=>({q,lab:PARES[q].nome.length>24?PARES[q].nome.slice(0,23)+'…':PARES[q].nome,v:r.parL[q]/3600,col:rcol(q)}));
+    it.forEach(o=>{o.ext=tot>0?` · ${nf(100*o.v*3600/tot,0)}%`:'';o.tip=`<div class="t">${esc(PARES[o.q].nome)}</div>${row('Grupo · Tipo_Alerta',tipoTxt(o.q))}${row('Perda',nf(o.v,2)+' h')}${row('Tempo com a Razao ativa',nf(r.parW[o.q]/3600,1)+' h')}`;});}
   hbars(document.getElementById('c-tipo'),it,' h',1);
   document.getElementById('c-tipo-note').innerHTML='';}
 const ORDT={perda:'perda',queda:'queda de velocidade',sev:'perda por evento',ev:'eventos',tm:'caminhões afetados'};let ORD='perda';
@@ -1179,7 +1301,7 @@ function tableRaz(){const tb=document.querySelector('#t-raz tbody');tb.innerHTML
   if(S.view==='grupo'){document.getElementById('t-raz-h').innerHTML='Grupo <span style="text-transform:none;letter-spacing:0">(nº de Razao)</span>';
     rows=[...Array(NG).keys()].filter(g=>r.grL[g]>0).map(g=>{const n=r.grEv[g];return {nome:esc(GRUPOS[g]),sub:UNITS(g).length+' Razao',cor:gvar(g),ev:n,tm:cnt(r.grTm[g]),perda:r.grL[g]/3600,sev:n?r.grL[g]/n:null,queda:r.grW[g]?r.grQ[g]/r.grW[g]:null};});}
   else{document.getElementById('t-raz-h').innerHTML='Razao <span style="text-transform:none;letter-spacing:0">(grupo · Tipo_Alerta)</span>';
-    rows=[...Array(NP).keys()].filter(q=>r.parL[q]>0).map(q=>{const n=r.evCount[q];return {nome:esc(PARES[q].razao),sub:esc(tipoTxt(q)),cor:rvar(q),ev:n,tm:cnt(r.parTm[q]),perda:r.parL[q]/3600,sev:n?r.parL[q]/n:null,queda:r.parW[q]?r.parQ[q]/r.parW[q]:null};});}
+    rows=[...Array(NP).keys()].filter(q=>r.parL[q]>0).map(q=>{const n=r.evCount[q];return {nome:esc(PARES[q].nome),sub:esc(tipoTxt(q)),cor:rvar(q),ev:n,tm:cnt(r.parTm[q]),perda:r.parL[q]/3600,sev:n?r.parL[q]/n:null,queda:r.parW[q]?r.parQ[q]/r.parW[q]:null};});}
   if(media)rows=rows.filter(o=>o.ev>=MINEV&&o[ORD]!=null);
   rows.sort((a,b)=>(b[ORD]-a[ORD])||(b.perda-a.perda));if(S.view!=='grupo')rows=rows.slice(0,25);
   document.getElementById('t-raz-tit').textContent=(S.view==='grupo'?'Grupos':'Razao')+' com mais '+ORDT[ORD];
@@ -1268,18 +1390,19 @@ function textos(){const q=M.q,cvr=M.cv.reduce((a,o)=>a+o.r2,0)/M.cv.length,cvm=M
     <p>Para cada leitura de GPS calcula-se a <b>velocidade de referência</b>: a velocidade típica (mediana) no mesmo local, rumo, rampa, carga, curvatura e cota. Ela vem de um modelo de gradient boosting treinado só com as ${q.pts_limpos.toLocaleString('pt-BR')} leituras em movimento <b>sem nenhuma interação ativa</b>. Na validação deixando caminhões de fora, o modelo acerta com R² ${nf(cvr,2)} e erro médio de ${nf(cvm,1)} km/h.</p>
     <div class="formula">perda (s) = tempo da leitura × (referência − real) / referência</div>
     <p><b>Durante <code>AT is in Loading</code> e <code>AT is in Dumping</code></b> (do início ao término de cada evento) a referência é 0 km/h, porque ficar parado é o esperado. Por isso essas leituras não geram perda.</p>
-    <p>A perda só conta quando a queda passa de <b>${M.tol} km/h</b>, o erro típico do modelo. Ela é atribuída às interações ativas naquele instante e dividida em partes iguais quando há mais de uma.</p></div>
+    <p>A perda só conta quando a queda passa de <b>${M.tol} km/h</b>, o erro típico do modelo. Ela é atribuída às interações <b>selecionadas no filtro</b> ativas naquele instante, dividida em partes iguais quando há mais de uma.</p></div>
   <div class="card"><h3>2 · Quando um evento está ativo</h3>
-    <p>Interação = o valor da coluna <code>Razao</code>. Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada por <code>Evento_Codigo</code> (base) = <code>Event Code</code> (planilha). <b>Só entram no modelo as interações com grupo</b>; os ${M.eventos_fora.toLocaleString('pt-BR')} eventos sem grupo na planilha e os ${M.eventos_sem_razao.toLocaleString('pt-BR')} com Razao em branco ficam fora (são tratados como "sem interação"). A interação fica ativa de <code>Data_Inicio − ${M.pre} s</code> até <code>Data_Termino + ${M.pos} s</code>, no mesmo caminhão (TAG). As folgas cobrem a frenagem antes e a retomada depois. Os relógios das duas bases batem: os eventos ficam, em mediana, a ~15 m da posição de GPS do mesmo instante.</p>
+    <p>Interação = o valor da coluna <code>Razao</code>. Grupo = coluna L (<code>Consolidação Operação</code>) da planilha de-para, ligada por <code>Evento_Codigo</code> (base) = <code>Event Code</code> (planilha). <b>Todas as interações entram no modelo</b>, identificadas por Razao + código (<code>Evento_Codigo</code>); as que não estão na planilha ficam no grupo "${esc(SEMG)}". Só os ${M.eventos_sem_razao.toLocaleString('pt-BR')} eventos com Razao em branco ficam fora. A interação fica ativa de <code>Data_Inicio − ${M.pre} s</code> até <code>Data_Termino + ${M.pos} s</code>, no mesmo caminhão (TAG). As folgas cobrem a frenagem antes e a retomada depois. Os relógios das duas bases batem: os eventos ficam, em mediana, a ~15 m da posição de GPS do mesmo instante.</p>
     <p>Para os ${q.sem_fim.toLocaleString('pt-BR')} eventos com <code>Data_Termino</code> = 1969 (sem término), usa-se a duração mediana da mesma Razao.</p></div>
   <div class="card"><h3>3 · O que é um "local"</h3>
     <p>A base não tem zonas. As células de 25 m são criadas a partir de PosX/PosY (UTM 22S). Cada célula recebe a métrica da cor da pista, ficam as do decil mais crítico, e as que se encostam formam um local. Tudo é recalculado com os filtros.</p><p>O nome vem dos dados: ponta, de carga ou basculamento (<code>AT is in Loading</code> ou <code>AT is in Dumping</code> a até 80 m; as duas ficam juntas porque a mesma área muitas vezes recebe os dois eventos), interseção (5 ou mais rumos), rampa (≥ 6%) ou estrada.</p></div>
   <div class="card"><h3>4 · Efeito estatístico</h3>
     <p>Regressão linear da velocidade com efeito fixo de célula de 25 m × rumo: cada leitura é comparada só com outras no mesmo trecho e sentido. Controles: rampa (separada por subida/descida e cheio/vazio), carga e curvatura. Variáveis de interesse: presença de cada Razao com pelo menos 30 eventos. Erros-padrão agrupados por caminhão; "n.s." = não significativo a 5%.</p></div>`;
   document.getElementById('quality').innerHTML=`<p><b>Dados.</b> ${q.linhas.toLocaleString('pt-BR')} linhas de interações viram ${q.eventos.toLocaleString('pt-BR')} eventos únicos com Razao preenchida, após deduplicar por <code>Id_Evento_Origem</code> × TAG; a base repete cada evento por <code>Id_Equipamento</code> e por <code>Evento_Tipo</code>. A identificação da interação vem só da coluna <code>Razao</code>; <code>Tipo_Alerta</code> aparece apenas como informação. Uma mesma Razao pode aparecer em mais de um Tipo_Alerta e é tratada como uma só interação. São ${q.pontos.toLocaleString('pt-BR')} leituras de GPS a cada ~10 s, de ${M.periodo[0]} a ${M.periodo[1]}.</p>
-  <p><b>Grupos.</b> O código do evento (<code>Evento_Codigo</code>) é procurado na coluna <code>Event Code</code> da planilha de-para, e o grupo é a coluna L. Só os ${PARES.reduce((a,p)=>a+p.n,0).toLocaleString('pt-BR')} eventos com grupo entram no modelo; os ${M.eventos_fora.toLocaleString('pt-BR')} sem grupo ficaram fora e estão listados na aba "Fora do modelo (sem grupo)" da planilha de resultados. Exceção: <code>AT is in Loading</code> e <code>AT is in Dumping</code> continuam sendo usados para definir cheio/vazio, os ciclos e a referência 0 durante carga e basculamento, mas não contam como interação. Uma Razao com códigos de grupos diferentes (ex.: <code>Detected by Laser</code> como alerta e como exceção) aparece uma vez em cada grupo.</p>
+  <p><b>Grupos.</b> O código do evento (<code>Evento_Codigo</code>) é procurado na coluna <code>Event Code</code> da planilha de-para, e o grupo é a coluna L. Os ${PARES.reduce((a,p)=>a+p.n,0).toLocaleString('pt-BR')} eventos entram no modelo, cada um como Razao + código; os códigos que não estão na planilha ficam no grupo "${esc(SEMG)}". <code>AT is in Loading</code> e <code>AT is in Dumping</code> também definem cheio/vazio, os ciclos e a referência 0 durante carga e basculamento. Uma mesma Razao com códigos diferentes (ex.: <code>Detected by Laser · 8E50</code> e <code>· 4E50</code>) aparece uma vez para cada código.</p>
   <p><b>Cheio/vazio e rampa.</b> A base não tem campo de carga. Cheio é o período após um <code>AT is in Loading</code>, vazio é o período após um <code>AT is in Dumping</code>. A rampa vem da cota PosZ (em decímetros) entre leituras vizinhas, no sentido do deslocamento.</p>
   <p><b>Fora da conta.</b> Paradas contínuas acima de 10 min (sem distinguir a causa) ficam fora da perda, mas aparecem no ciclo.</p>`;
+  {const p1=M.periodo[1];document.getElementById('hdr-chip-t').innerHTML=`<small>Dados até</small>${p1.slice(8,10)}/${p1.slice(5,7)}/${p1.slice(0,4)} ${p1.slice(11)}`;}
   document.getElementById('hdr-eyebrow').textContent=`Período ${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)} ${M.periodo[1].slice(11)}`;
   document.getElementById('foot').textContent=`Fontes: ${M.fontes?[M.fontes.inter,M.fontes.vel,M.fontes.dp].filter(Boolean).join(', '):'Interações_15102026.csv, velocidade_trecho_15102026.csv e CESG_Codigos_Caminhoes_pt_BR_1.xlsx'}. Coordenadas SIRGAS 2000 / UTM 22S.`;}
 
@@ -1327,11 +1450,11 @@ function drawCycle(){if(!CYC[C.tag]||!CYC[C.tag][C.n])return;const host=document
   document.getElementById('cy-facts').innerHTML=`<span>Duração <b>${nf((tb-ta)/60,0)} min</b></span><span>Distância <b>${nf(dist/1000,1)} km</b></span><span>Eventos <b>${evs.length}</b></span>${lpw?`<span>Parada >10 min <b>${nf(lpw/60,0)} min</b> (fora da média)</span>`:''}`;
   const tot=vPos-vReal;let it;document.getElementById('cy-break-tit').textContent=C.view==='grupo'?'Quanto perdeu por grupo':'Quanto perdeu por Razao';
   if(C.view==='grupo'){const byG=new Map();byP.forEach((v,q)=>byG.set(GI[q],(byG.get(GI[q])||0)+v));
-    it=[...byG.entries()].sort((a,b)=>b[1]-a[1]).map(([g,v])=>({lab:GRUPOS[g].length>24?GRUPOS[g].slice(0,23)+'…':GRUPOS[g],v:v/sw,col:gcol(g),tip:`<div class="t">${esc(GRUPOS[g])}</div>${row('Perda',nf(v/sw,2)+' km/h')}${row('Participação',nf(100*v/sw/tot,0)+'%')}`+[...byP.entries()].filter(([q])=>GI[q]===g).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([q,x])=>row(esc(PARES[q].razao),nf(x/sw,2))).join('')})).filter(o=>o.v>=0.005);}
-  else it=[...byP.entries()].sort((a,b)=>b[1]-a[1]).map(([q,v])=>({q,lab:PARES[q].razao.length>24?PARES[q].razao.slice(0,23)+'…':PARES[q].razao,v:v/sw,col:rcol(q)})).filter(o=>o.v>=0.005);
-  const MAXB=12;if(it.length>MAXB){const rest=it.slice(MAXB-1);it=it.slice(0,MAXB-1);it.push({lab:`Outras ${rest.length} Razao`,v:rest.reduce((a,o)=>a+o.v,0),col:css('--gray-series'),tip:`<div class="t">Outras Razao</div>`+rest.map(o=>row(esc(PARES[o.q].razao),nf(o.v,2))).join('')});}
+    it=[...byG.entries()].sort((a,b)=>b[1]-a[1]).map(([g,v])=>({lab:GRUPOS[g].length>24?GRUPOS[g].slice(0,23)+'…':GRUPOS[g],v:v/sw,col:gcol(g),tip:`<div class="t">${esc(GRUPOS[g])}</div>${row('Perda',nf(v/sw,2)+' km/h')}${row('Participação',nf(100*v/sw/tot,0)+'%')}`+[...byP.entries()].filter(([q])=>GI[q]===g).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([q,x])=>row(esc(PARES[q].nome),nf(x/sw,2))).join('')})).filter(o=>o.v>=0.005);}
+  else it=[...byP.entries()].sort((a,b)=>b[1]-a[1]).map(([q,v])=>({q,lab:PARES[q].nome.length>24?PARES[q].nome.slice(0,23)+'…':PARES[q].nome,v:v/sw,col:rcol(q)})).filter(o=>o.v>=0.005);
+  const MAXB=12;if(it.length>MAXB){const rest=it.slice(MAXB-1);it=it.slice(0,MAXB-1);it.push({lab:`Outras ${rest.length} Razao`,v:rest.reduce((a,o)=>a+o.v,0),col:css('--gray-series'),tip:`<div class="t">Outras Razao</div>`+rest.map(o=>row(esc(PARES[o.q].nome),nf(o.v,2))).join('')});}
   it.sort((a,b)=>(a.lab.startsWith('Outras ')?1:0)-(b.lab.startsWith('Outras ')?1:0)||b.v-a.v);
-  it.forEach(o=>{if(!o.tip)o.tip=`<div class="t">${o.q!=null?esc(PARES[o.q].razao):o.lab}</div>${o.q!=null?row('Grupo · Tipo_Alerta',tipoTxt(o.q)):''}${row('Perda',nf(o.v,2)+' km/h')}${row('Participação',nf(100*o.v/tot,0)+'%')}`;});
+  it.forEach(o=>{if(!o.tip)o.tip=`<div class="t">${o.q!=null?esc(PARES[o.q].nome):o.lab}</div>${o.q!=null?row('Grupo · Tipo_Alerta',tipoTxt(o.q)):''}${row('Perda',nf(o.v,2)+' km/h')}${row('Participação',nf(100*o.v/tot,0)+'%')}`;});
   hbars(document.getElementById('cy-break'),it.filter(o=>o.v>0),' km/h',2);
   // ---- linha do tempo ----
   host.innerHTML='';const Wd=Math.max(320,host.clientWidth),ml=Math.min(210,Math.max(120,Wd*.24)),mr=12;
@@ -1346,7 +1469,7 @@ function drawCycle(){if(!CYC[C.tag]||!CYC[C.tag][C.n])return;const host=document
         if(w>46)txt(s,x0+5,yS0+13,c===0?'Cheio':'Vazio',{style:`fill:var(--muted);font-size:10.5px;font-weight:600`});}
       st=k;}}
   // lanes
-  lanes.forEach((q,li)=>{const y=yL0+li*lh;const nm=byGrp?GRUPOS[q]:PARES[q].razao;const tl=txt(s,ml-8,y+lh/2+3,nm.length>lmax?nm.slice(0,lmax-1)+'…':nm,{'text-anchor':'end',style:'font-size:10px'});tl.setAttribute('data-tip',byGrp?`<div class="t">${esc(nm)}</div>`+[...new Set(evs.filter(j=>GI[E.q[j]]===q).map(j=>E.q[j]))].map(u=>row(esc(PARES[u].razao),evs.filter(j=>E.q[j]===u).length+' ev.')).join(''):`<div class="t">${esc(nm)}</div>${row('Grupo · Tipo_Alerta',tipoTxt(q))}`);el('line',{x1:ml,x2:Wd-mr,y1:y+lh,y2:y+lh,class:'grid'},s);});
+  lanes.forEach((q,li)=>{const y=yL0+li*lh;const nm=byGrp?GRUPOS[q]:PARES[q].nome;const tl=txt(s,ml-8,y+lh/2+3,nm.length>lmax?nm.slice(0,lmax-1)+'…':nm,{'text-anchor':'end',style:'font-size:10px'});tl.setAttribute('data-tip',byGrp?`<div class="t">${esc(nm)}</div>`+[...new Set(evs.filter(j=>GI[E.q[j]]===q).map(j=>E.q[j]))].map(u=>row(esc(PARES[u].nome),evs.filter(j=>E.q[j]===u).length+' ev.')).join(''):`<div class="t">${esc(nm)}</div>${row('Grupo · Tipo_Alerta',tipoTxt(q))}`);el('line',{x1:ml,x2:Wd-mr,y1:y+lh,y2:y+lh,class:'grid'},s);});
   if(!lanes.length)txt(s,ml,yL0+12,'sem eventos neste ciclo',{style:'fill:var(--muted)'});
   evs.forEach(j=>{const q=E.q[j],li=lanes.indexOf(laneOf(j)),y=yL0+li*lh+3;const a=Math.max(ta,E.t[j]),b=Math.min(tb,E.t[j]+E.d[j]);
     // perda atribuída a este evento (pela Razao) dentro da janela
@@ -1407,7 +1530,7 @@ function cmChips(){const host=document.getElementById('cm-tipos');host.innerHTML
   CM.evs.forEach(j=>{const key=byG?GI[E.q[j]]:E.q[j];cnt.set(key,(cnt.get(key)||0)+1);});
   [...cnt.entries()].sort((a,b)=>b[1]-a[1]).forEach(([key,n])=>{const units=byG?[...new Set(CM.evs.map(j=>E.q[j]).filter(q=>GI[q]===key))]:[key];
     const on=units.some(q=>!CM.off.has(q));const b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('aria-pressed',on);
-    b.innerHTML=`<i style="background:${byG?gvar(key):rvar(key)};border-radius:50%"></i>${esc(byG?GRUPOS[key]:PARES[key].razao)} <span style="color:var(--muted)">${n}</span>`;
+    b.innerHTML=`<i style="background:${byG?gvar(key):rvar(key)};border-radius:50%"></i>${esc(byG?GRUPOS[key]:PARES[key].nome)} <span style="color:var(--muted)">${n}</span>`;
     b.onclick=()=>{const turnOn=!units.some(q=>!CM.off.has(q));units.forEach(q=>turnOn?CM.off.delete(q):CM.off.add(q));cmChips();cmDraw();};host.appendChild(b);});
   if(!cnt.size)host.innerHTML='<span class="note" style="margin:0">sem interações neste ciclo</span>';}
 CM.load=(pts,evs)=>{CM.pts=pts;CM.evs=evs;CM.marker=-1;if(!cmResize())return;cmFit();cmChips();cmDraw();};
@@ -1510,7 +1633,7 @@ function initColors(){const L=new Float64Array(NP);for(let i=0;i<N;i++){if(P.lp[
   const LG=new Float64Array(NG);for(let q=0;q<NP;q++)LG[GI[q]]+=L[q];[...Array(NG).keys()].filter(g=>GRUPOS[g]!==SEMG).sort((a,b)=>LG[b]-LG[a]).slice(0,7).forEach((g,k)=>GCOL[g]=k);}
 document.querySelectorAll('.vtog').forEach(vt=>vt.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=vt.dataset.vt,v=b.dataset.v;document.querySelectorAll(`.vtog[data-vt="${k}"] button`).forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===v));
   if(k==='trecho'){S.view=v;chartTipo();tableRaz();}else if(k==='stat'){S.sview=v;statics();}else{C.view=v;drawCycle();}}));
-function init(){initColors();resize();fit();compute();textos();statics();update();if(location.hash==='#ciclo')showTab('ciclo');}
+function init(){initColors();resize();fit();compute();textos();docTextos();statics();update();if(location.hash==='#ciclo')showTab('ciclo');}
 window.addEventListener('resize',()=>{if(!vivo())return;if(!tabs.trecho[1].hidden){resize();sched();chartTipo();chartTruck();chartHour();statics();}else drawCycle();});
 const rethemed=()=>{if(!vivo())return;if(!tabs.trecho[1].hidden){sched();chartTipo();chartTruck();chartHour();statics();}else drawCycle();};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',rethemed);
@@ -1544,7 +1667,7 @@ carregarDados().then(D=>{ORIG=D;window.__ORIG=D;BOOT(D);document.getElementById(
   .catch(e=>{document.getElementById('carga-msg').textContent='Não foi possível carregar os dados: '+(e&&e.message?e.message:e);document.getElementById('carga').classList.add('err');});
 window.__reboot=(D,aba)=>{aba=aba||'trecho';window.__D=D;document.getElementById('pane-trecho').innerHTML=PRISTINE.trecho;document.getElementById('pane-ciclo').innerHTML=PRISTINE.ciclo;document.getElementById('pane-hist').innerHTML=PRISTINE.hist;
   // mostra a aba antes de montar, para o mapa medir o tamanho certo
-  ['trecho','ciclo','dados','hist'].forEach(k=>{document.getElementById('pane-'+k).hidden=k!==aba;document.getElementById('tab-'+k).setAttribute('aria-selected',k===aba);});
+  ['trecho','ciclo','dados','hist','doc'].forEach(k=>{document.getElementById('pane-'+k).hidden=k!==aba;document.getElementById('tab-'+k).setAttribute('aria-selected',k===aba);});
   BOOT(D);window.__showTab(aba);};
 </script>
 <script>
@@ -1568,7 +1691,7 @@ async function lerDepara(file){
   if(!n)throw new Error('A coluna "Consolidação Operação" está vazia na planilha.');
   return{m,n};}
 function liga(k){const inp=$('up-'+k),card=$('up-c-'+k);
-  const usar=async files=>{files=[...(files||[])];if(!files.length)return;if(k!=='dp'){F[k]=files;setCard(k,files,true);pronto();listarArquivos(k,files);return;}const file=files[0];F[k]=file;setCard(k,file);
+  const usar=async files=>{files=[...(files||[])];if(!files.length)return;if(k!=='dp'){const nomes=new Set(files.map(f=>f.name));F[k]=[...F[k].filter(f=>!nomes.has(f.name)),...files];inp.value='';atualizaLista(k);return;}const file=files[0];F[k]=file;setCard(k,file);
     if(k==='dp'){try{const r=await lerDepara(file);gmap=r.m;DPN=r.n;setCard(k,file,true,`${file.name} · ${r.n} códigos com grupo`);}catch(e){gmap=null;F.dp=null;setCard(k,file,false,e.message);}}
     else setCard(k,file,true);pronto();};
   inp.onchange=()=>usar(inp.files);
@@ -1585,11 +1708,15 @@ async function escanear(file,tipo){const rd=file.stream().pipeThrough(new TextDe
   linha(resto.replace(/\r$/,''));const ds=[...dias].sort();return{nome:file.name,tam:file.size,linhas:n,ini:mn,fim:mx,dias:ds};}
 const fdh=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}/${s.slice(0,4)} ${s.slice(11,16)}`:'—';const fd=s=>s?`${s.slice(8,10)}/${s.slice(5,7)}`:'—';
 const linhaArq=x=>`${x.linhas.toLocaleString('pt-BR')} linhas · ${fdh(x.ini)} → ${fdh(x.fim)}${x.dias&&x.dias.length?` · ${x.dias.length} dia${x.dias.length>1?'s':''} de referência (${fd(x.dias[0])}${x.dias.length>1?'–'+fd(x.dias[x.dias.length-1]):''})`:''}`;
-const SCAN={inter:[],vel:[]};
-async function listarArquivos(k,files){const ul=$('up-f-'+k);SCAN[k]=[];ul.innerHTML=files.map((f,i)=>`<li id="up-f-${k}-${i}"><b>${esc2(f.name)}</b> · ${tam(f.size)}<span class="lendo">lendo o arquivo…</span></li>`).join('');
-  for(let i=0;i<files.length;i++){const li=$(`up-f-${k}-${i}`);try{const x=await escanear(files[i],k);SCAN[k][i]=x;if(li)li.innerHTML=`<b>${esc2(x.nome)}</b> · ${tam(x.tam)}<span>${linhaArq(x)}</span>`;}catch(e){if(li)li.innerHTML=`<b>${esc2(files[i].name)}</b><span class="lendo">não foi possível ler: ${esc2(e.message||e)}</span>`;}}
-  const tot=SCAN[k].filter(Boolean);if(tot.length>1){const n=tot.reduce((a,x)=>a+x.linhas,0),ini=tot.map(x=>x.ini).filter(Boolean).sort()[0],fim=tot.map(x=>x.fim).filter(Boolean).sort().pop(),ds=[...new Set(tot.flatMap(x=>x.dias))].sort();
-    ul.insertAdjacentHTML('beforeend',`<li><b>Total</b><span>${linhaArq({linhas:n,ini,fim,dias:ds})}</span></li>`);}}
+const SCAN={inter:[],vel:[]};const SCANC=new Map();
+function atualizaLista(k){const fs=F[k];if(!fs.length){setCard(k,[],null,'Nenhum arquivo escolhido');$('up-c-'+k).classList.remove('ok');$('up-f-'+k).innerHTML='';pronto();return;}setCard(k,fs,true);pronto();listarArquivos(k,fs);}
+function removerArq(k,i){F[k].splice(i,1);atualizaLista(k);}
+async function listarArquivos(k,files){const ul=$('up-f-'+k);SCAN[k]=[];const bt=i=>`<button type="button" class="uprm" data-k="${k}" data-i="${i}" title="Remover este arquivo" aria-label="Remover ${esc2(files[i].name)}">✕ remover</button>`;
+  ul.innerHTML=files.map((f,i)=>`<li id="up-f-${k}-${i}">${bt(i)}<b>${esc2(f.name)}</b> · ${tam(f.size)}<span class="lendo">lendo o arquivo…</span></li>`).join('')+(files.length>1?`<li class="uptodos"><button type="button" class="uprm" data-k="${k}" data-i="todos">✕ remover todos</button></li>`:'');
+  ul.querySelectorAll('.uprm').forEach(b=>b.onclick=ev=>{ev.preventDefault();ev.stopPropagation();if(b.dataset.i==='todos'){F[k]=[];atualizaLista(k);}else removerArq(k,+b.dataset.i);});
+  for(let i=0;i<files.length;i++){const li=$(`up-f-${k}-${i}`);const ck=files[i].name+'|'+files[i].size+'|'+files[i].lastModified;try{const x=SCANC.get(ck)||await escanear(files[i],k);SCANC.set(ck,x);SCAN[k][i]=x;if(li&&li.isConnected&&F[k][i]===files[i]){li.querySelector('span').className='';li.querySelector('span').textContent=linhaArq(x);}}catch(e){if(li&&li.isConnected){li.querySelector('span').textContent='não foi possível ler: '+(e.message||e);}}}
+  if(F[k]!==files&&F[k].length!==files.length)return;const tot=SCAN[k].filter(Boolean);if(tot.length>1){const n=tot.reduce((a,x)=>a+x.linhas,0),ini=tot.map(x=>x.ini).filter(Boolean).sort()[0],fim=tot.map(x=>x.fim).filter(Boolean).sort().pop(),ds=[...new Set(tot.flatMap(x=>x.dias))].sort();
+    const td=ul.querySelector('.uptodos');(td||ul).insertAdjacentHTML(td?'beforebegin':'beforeend',`<li><b>Total</b><span>${linhaArq({linhas:n,ini,fim,dias:ds})}</span></li>`);}}
 const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const desc=M=>`<b>${M.q.pontos.toLocaleString('pt-BR')}</b> leituras de GPS de <b>${M.tags.length}</b> caminhões, de ${M.periodo[0]} a ${M.periodo[1]}${M.dias&&M.dias.length>1?` (<b>${M.dias.length}</b> dias)`:''}; <b>${M.q.eventos.toLocaleString('pt-BR')}</b> interações no modelo${M.usa_grupo===false?' (sem de-para: todas as Razao, sem grupo)':''}.`;
 const fontes=M=>M.fontes?`${M.fontes.inter}, ${M.fontes.vel}${M.fontes.dp?', '+M.fontes.dp:''}`:'Interações_15102026.csv, velocidade_trecho_15102026.csv, CESG_Codigos_Caminhoes_pt_BR_1.xlsx';
