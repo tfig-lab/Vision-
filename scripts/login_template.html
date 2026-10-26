@@ -5,14 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex,nofollow">
-<title>Análise de Performance de Velocidade · Entrar</title>
+<title>Vision+ · Entrar</title>
+<link rel="icon" type="image/png" href="__ICONE__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{--bg:#f5f4f0;--panel:#fdfcfa;--ink:#1c1b18;--ink2:#55524b;--muted:#85817a;--line:#e3e0d8;--line2:#cfcbc1;--accent:#8f3a1d;--accent-ink:#fff8f3;--err:#b3261e;--focus:rgba(143,58,29,.18);color-scheme:light}
  *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:grid;grid-template-rows:1fr auto;min-height:100vh}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif;display:grid;grid-template-rows:auto 1fr auto;min-height:100vh}
+.logo{display:block;width:min(300px,70%);height:auto;border-radius:14px;background:#000;margin-bottom:22px}.logo[src=""]{display:none}
+.piloto{background:repeating-linear-gradient(135deg,#1c1b18 0 22px,#2b2925 22px 44px);color:#fff;text-align:center;padding:16px;border-bottom:4px solid #f08a1c}.piloto b{display:inline-block;font:700 clamp(28px,5vw,48px)/1.05 "Barlow Condensed",sans-serif;letter-spacing:.06em;color:#ffb347}.piloto span{display:block;font-size:13px;color:#e8e2d6;margin-top:4px}
 main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);max-width:1080px;width:100%;margin:0 auto;padding:48px 24px;gap:56px;align-items:center}
 .eyebrow{font:500 11.5px/1.4 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 h1{font:700 clamp(40px,6vw,64px)/1.0 "Barlow Condensed",sans-serif;letter-spacing:-.01em;margin:14px 0 18px}
@@ -41,17 +44,13 @@ footer{padding:18px 24px;text-align:center;font:400 11.5px "IBM Plex Mono",monos
 </style>
 </head>
 <body>
+__PILOTO__
 <main>
   <section>
+    <img class="logo" src="__LOGO__" alt="Vision+">
     <div class="eyebrow">Serra Norte · caminhões autônomos</div>
     <h1>Análise de Performance de Velocidade</h1>
     <p class="lede">Onde e quanto a velocidade cai por interações, com o efeito da pista descontado. Acesso restrito à equipe.</p>
-    <svg class="track" viewBox="0 0 440 120" aria-hidden="true">
-      <path d="M8 96 C 60 96, 70 40, 130 40 S 200 92, 250 80 S 320 20, 372 28 S 420 70, 432 64" stroke="var(--line2)" stroke-width="10"/>
-      <path d="M8 96 C 60 96, 70 40, 130 40 S 200 92, 250 80" stroke="var(--line2)" stroke-width="10"/>
-      <path d="M196 72 C 214 86, 232 84, 250 80" stroke="var(--accent)" stroke-width="10"/>
-      <circle cx="223" cy="83" r="13" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity=".55"/>
-    </svg>
   </section>
   <form id="f" autocomplete="on" novalidate>
     <h2>Entrar</h2>

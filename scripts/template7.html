@@ -1,5 +1,6 @@
 <meta charset="utf-8">
-<title>Análise de Performance de Velocidade</title>
+<title>Vision+ · Análise de Performance de Velocidade</title>
+<link rel="icon" type="image/png" href="__ICONE__">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="color-scheme" content="light only">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -295,10 +296,19 @@ body.noscroll{overflow:hidden}
 .upparams label{display:flex;flex-direction:column;gap:6px}.phelp{display:block;font-size:12.5px;line-height:1.5;color:var(--ink2);font-weight:400;margin-top:2px}.phelp b{color:var(--ink);font-weight:600}
 .kpis.k2{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis .kpi[hidden]{display:none}
 @media (max-width:560px){.kpis.k2{grid-template-columns:minmax(0,1fr)}}
+.brand{display:flex;align-items:center;gap:18px}.brandlogo{width:104px;height:auto;border-radius:12px;background:#000;flex:none;box-shadow:0 1px 0 var(--line)}.brandtx{min-width:0}
+.brandlogo[src=""]{display:none}
+@media (max-width:560px){.brandlogo{width:72px}}
+.piloto{background:repeating-linear-gradient(135deg,#1c1b18 0 22px,#2b2925 22px 44px);color:#fff;text-align:center;padding:14px 16px;border-bottom:4px solid #f08a1c}
+.piloto b{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4vw,40px);letter-spacing:.06em;color:#ffb347;line-height:1.05}
+.piloto span{display:block;font-size:12.5px;color:#e8e2d6;margin-top:4px}
 </style>
+<!--PILOTO-->
 <header class="top wrap" style="padding-bottom:0">
+  <div class="brand"><img class="brandlogo" src="__LOGO__" alt="Vision+"><div class="brandtx">
   <div class="eyebrow" id="hdr-eyebrow">Serra Norte</div>
   <h1>Análise de Performance de Velocidade</h1>
+  </div></div>
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-trecho" aria-selected="true" aria-controls="pane-trecho">Trecho</button>
     <button role="tab" id="tab-ciclo" aria-selected="false" aria-controls="pane-ciclo">Ciclo do caminhão</button>
@@ -1513,7 +1523,11 @@ function decodificarVSD(ab){const u=new Uint8Array(ab),dv=new DataView(ab);if(St
   for(const c of H.cols){const T=TIPOSB[c.tp];const a=new T(ab,base+c.off,c.n);
     if(c.k==='eoN'){const eo=new Uint32Array(c.n+1);for(let i=0;i<c.n;i++)eo[i+1]=eo[i]+a[i];D[c.o].eo=eo;}else D[c.o][c.k]=a;}
   return D;}
-async function carregarDados(){const txt=document.getElementById('dados').textContent;const cfg=JSON.parse(txt);if(!cfg.partes)return cfg;
+async function carregarDados(){const txt=document.getElementById('dados').textContent;const cfg=JSON.parse(txt);
+  if(cfg.embutido){const msg=document.getElementById('carga-msg');msg.textContent='Abrindo os dados…';await new Promise(r=>setTimeout(r,30));
+    const s=document.getElementById('dados-b64').textContent.replace(/\s+/g,'');const bin=atob(s);const b=new Uint8Array(bin.length);for(let j=0;j<bin.length;j++)b[j]=bin.charCodeAt(j);
+    msg.textContent='Descompactando…';const ab=await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();msg.textContent='Montando o painel…';await new Promise(r=>setTimeout(r,30));return decodificarVSD(ab);}
+  if(!cfg.partes)return cfg;
   const msg=document.getElementById('carga-msg');const K=window.__VISION_K?await crypto.subtle.importKey('raw',Uint8Array.from(atob(window.__VISION_K),c=>c.charCodeAt(0)),'AES-GCM',false,['decrypt']):null;
   const partes=[];let lido=0;
   for(let i=0;i<cfg.partes.length;i++){msg.textContent=`Baixando os dados (${i+1} de ${cfg.partes.length}, ${nfMB(cfg.mb)} no total)…`;
