@@ -95,8 +95,10 @@ log('Associando interações às leituras',0.26);
 const comRazao=EV.filter(e=>e.razao);const semRazao=EV.length-comRazao.length;
 comRazao.forEach(e=>{e.grupo=gmap?(gmap[e.cod]||SEM_GRUPO):SEM_GRUPO;e.par=e.grupo+' | '+(e.cod||'—')+' | '+e.razao;});
 const usaGrupo=!!gmap;
-const EM=comRazao; // todas as interações (Razao + código) entram; as sem grupo no de-para ficam em SEM_GRUPO
-const eventosFora=0;
+// "AT is moving." só indica que o caminhão voltou a andar: não é interação, não entra no impacto nem bloqueia leituras limpas
+const NAO_IMPACTO=/^AT is moving\.?$/i;
+const EM=comRazao.filter(e=>!NAO_IMPACTO.test(e.razao.trim())); // demais interações (Razao + código) entram; as sem grupo no de-para ficam em SEM_GRUPO
+const eventosFora=comRazao.length-EM.length;
 const contPar=new Map();EM.forEach(e=>contPar.set(e.par,(contPar.get(e.par)||0)+1));
 const pares=[...contPar.keys()].sort((a,b)=>contPar.get(b)-contPar.get(a)||(a<b?-1:1));const pi=Object.fromEntries(pares.map((p,k)=>[p,k]));
 {const md=new Map();EM.forEach(e=>{if(e.fv)(md.get(e.par)||md.set(e.par,[]).get(e.par)).push(e.dur);});const mm=new Map();md.forEach((a,k)=>mm.set(k,median(a)));
