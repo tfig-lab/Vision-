@@ -159,7 +159,11 @@ function construirArvore(TR,g,minLeaf,maxLeaves){const nt=TR.length;const leafOf
   return{nodes,leafOf};}
 function preverArvore(nodes,i){let id=0;for(;;){const nd=nodes[id];if(nd.leaf)return nd.val;const bv=BIN[nd.j][i];id=(bv===0?nd.nan:bv<=nd.b)?nd.l:nd.r;}}
 const preverModelo=(m,i)=>{let s=m.f0;for(const t of m.trees)s+=preverArvore(t,i);return s;};
-const LIMPO=new Uint8Array(N);for(let i=0;i<N;i++)LIMPO[i]=(NAT[i]===0&&V[i]>=2&&!LP[i])?1:0;
+// áreas tiradas da análise (polígonos em UTM): leituras dentro delas não entram no treino da referência
+const EXCL=(prm.excl||[]).map(a=>({nome:a.nome,pts:a.pts||a})).filter(a=>a.pts&&a.pts.length>=3);const FORA=new Uint8Array(N);
+for(const a of EXCL){const pg=a.pts;let x0=1e18,x1=-1e18,y0=1e18,y1=-1e18;for(const[x,y]of pg){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}
+  for(let i=0;i<N;i++){const x=X[i],y=Y[i];if(x<x0||x>x1||y<y0||y>y1)continue;let c=false;for(let p=0,q=pg.length-1;p<pg.length;q=p++){const[xi,yi]=pg[p],[xj,yj]=pg[q];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}if(c)FORA[i]=1;}}
+const LIMPO=new Uint8Array(N);for(let i=0;i<N;i++)LIMPO[i]=(NAT[i]===0&&V[i]>=2&&!LP[i]&&!FORA[i])?1:0;
 const VREF=new Float64Array(N);const cvs=[];
 {const nf=Math.min(5,tags.length);const foldOf=k=>k%nf; // GroupKFold por caminhão
  for(let f=0;f<nf;f++){log(`Treinando velocidade de referência (${f+1}/${nf})`,0.32+0.4*f/nf);
@@ -274,7 +278,7 @@ EM.filter(e=>e.tag in ti).sort((a,b)=>a.ini-b.ini).forEach(e=>{const k=ti[e.tag]
 const tiposPar=(()=>{const m=new Map();EM.forEach(e=>{let s=m.get(e.par);if(!s){s=new Set();m.set(e.par,s);}s.add(e.tipo);});return pares.map(p=>[...(m.get(p)||[])].sort());})();
 let tmin=Infinity,tmax=-Infinity;for(let i=0;i<N;i++){if(T[i]<tmin)tmin=T[i];if(T[i]>tmax)tmax=T[i];}
 let horas=0;for(let i=0;i<N;i++)horas+=W[i];
-const meta={origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota,dias,arquivos:{inter:listaI.length,vel:listaV.length},
+const meta={exclusoes:EXCL,origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota,dias,arquivos:{inter:listaI.length,vel:listaV.length},
   pares:pares.map((p,q)=>({razao:p.split(' | ').slice(2).join(' | '),cod:p.split(' | ')[1],grupo:parGrupo[q],tipos:tiposPar[q],n:contPar.get(p)})),
   grupos,sem_grupo:SEM_GRUPO,reg_grupo:regGrupo.tab,eventos_sem_razao:semRazao,
   loadxy:CICLO.filter(e=>e.razao==='AT is in Loading'&&isFinite(e.X)).map(e=>[Math.round(e.X-x0),Math.round(e.Y-y0)]),
