@@ -354,11 +354,10 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
 .pilotobadge+.hdrchip{margin-left:12px}
 .satop:disabled{display:none}
 .shd,.srow{grid-template-columns:30px 48px minmax(0,1fr) 60px 36px 12px}
-@media (max-width:700px){.hdrchip{display:none}.brandlogo{height:42px}}
+@media (max-width:700px){.brand{flex-wrap:wrap;row-gap:10px}.hdrchip{margin-left:0;padding:6px 10px;font-size:12px}.brandlogo{height:42px}}
 </style>
 <header class="top wrap" style="padding-bottom:0">
   <div class="brand"><img class="brandlogo" src="__LOGO__" alt="Vision+"><span class="brandsep" aria-hidden="true"></span><div class="brandtx">
-  <div class="eyebrow" id="hdr-eyebrow"></div>
   <h1>Análise de Performance de Velocidade</h1>
   </div><!--PILOTO--><div class="hdrchip" id="hdr-chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="hdr-chip-t"></span></div></div>
   <div class="tabs" role="tablist">
@@ -1402,8 +1401,8 @@ function textos(){const q=M.q,cvr=M.cv.reduce((a,o)=>a+o.r2,0)/M.cv.length,cvm=M
   <p><b>Grupos.</b> O código do evento (<code>Evento_Codigo</code>) é procurado na coluna <code>Event Code</code> da planilha de-para, e o grupo é a coluna L. Os ${PARES.reduce((a,p)=>a+p.n,0).toLocaleString('pt-BR')} eventos entram no modelo, cada um como Razao + código; os códigos que não estão na planilha ficam no grupo "${esc(SEMG)}". <code>AT is in Loading</code> e <code>AT is in Dumping</code> também definem cheio/vazio, os ciclos e a referência 0 durante carga e basculamento. Uma mesma Razao com códigos diferentes (ex.: <code>Detected by Laser · 8E50</code> e <code>· 4E50</code>) aparece uma vez para cada código. <code>AT is moving.</code> fica fora do impacto${(M.eventos_fora||0)?' ('+M.eventos_fora.toLocaleString('pt-BR')+' eventos)':''}: só indica que o caminhão voltou a andar, então não recebe perda e não impede a leitura de entrar no treino da referência.</p>
   <p><b>Cheio/vazio e rampa.</b> A base não tem campo de carga. Cheio é o período após um <code>AT is in Loading</code>, vazio é o período após um <code>AT is in Dumping</code>. A rampa vem da cota PosZ (em decímetros) entre leituras vizinhas, no sentido do deslocamento.</p>
   <p><b>Fora da conta.</b> Paradas contínuas acima de 10 min (sem distinguir a causa) ficam fora da perda, mas aparecem no ciclo.</p>`;
-  {const p1=M.periodo[1];document.getElementById('hdr-chip-t').innerHTML=`<small>Dados até</small>${p1.slice(8,10)}/${p1.slice(5,7)}/${p1.slice(0,4)} ${p1.slice(11)}`;}
-  document.getElementById('hdr-eyebrow').textContent=`Período ${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)} ${M.periodo[1].slice(11)}`;
+  {const p0=M.periodo[0],p1=M.periodo[1];document.getElementById('hdr-chip-t').innerHTML=`<small>Período</small>${p0.slice(8,10)}/${p0.slice(5,7)} ${p0.slice(11)} – ${p1.slice(8,10)}/${p1.slice(5,7)}/${p1.slice(0,4)} ${p1.slice(11)}`;}
+  if(0)document.getElementById('hdr-eyebrow').textContent=`Período ${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)} ${M.periodo[1].slice(11)}`;
   document.getElementById('foot').textContent=`Fontes: ${M.fontes?[M.fontes.inter,M.fontes.vel,M.fontes.dp].filter(Boolean).join(', '):'Interações_15102026.csv, velocidade_trecho_15102026.csv e CESG_Codigos_Caminhoes_pt_BR_1.xlsx'}. Coordenadas SIRGAS 2000 / UTM 22S.`;}
 
 /* =================== ABA CICLO =================== */
