@@ -306,7 +306,7 @@ body.noscroll{overflow:hidden}
 <!--PILOTO-->
 <header class="top wrap" style="padding-bottom:0">
   <div class="brand"><img class="brandlogo" src="__LOGO__" alt="Vision+"><div class="brandtx">
-  <div class="eyebrow" id="hdr-eyebrow">Serra Norte</div>
+  <div class="eyebrow" id="hdr-eyebrow"></div>
   <h1>Análise de Performance de Velocidade</h1>
   </div></div>
   <div class="tabs" role="tablist">
@@ -1278,7 +1278,7 @@ function textos(){const q=M.q,cvr=M.cv.reduce((a,o)=>a+o.r2,0)/M.cv.length,cvm=M
   <p><b>Grupos.</b> O código do evento (<code>Evento_Codigo</code>) é procurado na coluna <code>Event Code</code> da planilha de-para, e o grupo é a coluna L. Só os ${PARES.reduce((a,p)=>a+p.n,0).toLocaleString('pt-BR')} eventos com grupo entram no modelo; os ${M.eventos_fora.toLocaleString('pt-BR')} sem grupo ficaram fora e estão listados na aba "Fora do modelo (sem grupo)" da planilha de resultados. Exceção: <code>AT is in Loading</code> e <code>AT is in Dumping</code> continuam sendo usados para definir cheio/vazio, os ciclos e a referência 0 durante carga e basculamento, mas não contam como interação. Uma Razao com códigos de grupos diferentes (ex.: <code>Detected by Laser</code> como alerta e como exceção) aparece uma vez em cada grupo.</p>
   <p><b>Cheio/vazio e rampa.</b> A base não tem campo de carga. Cheio é o período após um <code>AT is in Loading</code>, vazio é o período após um <code>AT is in Dumping</code>. A rampa vem da cota PosZ (em decímetros) entre leituras vizinhas, no sentido do deslocamento.</p>
   <p><b>Fora da conta.</b> Paradas contínuas acima de 10 min (sem distinguir a causa) ficam fora da perda, mas aparecem no ciclo.</p>`;
-  document.getElementById('hdr-eyebrow').textContent=`${M.local||'Serra Norte'} · ${TAGS.length} caminhões ${M.frota||'Komatsu 930E-4 AT'} · ${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)} ${M.periodo[1].slice(11)}`;
+  document.getElementById('hdr-eyebrow').textContent=`Período ${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)} ${M.periodo[1].slice(11)}`;
   document.getElementById('foot').textContent=`Fontes: ${M.fontes?[M.fontes.inter,M.fontes.vel,M.fontes.dp].filter(Boolean).join(', '):'Interações_15102026.csv, velocidade_trecho_15102026.csv e CESG_Codigos_Caminhoes_pt_BR_1.xlsx'}. Coordenadas SIRGAS 2000 / UTM 22S.`;}
 
 /* =================== ABA CICLO =================== */
