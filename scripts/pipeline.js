@@ -163,6 +163,11 @@ const preverModelo=(m,i)=>{let s=m.f0;for(const t of m.trees)s+=preverArvore(t,i
 const EXCL=(prm.excl||[]).map(a=>({nome:a.nome,pts:a.pts||a})).filter(a=>a.pts&&a.pts.length>=3);const FORA=new Uint8Array(N);
 for(const a of EXCL){const pg=a.pts;let x0=1e18,x1=-1e18,y0=1e18,y1=-1e18;for(const[x,y]of pg){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}
   for(let i=0;i<N;i++){const x=X[i],y=Y[i];if(x<x0||x>x1||y<y0||y>y1)continue;let c=false;for(let p=0,q=pg.length-1;p<pg.length;q=p++){const[xi,yi]=pg[p],[xj,yj]=pg[q];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}if(c)FORA[i]=1;}}
+// área de análise (polígonos em UTM): leituras fora dela também saem do treino
+const INCL=(prm.incl||[]).map(a=>({nome:a.nome||'Área de análise',pts:a.pts||a})).filter(a=>a.pts&&a.pts.length>=3);
+if(INCL.length){const bb=INCL.map(a=>{let x0=1e18,x1=-1e18,y0=1e18,y1=-1e18;for(const[x,y]of a.pts){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}return[x0,x1,y0,y1];});
+  const den=(x,y,pg)=>{let c=false;for(let p=0,q=pg.length-1;p<pg.length;q=p++){const[xi,yi]=pg[p],[xj,yj]=pg[q];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;};
+  for(let i=0;i<N;i++){const x=X[i],y=Y[i];let ok=false;for(let k=0;k<INCL.length&&!ok;k++){const b=bb[k];if(x>=b[0]&&x<=b[1]&&y>=b[2]&&y<=b[3]&&den(x,y,INCL[k].pts))ok=true;}if(!ok)FORA[i]=1;}}
 const LIMPO=new Uint8Array(N);for(let i=0;i<N;i++)LIMPO[i]=(NAT[i]===0&&V[i]>=2&&!LP[i]&&!FORA[i])?1:0;
 const VREF=new Float64Array(N);const cvs=[];
 {const nf=Math.min(5,tags.length);const foldOf=k=>k%nf; // GroupKFold por caminhão
@@ -278,7 +283,7 @@ EM.filter(e=>e.tag in ti).sort((a,b)=>a.ini-b.ini).forEach(e=>{const k=ti[e.tag]
 const tiposPar=(()=>{const m=new Map();EM.forEach(e=>{let s=m.get(e.par);if(!s){s=new Set();m.set(e.par,s);}s.add(e.tipo);});return pares.map(p=>[...(m.get(p)||[])].sort());})();
 let tmin=Infinity,tmax=-Infinity;for(let i=0;i<N;i++){if(T[i]<tmin)tmin=T[i];if(T[i]>tmax)tmax=T[i];}
 let horas=0;for(let i=0;i<N;i++)horas+=W[i];
-const meta={exclusoes:EXCL,origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota,dias,arquivos:{inter:listaI.length,vel:listaV.length},
+const meta={exclusoes:EXCL,area_analise:INCL,origem:[x0,y0],t0:fmt(T0,true),tags,tipos,local,frota,dias,arquivos:{inter:listaI.length,vel:listaV.length},
   pares:pares.map((p,q)=>({razao:p.split(' | ').slice(2).join(' | '),cod:p.split(' | ')[1],grupo:parGrupo[q],tipos:tiposPar[q],n:contPar.get(p)})),
   grupos,sem_grupo:SEM_GRUPO,reg_grupo:regGrupo.tab,eventos_sem_razao:semRazao,
   loadxy:CICLO.filter(e=>e.razao==='AT is in Loading'&&isFinite(e.X)).map(e=>[Math.round(e.X-x0),Math.round(e.Y-y0)]),
