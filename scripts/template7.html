@@ -825,6 +825,7 @@ function exclMask(){FORA.fill(0);EFORA.fill(0);const ox=M.origem[0],oy=M.origem[
     for(let j=0;j<NE;j++){const x=E.x[j],y=E.y[j];if(!(x>=x0&&x<=x1&&y>=y0&&y<=y1))continue;if(dentroPg(x,y,pg))EFORA[j]=1;}}}
 window.__EXCL=()=>EXCL;
 function exclSalvar(){try{localStorage.setItem(EXKEY,JSON.stringify(EXCL.map(a=>({nome:a.nome,pts:a.pts,treino:!!a.treino}))));}catch(e){}}
+{const ka=new Set(AREA.map(a=>JSON.stringify(a.pts)));const n0=EXCL.length;EXCL=EXCL.filter(a=>!ka.has(JSON.stringify(a.pts)));if(EXCL.length!==n0)exclSalvar();} // a área de análise não pode ficar também como exclusão
 exclMask();
 const pass=(i,ignTag)=>!FORA[i]&&DAYOK[P.dr[i]]&&(S.stipo<0||(SIDP&&SIDP[i]>=0?SECTI[SIDP[i]]===S.stipo:S.stipo===4))&&(S.rampa<0||rampaOk(P.g[i]))&&!(!ignTag&&S.tag>=0&&P.k[i]!==S.tag)&&!(S.carga>=0&&P.c[i]!==S.carga)&&!(S.turno>=0&&P.s[i]!==S.turno);
 const passE=j=>!EFORA[j]&&DAYOK[E.dr[j]]&&(S.stipo<0||(SIDE&&SIDE[j]>=0?SECTI[SIDE[j]]===S.stipo:S.stipo===4))&&!(S.tag>=0&&E.k[j]!==S.tag)&&!(S.carga>=0&&E.c[j]!==S.carga)&&!(S.turno>=0&&E.s[j]!==S.turno)&&selPar(E.q[j]);
