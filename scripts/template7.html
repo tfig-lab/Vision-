@@ -190,6 +190,29 @@ footer{padding-block:24px 40px;color:var(--muted);font-size:12px;border-top:1px 
 .lg-inline i{display:inline-block;width:14px;height:3px;border-radius:2px}
 .scroll{max-height:440px;overflow:auto}
 .scroll thead th{position:sticky;top:0;background:var(--panel);z-index:1}
+.rswrap{max-width:1180px}
+.rs-hero{padding:26px 4px 10px}.rs-eyebrow{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.rs-lead{font:600 26px/1.3 var(--f-body);margin:0 0 20px;max-width:900px;color:var(--ink)}.rs-lead b{color:var(--accent)}
+.rs-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.rs-tile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}.rs-tv{font:600 30px var(--f-body);color:var(--ink);line-height:1.1}.rs-tv small{font-size:14px;font-weight:500;margin-left:4px;color:var(--ink2)}
+.rs-tl{font-size:13px;color:var(--ink2);margin-top:4px}.rs-ts{font:11.5px var(--f-mono);color:var(--muted);margin-top:6px}
+.rs-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:16px;min-width:0}.rs-card h3{margin:0 0 4px;font-size:16px}
+.rs-h{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}.rs-sub{font-size:12px;color:var(--muted);display:block;margin-bottom:10px}.rs-h .rs-sub{margin:0}
+.rs-find{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.55;color:var(--ink2)}.rs-find b{color:var(--ink)}
+.rs-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px}.rs-two .rs-card,.rs-three .rs-card{margin-top:16px}
+.rs-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rs-row{display:grid;grid-template-columns:22px 62px minmax(40px,1fr) 52px 58px 86px;gap:8px;align-items:center;width:100%;padding:7px 4px;border:0;border-bottom:1px solid var(--line);background:none;font:13px var(--f-body);color:var(--ink);text-align:left;cursor:pointer}
+.rs-row.rs-sr{grid-template-columns:22px 104px minmax(40px,1fr) 56px 40px minmax(0,1.3fr)}
+.rs-row:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}.rs-row.rs-hd{cursor:default;font:500 10.5px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.rs-row.rs-hd:hover{background:none}
+.rs-row .n{text-align:right;font-family:var(--f-mono);font-size:12.5px}.rs-i{color:var(--muted);font:12px var(--f-mono)}.rs-n{font-weight:600;display:flex;flex-direction:column;line-height:1.2}.rs-n small{font-weight:400;color:var(--muted);font-size:11px}
+.rs-bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.rs-bh{background:none}.rs-bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.rs-par{font-size:11.5px;line-height:1.3;color:var(--ink2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.rs-par small{color:var(--muted)}
+.rs-foot{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+.rs-sb{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;font-size:13px;margin-bottom:10px}.rs-sb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rs-sb b{font:600 12.5px var(--f-mono)}.rs-sb i{grid-column:1/3;height:6px;border-radius:3px;background:var(--accent);opacity:.85;display:block}
+.rs-q{display:grid;grid-template-columns:86px 1fr 1fr;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.rs-q span:first-child{color:var(--ink2)}.rs-q b{font:600 15px var(--f-mono)}.rs-q small{color:var(--muted);font-size:11.5px}
+@media (max-width:980px){.rs-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.rs-two,.rs-three{grid-template-columns:1fr}.rs-lead{font-size:21px}}
+@media (max-width:700px){.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%}.tabs button{flex:none;white-space:nowrap}}
+@media (max-width:600px){.rs-row .rs-bar{display:none}.rs-row{grid-template-columns:20px minmax(0,1fr) 44px 52px 70px;gap:6px}.rs-row.rs-sr{grid-template-columns:20px 70px 52px 34px minmax(0,1fr)}.rs-card{padding:14px}.rs-q{grid-template-columns:70px 1fr 1fr}}
 .flx{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 34px;counter-reset:f}
 .flx li{position:relative;border:1px solid var(--line2);border-top:4px solid var(--c);border-radius:10px;padding:12px 14px 14px;background:var(--panel);display:flex;flex-direction:column;gap:4px;min-height:150px}
 .flx li[class*=ar-]::after{position:absolute;font:600 20px var(--f-body);color:var(--muted)}
@@ -382,6 +405,7 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
   <h1>Análise de Performance de Velocidade</h1>
   </div><!--PILOTO--><div class="hdrchip" id="hdr-chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="hdr-chip-t"></span></div></div>
   <div class="tabs" role="tablist">
+    <button role="tab" id="tab-resumo" aria-selected="false" aria-controls="pane-resumo">Resumo</button>
     <button role="tab" id="tab-trecho" aria-selected="true" aria-controls="pane-trecho">Trecho</button>
     <button role="tab" id="tab-ciclo" aria-selected="false" aria-controls="pane-ciclo">Ciclo do caminhão</button>
     <button role="tab" id="tab-hist" aria-selected="false" aria-controls="pane-hist">Histórico</button>
@@ -574,6 +598,26 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
     <p class="note">Médias (km/h) só aparecem com pelo menos 15 leituras (~2,5 min) no dia ou turno. A linha tracejada vertical marca um salto de datas. A tendência compara a média da velocidade perdida por interações na segunda metade dos dias/turnos com a da primeira.</p>
   </section>
 </div>
+<div id="pane-resumo" role="tabpanel" hidden>
+<main class="wrap rswrap">
+  <section class="rs-hero">
+    <p class="rs-eyebrow" id="rs-per"></p>
+    <h2 class="rs-lead" id="rs-lead"></h2>
+    <div class="rs-tiles" id="rs-tiles"></div>
+  </section>
+  <section class="rs-card"><h3>Principais achados</h3><ol class="rs-find" id="rs-find"></ol></section>
+  <div class="rs-two">
+    <section class="rs-card"><div class="rs-h"><h3>Caminhões mais críticos</h3><span class="rs-sub">minutos perdidos por hora operada · clique para filtrar no Trecho</span></div><div id="rs-trk"></div></section>
+    <section class="rs-card"><div class="rs-h"><h3>Trechos mais críticos</h3><span class="rs-sub">horas perdidas na seção · clique para ver no mapa</span></div><div id="rs-sec"></div></section>
+  </div>
+  <div class="rs-three">
+    <section class="rs-card"><h3>Onde</h3><span class="rs-sub">parte da perda por tipo de seção</span><div id="rs-onde"></div></section>
+    <section class="rs-card"><h3>O que</h3><span class="rs-sub">parte da perda por interação</span><div id="rs-oque"></div></section>
+    <section class="rs-card"><h3>Quando e em que condição</h3><span class="rs-sub">minutos perdidos por hora operada</span><div id="rs-quando"></div></section>
+  </div>
+  <p class="note" id="rs-nota"></p>
+</main>
+</div>
 <div id="pane-doc" role="tabpanel" hidden>
 <main class="wrap docwrap">
   <section class="band" style="margin-top:18px">
@@ -619,7 +663,7 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
     <p>Leituras a mais de 30 m de qualquer seção (pistas pouco usadas, pátios) entram nos totais mas não nas seções. As seções são remontadas a cada processamento, então os números (S…) podem mudar entre cargas de dados diferentes.</p>
     <p>Lacunas de GPS acima de 25 s aparecem como "sem registro" e não são tratadas como velocidade zero. Paradas contínuas acima de 10 min ficam fora da perda.</p></div></section>
   <section class="band" id="doc-versoes"><div class="shead"><div><h2>Histórico de versões</h2><p class="sub">O que mudou em cada versão publicada.</p></div></div>
-    <ol class="vlist"><li class="vitem"><div class="vhead"><span class="vtag">v0.5</span><span class="vdata">26/10/2026</span><span class="vatual">atual</span></div><ul><li>Histórico de versões nesta aba.</li><li>Filtros novos: <b>Tipo de seção</b> (retas, curvas, interseções, pontas, fora das seções) e <b>Rampa</b> (subida, plano, descida).</li><li><b>Áreas fora da análise</b>: contornar uma área no mapa (⬚) e tirá-la de todos os números, mapas, rankings e do histórico; ao reprocessar, ela também sai do treino da referência.</li><li>Todas as interações entram no impacto, inclusive as sem grupo na planilha ("Sem grupo na planilha"); interações sem Razao usam a descrição do evento.</li><li><code>AT is moving.</code> não conta como interação: só indica que o caminhão voltou a andar. Perda total passa de 345,6 h para 290,2 h.</li><li>Código da interação (<code>Evento_Codigo</code>) junto com a Razao.</li><li>Filtro de interações lista todas, não só as classificadas; as selecionadas mostram quanto impactaram.</li><li>Perda por Razao: gráfico e tabela mostram todas as Razao.</li><li>Gráficos Caminhões e Hora do dia mostram quanto a velocidade real ficou acima da referência, quando ficar.</li><li>Aba <b>Documentação</b> (glossário, seções, rampa, critérios de cálculo, dados, limitações) e nota sobre o cálculo da rampa.</li><li>Carregar dados: adicionar, substituir (mesmo nome) e remover arquivos.</li><li>Carregar dados: o de-para de códigos fica fixo (vem com os dados publicados) e só muda se alguém enviar outra planilha.</li><li>Correção: "Processar e atualizar o painel" voltou a funcionar depois da inclusão das áreas fora da análise.</li><li>Todos os filtros numa linha só.</li><li>Documentação: diagrama de como o modelo roda, do arquivo carregado ao painel.</li><li>Mapa: escolha das cores do mapa de calor e das perdas (paletas mais vivas para usar com o satélite).</li><li>Histórico: filtro "Seções com registro" para ver só as seções com leitura em todos (ou na maior parte) dos dias/turnos.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.4</span><span class="vdata">23/10/2026</span></div><ul><li>Fundo de satélite Sentinel-2 nos mapas do Trecho e do Histórico, com a imagem menos nublada dos últimos 90 dias.</li><li>"Pontas (Carga / Basc.)" junta frentes de carga e áreas de basculamento.</li><li>Seção de estatística desligada (cálculo guardado).</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.3</span><span class="vdata">22/10/2026</span></div><ul><li>Aba <b>Histórico</b>: matriz seção × dia/turno, média do período explícita, ordenação clicando nos cabeçalhos.</li><li>Mapa do histórico com zoom e arraste; clicar em seções no mapa filtra a matriz.</li><li>Carregar dados: mostra arquivos, linhas e período (data e hora) de cada entrada.</li><li>Dados de 15 a 22/10/2026; nova senha de acesso.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.2</span><span class="vdata">21/10/2026</span></div><ul><li>Publicação no GitHub Pages com tela de login e dados criptografados.</li><li><b>Seções físicas</b> da pista (retas, curvas, interseções, carga, basculamento), com tabela por tipo que abre as seções de cada um.</li><li>Tabela de grupos/Razao com escolha da ordenação (perda, queda, perda por evento, eventos, caminhões).</li><li>Descrição dos parâmetros da análise.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.1</span><span class="vdata">até 20/10/2026</span></div><ul><li>Primeira versão: velocidade de referência por modelo (gradient boosting) a partir das leituras sem interação, considerando rampa, curvatura e carga.</li><li>Mapa de células de 25 m com ranking de locais, perda por grupo e Razao, gráficos por caminhão e hora.</li><li>Aba Ciclo do caminhão.</li><li>Processamento dos CSVs no próprio navegador (aba Carregar dados).</li></ul></li></ol></section>
+    <ol class="vlist"><li class="vitem"><div class="vhead"><span class="vtag">v0.5</span><span class="vdata">26/10/2026</span><span class="vatual">atual</span></div><ul><li>Histórico de versões nesta aba.</li><li>Filtros novos: <b>Tipo de seção</b> (retas, curvas, interseções, pontas, fora das seções) e <b>Rampa</b> (subida, plano, descida).</li><li><b>Áreas fora da análise</b>: contornar uma área no mapa (⬚) e tirá-la de todos os números, mapas, rankings e do histórico; ao reprocessar, ela também sai do treino da referência.</li><li>Todas as interações entram no impacto, inclusive as sem grupo na planilha ("Sem grupo na planilha"); interações sem Razao usam a descrição do evento.</li><li><code>AT is moving.</code> não conta como interação: só indica que o caminhão voltou a andar. Perda total passa de 345,6 h para 290,2 h.</li><li>Código da interação (<code>Evento_Codigo</code>) junto com a Razao.</li><li>Filtro de interações lista todas, não só as classificadas; as selecionadas mostram quanto impactaram.</li><li>Perda por Razao: gráfico e tabela mostram todas as Razao.</li><li>Gráficos Caminhões e Hora do dia mostram quanto a velocidade real ficou acima da referência, quando ficar.</li><li>Aba <b>Documentação</b> (glossário, seções, rampa, critérios de cálculo, dados, limitações) e nota sobre o cálculo da rampa.</li><li>Carregar dados: adicionar, substituir (mesmo nome) e remover arquivos.</li><li>Carregar dados: o de-para de códigos fica fixo (vem com os dados publicados) e só muda se alguém enviar outra planilha.</li><li>Correção: "Processar e atualizar o painel" voltou a funcionar depois da inclusão das áreas fora da análise.</li><li>Todos os filtros numa linha só.</li><li>Documentação: diagrama de como o modelo roda, do arquivo carregado ao painel.</li><li>Aba <b>Resumo</b> (abre primeiro): ranking dos caminhões e trechos mais críticos, onde, o quê e quando se perde, e os principais achados escritos a partir dos dados.</li><li>Mapa: escolha das cores do mapa de calor e das perdas (paletas mais vivas para usar com o satélite).</li><li>Histórico: filtro "Seções com registro" para ver só as seções com leitura em todos (ou na maior parte) dos dias/turnos.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.4</span><span class="vdata">23/10/2026</span></div><ul><li>Fundo de satélite Sentinel-2 nos mapas do Trecho e do Histórico, com a imagem menos nublada dos últimos 90 dias.</li><li>"Pontas (Carga / Basc.)" junta frentes de carga e áreas de basculamento.</li><li>Seção de estatística desligada (cálculo guardado).</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.3</span><span class="vdata">22/10/2026</span></div><ul><li>Aba <b>Histórico</b>: matriz seção × dia/turno, média do período explícita, ordenação clicando nos cabeçalhos.</li><li>Mapa do histórico com zoom e arraste; clicar em seções no mapa filtra a matriz.</li><li>Carregar dados: mostra arquivos, linhas e período (data e hora) de cada entrada.</li><li>Dados de 15 a 22/10/2026; nova senha de acesso.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.2</span><span class="vdata">21/10/2026</span></div><ul><li>Publicação no GitHub Pages com tela de login e dados criptografados.</li><li><b>Seções físicas</b> da pista (retas, curvas, interseções, carga, basculamento), com tabela por tipo que abre as seções de cada um.</li><li>Tabela de grupos/Razao com escolha da ordenação (perda, queda, perda por evento, eventos, caminhões).</li><li>Descrição dos parâmetros da análise.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.1</span><span class="vdata">até 20/10/2026</span></div><ul><li>Primeira versão: velocidade de referência por modelo (gradient boosting) a partir das leituras sem interação, considerando rampa, curvatura e carga.</li><li>Mapa de células de 25 m com ranking de locais, perda por grupo e Razao, gráficos por caminhão e hora.</li><li>Aba Ciclo do caminhão.</li><li>Processamento dos CSVs no próprio navegador (aba Carregar dados).</li></ul></li></ol></section>
 </main>
 </div>
 <div id="pane-dados" role="tabpanel" hidden>
@@ -685,10 +729,10 @@ const day=s=>{const d=new Date(t0ms+s*1000);return String(d.getUTCDate()).padSta
 const row=(a,b)=>`<div class="r"><span>${a}</span><span>${b}</span></div>`;
 
 /* ---------- abas ---------- */
-const tabs={trecho:[document.getElementById('tab-trecho'),document.getElementById('pane-trecho')],ciclo:[document.getElementById('tab-ciclo'),document.getElementById('pane-ciclo')],dados:[document.getElementById('tab-dados'),document.getElementById('pane-dados')],hist:[document.getElementById('tab-hist'),document.getElementById('pane-hist')],doc:[document.getElementById('tab-doc'),document.getElementById('pane-doc')]};let TAB='trecho';
+const tabs={trecho:[document.getElementById('tab-trecho'),document.getElementById('pane-trecho')],ciclo:[document.getElementById('tab-ciclo'),document.getElementById('pane-ciclo')],dados:[document.getElementById('tab-dados'),document.getElementById('pane-dados')],hist:[document.getElementById('tab-hist'),document.getElementById('pane-hist')],doc:[document.getElementById('tab-doc'),document.getElementById('pane-doc')],resumo:[document.getElementById('tab-resumo'),document.getElementById('pane-resumo')]};let TAB='trecho';
 function showTab(k){TAB=k;for(const n in tabs){tabs[n][0].setAttribute('aria-selected',n===k);tabs[n][1].hidden=n!==k;}filtrosNoLugar(fsActive());
-  if(k==='ciclo')drawCycle();else if(k==='trecho'){resize();sched();}else if(k==='hist'&&HASSEC){if(HDIRTY)histCompute();histMatrix();histDetail();}}
-tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');tabs.hist[0].onclick=()=>showTab('hist');tabs.doc[0].onclick=()=>showTab('doc');window.__showTab=showTab;
+  if(k==='ciclo')drawCycle();else if(k==='trecho'){resize();sched();}else if(k==='hist'&&HASSEC){if(HDIRTY)histCompute();histMatrix();histDetail();}else if(k==='resumo')resumo();}
+tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');tabs.hist[0].onclick=()=>showTab('hist');tabs.doc[0].onclick=()=>showTab('doc');tabs.resumo[0].onclick=()=>showTab('resumo');window.__showTab=showTab;
 
 /* ---------- estado e filtros ---------- */
 const S={ano:'',mes:'',dia:'',view:'grupo',sview:'grupo',tag:-1,carga:-1,turno:-1,stipo:-1,rampa:-1,raz:new Set(PARES.map((p,q)=>q)),metric:'ri',heat:true,sel:false,area:null,ev:false,zones:true,selZone:0,unit:'sec',selSec:0};
@@ -853,6 +897,73 @@ function locais(){LOCPE=locaisPor('pe').L;LOCRI=locaisPor('ri').L;const o=locais
 /* ---------- seções por tipo ---------- */
 const SCOR={'Reta':'--t0','Curva':'--t1','Interseção':'--t6','Pontas (Carga / Basc.)':'--t2'};
 const SOPEN=new Set();
+
+/* ---------- resumo executivo (todas as leituras fora das áreas excluídas, todas as interações) ---------- */
+function resumo(){const $r=id=>document.getElementById(id);const NT=TAGS.length,TOL=M.tol;
+  const tk={w:new Float64Array(NT),pe:new Float64Array(NT),mw:new Float64Array(NT),vw:new Float64Array(NT),rw:new Float64Array(NT),ev:new Uint8Array(NT)};
+  const sw=new Float64Array(NSEC),spe=new Float64Array(NSEC),sri=new Float64Array(NSEC),sn=new Uint32Array(NSEC),sPar=Array.from({length:NSEC},()=>new Map());
+  const parL=new Float64Array(NP),tipoPe=new Float64Array(5),hW=new Float64Array(24),hP=new Float64Array(24),dW=new Float64Array(DIAS.length),dP=new Float64Array(DIAS.length);
+  const tW=[0,0],tP=[0,0],cW=[0,0],cP=[0,0],rW=[0,0,0],rP=[0,0,0];let W_=0,PE=0,MW=0,VW=0,RW=0,LP=0;
+  for(let i=0;i<N;i++){if(FORA[i])continue;const w=P.w[i],k=P.k[i];if(P.lp[i]){LP+=w;continue;}
+    const a0=P.eo[i],a1=P.eo[i+1],n=a1-a0,v=P.v[i]/10,rf=P.r[i]/10,pe=n?P.p[i]/10:0;
+    W_+=w;PE+=pe;tk.w[k]+=w;tk.pe[k]+=pe;if(n)tk.ev[k]=1;if(v>=2){MW+=w;VW+=v*w;RW+=rf*w;tk.mw[k]+=w;tk.vw[k]+=v*w;tk.rw[k]+=rf*w;}
+    if(n&&pe>0)for(let j=a0;j<a1;j++)parL[P.el[j]]+=pe/n;
+    const si=SIDP?SIDP[i]:-1;const ti=si>=0?SECTI[si]:4;tipoPe[ti<0?4:ti]+=pe;
+    if(si>=0){sw[si]+=w;spe[si]+=pe;sn[si]++;if(n&&rf-v>TOL)sri[si]+=(rf-v)*w;if(n&&pe>0){const m=sPar[si];for(let j=a0;j<a1;j++){const q=P.el[j];m.set(q,(m.get(q)||0)+pe/n);}}}
+    const hr=Math.floor(((P.t[i]/3600)+H0)%24);hW[hr]+=w;hP[hr]+=pe;dW[P.dr[i]]+=w;dP[P.dr[i]]+=pe;
+    const tu=P.s[i];if(tu===0||tu===1){tW[tu]+=w;tP[tu]+=pe;}const c=P.c[i];if(c===0||c===1){cW[c]+=w;cP[c]+=pe;}
+    const g=P.g[i];if(g>-990&&v>=2){const rc=g>20?0:g<-20?2:1;rW[rc]+=w;rP[rc]+=pe;}}
+  const hOp=W_/3600,hPe=PE/3600,mph=x=>x[1]>0?x[0]/60/(x[1]/3600):null,vm=VW/MW,vr=RW/MW,pct=x=>PE?100*x/PE:0;
+  const per=`${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)}/${M.periodo[1].slice(0,4)} ${M.periodo[1].slice(11)}`;
+  $r('rs-per').textContent=`Resumo executivo · ${per} · ${(M.dias||[]).length} dias · ${NT} caminhões`;
+  $r('rs-lead').innerHTML=`As interações custaram <b>${nf(hPe,0)} h</b> de operação: <b>${nf(PE/60/hOp,1)} min a cada hora</b> operada, ou ${nf(100*hPe/hOp,1)}% do tempo.`;
+  const tile=(v,u,l,s2)=>`<div class="rs-tile"><div class="rs-tv">${v}<small>${u}</small></div><div class="rs-tl">${l}</div>${s2?`<div class="rs-ts">${s2}</div>`:''}</div>`;
+  $r('rs-tiles').innerHTML=tile(nf(hPe,0),'h','perda por interações',`${nf(100*hPe/hOp,1)}% do tempo operado`)+tile(nf(PE/60/hOp,1),'min/h','perdidos por hora operada','média do período')
+    +tile(nf(vm,1),'km/h','velocidade real em movimento',`referência ${nf(vr,1)} km/h (${vm<vr?'−':'+'}${nf(Math.abs(vr-vm),1)})`)+tile(nf(hOp,0),'h','tempo operado analisado',`sem paradas acima de 10 min · ${NSEC} seções`);
+  // caminhões
+  const wsort=[...tk.w].filter(x=>x>0).sort((a,b)=>a-b),wmin=Math.max(3600,.3*(wsort.at(Math.floor(wsort.length/2))||0));const poucas=[...Array(NT).keys()].filter(k=>tk.w[k]>0&&tk.w[k]<wmin).map(k=>TAGS[k]);
+  const trk=[...Array(NT).keys()].filter(k=>tk.w[k]>=wmin).map(k=>({k,tag:TAGS[k],mph:tk.pe[k]/60/(tk.w[k]/3600),h:tk.pe[k]/3600,gap:tk.mw[k]?(tk.rw[k]-tk.vw[k])/tk.mw[k]:null,ev:tk.ev[k]}));
+  const comEv=trk.filter(o=>o.ev).sort((a,b)=>b.mph-a.mph),semEv=[...Array(NT).keys()].filter(k=>tk.w[k]>0&&!tk.ev[k]).map(k=>({tag:TAGS[k]})),nTk=[...Array(NT).keys()].filter(k=>tk.w[k]>0).length;const fm=comEv.reduce((a,o)=>a+o.mph,0)/Math.max(1,comEv.length);
+  const top=comEv.slice(0,10),mx=Math.max(...top.map(o=>o.mph),1e-9);
+  $r('rs-trk').innerHTML=`<div class="rs-row rs-hd"><span>#</span><span>Caminhão</span><span class="rs-bar rs-bh"></span><span class="n">min/h</span><span class="n">perda</span><span class="n">abaixo da ref.</span></div>`+top.map((o,i)=>`<button type="button" class="rs-row" data-k="${o.k}"><span class="rs-i">${i+1}</span><span class="rs-n">${esc(o.tag)}</span><span class="rs-bar"><i style="width:${100*o.mph/mx}%"></i></span><span class="n"><b>${nf(o.mph,1)}</b></span><span class="n">${nf(o.h,1)} h</span><span class="n">${nf(o.gap,1)} km/h</span></button>`).join('')
+    +`<p class="rs-foot">Média da frota com interações: ${nf(fm,1)} min/h.${poucas.length?` Fora do ranking por terem menos de ${nf(wmin/3600,0)} h operadas: ${poucas.filter(t=>!semEv.some(o=>o.tag===t)).map(esc).join(', ')||'—'}.`:''}${semEv.length?` ${semEv.length} caminhões (${semEv.map(o=>esc(o.tag)).join(', ')}) não têm nenhuma interação na base e ficam fora do ranking.`:''}</p>`;
+  $r('rs-trk').querySelectorAll('button[data-k]').forEach(b=>b.onclick=()=>{S.tag=+b.dataset.k;ftag.value=S.tag;update();showTab('trecho');window.scrollTo({top:0});});
+  // seções
+  const secs=[...Array(NSEC).keys()].filter(si=>sn[si]>=60&&spe[si]>0).map(si=>{const s=SECS[si];let bq=-1,bv=0;sPar[si].forEach((v,q)=>{if(v>bv){bv=v;bq=q;}});return{si,id:s.id,tipo:s.tipo,len:s.poly?s.len:null,h:spe[si]/3600,ri:sri[si]/sw[si],par:bq,parSh:spe[si]?bv/spe[si]:0};}).sort((a,b)=>b.h-a.h);
+  const t10=secs.slice(0,10),mxs=Math.max(...t10.map(o=>o.h),1e-9),shTop=pct(t10.reduce((a,o)=>a+o.h*3600,0));
+  const nS20=Math.max(1,Math.round(secs.length*.1)),sh10p=pct(secs.slice(0,nS20).reduce((a,o)=>a+o.h*3600,0));
+  $r('rs-sec').innerHTML=`<div class="rs-row rs-hd rs-sr"><span>#</span><span>Seção</span><span class="rs-bar rs-bh"></span><span class="n">perda</span><span class="n">km/h</span><span>principal interação</span></div>`+t10.map((o,i)=>`<button type="button" class="rs-row rs-sr" data-id="${o.id}"><span class="rs-i">${i+1}</span><span class="rs-n">S${o.id}<small>${esc(o.tipo.replace(' (Carga / Basc.)',''))}${o.len?' · '+nf(o.len,0)+' m':''}</small></span><span class="rs-bar"><i style="width:${100*o.h/mxs}%"></i></span><span class="n"><b>${nf(o.h,1)} h</b></span><span class="n">${nf(o.ri,1)}</span><span class="rs-par" title="${o.par>=0?esc(PARES[o.par].nome+' · '+PARES[o.par].grupo):''}">${o.par>=0?esc(PARES[o.par].nome):'—'} <small>${nf(100*o.parSh,0)}%</small></span></button>`).join('')
+    +`<p class="rs-foot">Estas 10 seções somam ${nf(shTop,0)}% da perda; os ${nS20} trechos mais críticos (10% das seções) somam ${nf(sh10p,0)}%. km/h = velocidade perdida por interações, em média, na seção.</p>`;
+  $r('rs-sec').querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{showTab('trecho');focoSecao(+b.dataset.id);});
+  // onde / o que
+  const barras=(L)=>{const m=Math.max(...L.map(o=>o.v),1e-9);return L.map(o=>`<div class="rs-sb"><span title="${esc(o.t||o.l)}">${esc(o.l)}</span><b>${nf(o.v,0)}%</b><i style="width:${100*o.v/m}%"></i></div>`).join('');};
+  const tiposL=['Retas','Curvas','Interseções','Pontas (carga e basculamento)','Fora das seções'];
+  const onde=[0,1,2,3,4].map(t=>({l:tiposL[t],v:pct(tipoPe[t])})).filter(o=>o.v>0).sort((a,b)=>b.v-a.v);$r('rs-onde').innerHTML=barras(onde);
+  const pr=[...Array(NP).keys()].filter(q=>parL[q]>0).sort((a,b)=>parL[b]-parL[a]);const top5=pr.slice(0,6).map(q=>({l:PARES[q].razao,t:PARES[q].nome+' · '+PARES[q].grupo,v:pct(parL[q])}));
+  const sh5=top5.slice(0,5).reduce((a,o)=>a+o.v,0);$r('rs-oque').innerHTML=barras(top5)+`<p class="rs-foot">${pr.length} interações tiveram perda; as 5 maiores somam ${nf(sh5,0)}%.</p>`;
+  // quando
+  const hm=[...Array(24).keys()].filter(h=>hW[h]>3600*5).map(h=>({h,v:hP[h]/60/(hW[h]/3600)})).sort((a,b)=>b.v-a.v);const hMax=hm[0],hMin=hm.at(-1);
+  const dm=[...Array(DIAS.length).keys()].filter(d=>dW[d]>3600*20).map(d=>({d,v:dP[d]/60/(dW[d]/3600)})).sort((a,b)=>b.v-a.v);
+  const q=(l,a,b,la,lb)=>`<div class="rs-q"><span>${l}</span><span><b>${nf(a,1)}</b> <small>${la}</small></span><span><b>${nf(b,1)}</b> <small>${lb}</small></span></div>`;
+  const dlab=d=>`${DIAS[d].slice(8,10)}/${DIAS[d].slice(5,7)}`;
+  $r('rs-quando').innerHTML=q('Turno',mph([tP[0],tW[0]]),mph([tP[1],tW[1]]),'diurno','noturno')+q('Carga',mph([cP[0],cW[0]]),mph([cP[1],cW[1]]),'cheio','vazio')
+    +q('Rampa',mph([rP[0],rW[0]]),mph([rP[2],rW[2]]),'subida','descida')+(hMax?q('Hora do dia',hMax.v,hMin.v,`pior: ${String(hMax.h).padStart(2,'0')}h`,`melhor: ${String(hMin.h).padStart(2,'0')}h`):'')
+    +(dm.length>1?q('Dia',dm[0].v,dm.at(-1).v,`pior: ${dlab(dm[0].d)}`,`melhor: ${dlab(dm.at(-1).d)}`):'');
+  // achados
+  const A=[];const tp=onde[0];
+  if(top.length)A.push(`<b>Caminhões:</b> ${esc(top[0].tag)}${top[1]?`, ${esc(top[1].tag)}`:''}${top[2]?` e ${esc(top[2].tag)}`:''} são os mais afetados, com ${nf(top[0].mph,1)}${top[1]?` a ${nf(top[Math.min(2,top.length-1)].mph,1)}`:''} min perdidos por hora, contra ${nf(fm,1)} na média da frota.`);
+  if(t10.length)A.push(`<b>Trechos:</b> a perda é concentrada. As 10 piores seções somam ${nf(shTop,0)}% da perda; a pior é a S${t10[0].id} (${esc(['reta','curva','interseção','ponta de carga/basculamento'][SECTI[t10[0].si]]||'seção')}), com ${nf(t10[0].h,1)} h perdidas${t10[0].par>=0?`, sobretudo por ${esc(PARES[t10[0].par].razao)}`:''}.`);
+  if(tp)A.push(`<b>Onde:</b> ${esc(tp.l.toLowerCase())} concentram ${nf(tp.v,0)}% da perda${onde[1]?`, seguidas de ${esc(onde[1].l.toLowerCase())} (${nf(onde[1].v,0)}%)`:''}.`);
+  if(top5.length)A.push(`<b>O que:</b> ${esc(top5[0].l)} responde por ${nf(top5[0].v,0)}% da perda${top5[1]?`, seguida de ${esc(top5[1].l)} (${nf(top5[1].v,0)}%)`:''}; as 5 maiores interações somam ${nf(sh5,0)}%.`);
+  {const a=mph([tP[0],tW[0]]),b=mph([tP[1],tW[1]]),c0=mph([rP[0],rW[0]]),c2=mph([rP[2],rW[2]]);const parts=[];
+   if(a!=null&&b!=null&&Math.abs(a-b)/Math.max(a,b)>.1)parts.push(`o turno ${a>b?'diurno':'noturno'} perde ${nf(Math.max(a,b)/Math.min(a,b),1)}× mais que o ${a>b?'noturno':'diurno'}`);
+   if(c0!=null&&c2!=null&&Math.abs(c0-c2)/Math.max(c0,c2)>.1)parts.push(`${c2>c0?'descidas':'subidas'} perdem ${nf(Math.max(c0,c2)/Math.min(c0,c2),1)}× mais que ${c2>c0?'subidas':'descidas'}`);
+   if(hMax)parts.push(`o pior horário é ${String(hMax.h).padStart(2,'0')}h (${nf(hMax.v,1)} min/h)`);
+   if(parts.length)A.push(`<b>Quando:</b> ${parts.join('; ')}.`);}
+  A.push(`<b>Velocidade:</b> em movimento, a frota anda a ${nf(vm,1)} km/h, ${nf(Math.abs(vr-vm),1)} km/h ${vm<vr?'abaixo':'acima'} do que a pista permitiria sem interações (${nf(vr,1)} km/h).`);
+  if(semEv.length)A.push(`<b>Dados:</b> ${semEv.length} dos ${nTk} caminhões não têm nenhuma interação no arquivo de interações; a perda deles não aparece e convém conferir a consulta.`);
+  $r('rs-find').innerHTML=A.map(x=>`<li>${x}</li>`).join('');
+  $r('rs-nota').innerHTML=`Considera todas as leituras e todas as interações do período${EXCL.length?`, sem as ${EXCL.length} área(s) tiradas da análise`:''}; os filtros das outras abas não se aplicam aqui. Paradas acima de ${Math.round(M.parada||600)/60|0} min ficam fora da perda.`;}
 function focoSecao(id){const s=SECS.find(x=>x.id===id);if(!s)return;S.unit='sec';unitUI();locCrit();S.selSec=id;T.cx=s.x;T.cy=s.y;const ext=s.r?s.r*4:Math.max(150,(s.len||200)*1.3);T.s=Math.min(1.6,Math.min(W,H)/ext);zoneList();sched();box.scrollIntoView({block:'center',behavior:'smooth'});}
 function tableSec(){const tb=document.querySelector('#t-sec tbody');if(!tb)return;const band=document.getElementById('secoes');if(!HASSEC){band.hidden=true;return;}
   const G={};let totPe=0;for(const tp of STIPOS)G[tp]={n:0,len:0,w:0,vw:0,rw:0,ri:0,pe:0,st:0,pm:new Map(),ss:[]};
@@ -1728,11 +1839,11 @@ async function carregarDados(){const txt=document.getElementById('dados').textCo
   msg.textContent='Montando o painel…';await new Promise(r=>setTimeout(r,30));return decodificarVSD(ab);}
 const nfMB=x=>x.toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB';
 let ORIG=null;
-carregarDados().then(D=>{ORIG=D;window.__ORIG=D;BOOT(D);document.getElementById('carga').hidden=true;if(window.__aoCarregar)window.__aoCarregar();})
+carregarDados().then(D=>{ORIG=D;window.__ORIG=D;BOOT(D);document.getElementById('carga').hidden=true;window.__showTab('resumo');if(window.__aoCarregar)window.__aoCarregar();})
   .catch(e=>{document.getElementById('carga-msg').textContent='Não foi possível carregar os dados: '+(e&&e.message?e.message:e);document.getElementById('carga').classList.add('err');});
 window.__reboot=(D,aba)=>{aba=aba||'trecho';window.__D=D;document.getElementById('pane-trecho').innerHTML=PRISTINE.trecho;document.getElementById('pane-ciclo').innerHTML=PRISTINE.ciclo;document.getElementById('pane-hist').innerHTML=PRISTINE.hist;
   // mostra a aba antes de montar, para o mapa medir o tamanho certo
-  ['trecho','ciclo','dados','hist','doc'].forEach(k=>{document.getElementById('pane-'+k).hidden=k!==aba;document.getElementById('tab-'+k).setAttribute('aria-selected',k===aba);});
+  const ab0=aba==='resumo'?'trecho':aba;['resumo','trecho','ciclo','dados','hist','doc'].forEach(k=>{document.getElementById('pane-'+k).hidden=k!==ab0;document.getElementById('tab-'+k).setAttribute('aria-selected',k===ab0);});
   BOOT(D);window.__showTab(aba);};
 </script>
 <script>
@@ -1812,7 +1923,7 @@ $('up-go').onclick=()=>{const prm={pre:+$('up-pre').value,pos:+$('up-pos').value
   const fim=D=>{const nomes=fs=>fs.length===1?fs[0].name:`${fs.length} arquivos (${fs.map(f=>f.name).join(', ')})`;D.meta.fontes={inter:nomes(F.inter),vel:nomes(F.vel),dp:DPU?DPU.nome:null};D.meta.arquivos_det={inter:F.inter.map((f,i)=>SCAN.inter[i]||{nome:f.name,linhas:null}),vel:F.vel.map((f,i)=>SCAN.vel[i]||{nome:f.name,linhas:null}),dp:DPU?{nome:DPU.nome,codigos:DPU.n}:null};const seg=Math.round((performance.now()-t0)/1000);
     $('up-bar').style.width='100%';$('up-msg').textContent=`Pronto em ${seg} s`;
     $('up-res').hidden=false;$('up-res').innerHTML=`Painel atualizado: ${desc(D.meta)}`;$('up-reset').hidden=false;$('up-go').disabled=false;emUso(D.meta,false);
-    window.__reboot(D,'trecho');window.scrollTo({top:0});};
+    window.__reboot(D,'resumo');window.scrollTo({top:0});};
   const erro=msg=>{$('up-res').hidden=false;$('up-res').classList.add('err');$('up-res').textContent='Não foi possível processar: '+msg;$('up-go').disabled=false;$('up-prog').hidden=true;};
   try{if(worker)worker.terminate();worker=new Worker(URL.createObjectURL(new Blob([workerSrc()],{type:'text/javascript'})));
     worker.onmessage=e=>{const d=e.data;if(d.tipo==='prog'){$('up-bar').style.width=Math.round(d.f*100)+'%';$('up-msg').textContent=d.msg+'…';}else if(d.tipo==='ok'){fim(d.D);worker.terminate();worker=null;}else erro(d.msg);};
@@ -1821,6 +1932,6 @@ $('up-go').onclick=()=>{const prm={pre:+$('up-pre').value,pos:+$('up-pos').value
   catch(e){ // sem Web Worker: roda na própria página
     $('up-msg').textContent='Processando (a página pode ficar parada por alguns segundos)…';
     setTimeout(async()=>{try{(0,eval)(document.getElementById('pipeline-src').textContent);const a=await Promise.all(F.inter.map(f=>f.text())),b=await Promise.all(F.vel.map(f=>f.text()));fim(rodarPipeline(a,b,DPU?DPU.m:null,prm,()=>{}));}catch(err){erro(err.message);}},50);}};
-$('up-reset').onclick=()=>{window.__reboot(window.__ORIG,'trecho');emUso(window.__ORIG.meta,true);$('up-reset').hidden=true;$('up-res').hidden=true;$('up-prog').hidden=true;window.scrollTo({top:0});};
+$('up-reset').onclick=()=>{window.__reboot(window.__ORIG,'resumo');emUso(window.__ORIG.meta,true);$('up-reset').hidden=true;$('up-res').hidden=true;$('up-prog').hidden=true;window.scrollTo({top:0});};
 })();
 </script>
