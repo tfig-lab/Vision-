@@ -938,7 +938,7 @@ function resumo(){const $r=id=>document.getElementById(id);const NT=TAGS.length,
     const g=P.g[i];if(g>-990&&v>=2){const rc=g>20?0:g<-20?2:1;rW[rc]+=w;rP[rc]+=pe;}}
   const hOp=W_/3600,hPe=PE/3600,mph=x=>x[1]>0?x[0]/60/(x[1]/3600):null,vm=VW/MW,vr=RW/MW,pct=x=>PE?100*x/PE:0;
   const per=`${M.periodo[0].slice(8,10)}/${M.periodo[0].slice(5,7)} ${M.periodo[0].slice(11)} – ${M.periodo[1].slice(8,10)}/${M.periodo[1].slice(5,7)}/${M.periodo[1].slice(0,4)} ${M.periodo[1].slice(11)}`;
-  $r('rs-per').textContent=`Resumo executivo · ${per} · ${(M.dias||[]).length} dias · ${NT} caminhões`;
+  $r('rs-per').textContent=`Resumo executivo · ${per} · ${(M.dias||[]).length} ${(M.dias||[]).length===1?'dia':'dias'} · ${NT} caminhões`;
   $r('rs-lead').innerHTML=`As interações custaram <b>${nf(hPe,0)} h</b> de operação: <b>${nf(PE/60/hOp,1)} min a cada hora</b> operada, ou ${nf(100*hPe/hOp,1)}% do tempo.`;
   const tile=(v,u,l,s2)=>`<div class="rs-tile"><div class="rs-tv">${v}<small>${u}</small></div><div class="rs-tl">${l}</div>${s2?`<div class="rs-ts">${s2}</div>`:''}</div>`;
   $r('rs-tiles').innerHTML=tile(nf(hPe,0),'h','perda por interações',`${nf(100*hPe/hOp,1)}% do tempo operado`)+tile(nf(PE/60/hOp,1),'min/h','perdidos por hora operada','média do período')
