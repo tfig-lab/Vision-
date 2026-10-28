@@ -66,6 +66,7 @@ __PILOTO__
 <script id="cfg" type="application/json">__CFG__</script>
 <script>
 (()=>{
+const SRC0='<!doctype html>\n'+document.documentElement.outerHTML; // cópia intacta da tela de login, antes de qualquer interação
 const C=JSON.parse(document.getElementById('cfg').textContent),enc=new TextEncoder(),S=crypto.subtle;
 const b2u=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
 const u2b=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
@@ -75,6 +76,7 @@ async function abrir(raw){
   const k=await S.importKey('raw',raw,'AES-GCM',false,['decrypt']);
   const gz=await S.decrypt({name:'AES-GCM',iv:b2u(C.iv)},k,b2u(C.ct));
   let html=await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  try{window.__VISION_LOGIN_SRC=SRC0;window.__VISION_SRC=html;}catch(e){} // para o painel poder gerar uma cópia com dados novos
   const sair=`<script>(function(){function s(){try{sessionStorage.removeItem('${KS}')}catch(e){}location.reload()}function add(){var a=document.getElementById('fs-page');var b=document.createElement('button');b.type='button';b.className='fsbtn';b.textContent='Sair';b.style.alignSelf='center';b.setAttribute('aria-label','Sair do painel');b.onclick=s;if(a&&a.parentNode){a.parentNode.insertBefore(b,a.nextSibling)}else{b.style.cssText='position:fixed;top:10px;right:12px;z-index:9999';document.body.appendChild(b)}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add()})()<\/script>`;
   html=html.replace(/<head>/i,'<head><script>window.__VISION_K="'+u2b(raw)+'";<\/script>');const fim=html.search(/<\/body>(?![\s\S]*<\/body>)/i);document.open();document.write(fim<0?html+sair:html.slice(0,fim)+sair+html.slice(fim));document.close();
 }
