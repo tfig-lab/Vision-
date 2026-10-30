@@ -269,8 +269,8 @@ log('Montando painel',0.97);
 let x0=Infinity,y0=Infinity;for(let i=0;i<N;i++){if(X[i]<x0)x0=X[i];if(Y[i]<y0)y0=Y[i];}
 const eo=new Int32Array(N+1),el=[];for(let i=0;i<N;i++){for(const q of ATIVOS[i])el.push(q);eo[i+1]=el.length;}
 const turnoCod=s=>s==='Diurno'?0:s==='Noturno'?1:0;
-const P={t:[],x:[],y:[],v:[],r:[],w:[],k:[],c:[],s:[],p:[],sc:[],g:[],lp:[],dr:[],eo:Array.from(eo),el};
-for(let i=0;i<N;i++){P.t.push(Math.round((T[i]-T0)/1000));P.x.push(Math.round(X[i]-x0));P.y.push(Math.round(Y[i]-y0));P.v.push(Math.round(V[i]*10));P.r.push(Math.round(VREF[i]*10));P.w.push(Math.round(W[i]));
+const P={t:[],x:[],y:[],z:[],v:[],r:[],w:[],k:[],c:[],s:[],p:[],sc:[],g:[],lp:[],dr:[],eo:Array.from(eo),el};
+for(let i=0;i<N;i++){P.t.push(Math.round((T[i]-T0)/1000));P.x.push(Math.round(X[i]-x0));P.y.push(Math.round(Y[i]-y0));P.z.push(isFinite(Z[i])?Math.round(Z[i]):-9999);P.v.push(Math.round(V[i]*10));P.r.push(Math.round(VREF[i]*10));P.w.push(Math.round(W[i]));
   P.k.push(K[i]);P.c.push(CARGA[i]);P.s.push(turnoCod(TURNO[i]));P.p.push(Math.round(PERDA[i]*10));P.sc.push(SEC[i]);P.g.push(isNaN(G[i])?-999:Math.round(G[i]*10));P.lp.push(LP[i]);P.dr.push(diaIdx[DIAV[i]]);}
 const ordemT=['TRUCK_STOP','EXCEPTION','WARNING','LH_MODE','TRUCK_MOVING','NAV_STATUS','OP_MODE'];const tset=new Set(EM.map(e=>e.tipo));
 const tipos=[...ordemT.filter(t=>tset.has(t)),...[...tset].filter(t=>!ordemT.includes(t)).sort()];

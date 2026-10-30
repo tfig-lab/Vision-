@@ -190,6 +190,8 @@ footer{padding-block:24px 40px;color:var(--muted);font-size:12px;border-top:1px 
 .lg-inline i{display:inline-block;width:14px;height:3px;border-radius:2px}
 .scroll{max-height:440px;overflow:auto}
 .scroll thead th{position:sticky;top:0;background:var(--panel);z-index:1}
+.pftip{position:absolute;background:rgba(24,24,26,.9);color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.45;pointer-events:none;width:180px}
+.d3ctl{position:absolute;left:12px;top:12px;z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:rgba(255,255,255,.94);border:1px solid var(--line2);border-radius:10px;padding:7px 10px;font-size:12px;color:var(--ink2);max-width:calc(100% - 90px)}.d3ctl label{display:flex;align-items:center;gap:6px}.d3ctl input{width:110px}.d3ctl button{border:1px solid var(--line2);background:#fff;border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer}.d3ctl span{color:var(--muted);font-size:11px}#z3d[aria-pressed=true]{background:var(--ink);color:#fff}
 .rswrap{max-width:1180px}
 .rs-hero{padding:26px 4px 10px}.rs-eyebrow{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 .rs-lead{font:600 26px/1.3 var(--f-body);margin:0 0 20px;max-width:900px;color:var(--ink)}.rs-lead b{color:var(--accent)}
@@ -465,8 +467,9 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
     <div class="mapgrid">
       <div class="mapbox" id="mapbox">
         <canvas id="map" aria-label="Mapa do trecho colorido pela métrica selecionada"></canvas>
-        <div class="mapctl"><button id="zin" type="button" aria-label="Aproximar">+</button><button id="zout" type="button" aria-label="Afastar">−</button><button id="zfit" type="button" aria-label="Enquadrar trecho" style="font-size:12px">⤢</button><button id="zsel" type="button" aria-label="Selecionar área no mapa" title="Selecionar área: contorne a região com o mouse" aria-pressed="false" style="font-size:14px">⬚</button><button type="button" class="fsx" data-fs="fs-trecho" aria-label="Mapa, trechos e filtros em tela cheia" title="Tela cheia" style="font-size:13px">⛶</button></div>
+        <div class="mapctl"><button id="zin" type="button" aria-label="Aproximar">+</button><button id="zout" type="button" aria-label="Afastar">−</button><button id="zfit" type="button" aria-label="Enquadrar trecho" style="font-size:12px">⤢</button><button id="z3d" type="button" aria-label="Ver em 3D" title="Ver a pista em 3D (com a cota real)" aria-pressed="false" style="font:700 11px var(--f-mono)">3D</button><button id="zsel" type="button" aria-label="Selecionar área no mapa" title="Selecionar área: contorne a região com o mouse" aria-pressed="false" style="font-size:14px">⬚</button><button type="button" class="fsx" data-fs="fs-trecho" aria-label="Mapa, trechos e filtros em tela cheia" title="Tela cheia" style="font-size:13px">⛶</button></div>
         <div class="legend" id="legend"></div>
+        <div class="d3ctl" id="d3ctl" hidden><label>Exagero vertical <input type="range" id="d3ex" min="1" max="8" step="0.5" value="3"> <b id="d3exv">3×</b></label><button type="button" id="d3reset">Vista inicial</button><button type="button" id="d3topo">De cima</button><span>Arraste para girar · Shift + arraste para mover · roda para zoom</span></div>
         <div class="selhint" id="selhint" hidden>Contorne a área com o mouse (clique e arraste). Esc cancela.</div>
       </div>
       <aside class="zlist" aria-label="Ranking de locais">
@@ -551,6 +554,11 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
       </div>
     </div>
   </div>
+  <section class="card" id="cy-perfil-card" style="margin-top:16px" hidden>
+    <div class="chead"><div><h3 style="font-size:16px">Perfil de elevação do ciclo</h3><p class="sub" style="margin:2px 0 0">Cota ao longo da distância percorrida. A cor da linha é a velocidade real; a faixa vermelha embaixo marca onde houve perda com interação ativa.</p></div></div>
+    <div id="cy-perfil" style="position:relative"></div>
+    <div class="lg-inline" style="margin-top:8px"><span class="toggle" style="cursor:default"><i style="width:60px;height:8px;background:linear-gradient(90deg,var(--b0),var(--b2),var(--b4))"></i>Velocidade real 0 → 40 km/h</span><span class="toggle" style="cursor:default"><i style="width:14px;height:6px;background:#d33"></i>Perda com interação</span><span class="toggle" style="cursor:default"><i style="background:var(--band-cheio);height:10px;outline:1px solid var(--line2)"></i>Cheio</span><span class="toggle" style="cursor:default"><i style="background:var(--band-vazio);height:10px;outline:1px solid var(--line2)"></i>Vazio</span></div>
+  </section>
   <section class="card" id="cy-mapcard" style="margin-top:16px">
     <div class="shead" style="margin-bottom:10px"><div><h3 style="font-size:16px">Mapa do ciclo</h3><p class="sub" style="margin:2px 0 0">Trajeto lido do GPS com os eventos na posição registrada na base (Latitude/Longitude). Passe o mouse no trajeto ou num evento para ver os detalhes. Ao passar o mouse na linha do tempo, a posição aparece aqui.</p></div></div>
     <div class="maptools">
@@ -667,7 +675,7 @@ section.band{background:#fff;border:1px solid var(--line);border-radius:14px;pad
     <p>Leituras a mais de 30 m de qualquer seção (pistas pouco usadas, pátios) entram nos totais mas não nas seções. As seções são remontadas a cada processamento, então os números (S…) podem mudar entre cargas de dados diferentes.</p>
     <p>Lacunas de GPS acima de 25 s aparecem como "sem registro" e não são tratadas como velocidade zero. Paradas contínuas acima de 10 min ficam fora da perda.</p></div></section>
   <section class="band" id="doc-versoes"><div class="shead"><div><h2>Histórico de versões</h2><p class="sub">O que mudou em cada versão publicada.</p></div></div>
-    <ol class="vlist"><li class="vitem"><div class="vhead"><span class="vtag">v0.6</span><span class="vdata">27 e 28/10/2026</span><span class="vatual">atual</span></div><ul><li>Mapa em células de 25 m: estilo \"Mapa de calor\" suavizado também para velocidade, referência e rampa (sem o efeito de quadradinhos).</li><li>Mapa: com velocidade média ou de referência, escolha de sentido <b>Ida (vazio)</b> ou <b>Volta (cheio)</b>.</li><li>Resumo com os mesmos filtros das outras abas (caminhão, carga, turno, tipo de seção, rampa, dia, grupo/Razao).</li><li>Interações traduzidas para o português, sempre com o código (o texto original continua na lista e na busca).</li><li>Carregar dados: <b>Publicar para todos</b> (link com login, com chave de publicação) e, no arquivo local, <b>Salvar neste arquivo</b> (grava os dados no próprio HTML, por cima dos anteriores).</li><li><b>Área de análise</b>: a análise fica limitada à área de atuação; o que está fora aparece apagado no mapa, sai de todos os números e do treino da velocidade de referência.</li><li>Mapa: paleta "4 faixas" (verde, amarelo, laranja, vermelho) com níveis bem separados; a paleta escolhida vale também para a rampa.</li><li>Áreas fora da análise: botões Copiar áreas e Colar áreas, para passar as mesmas áreas a outra pessoa ou publicá-las.</li><li>Trecho: card com a quantidade de interações, por hora operada e por dia.</li><li>Aba <b>Resumo</b> (abre primeiro): ranking dos caminhões e trechos mais críticos, onde, o quê e quando se perde, e os principais achados escritos a partir dos dados.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.5</span><span class="vdata">26/10/2026</span></div><ul><li>Histórico de versões nesta aba.</li><li>Filtros novos: <b>Tipo de seção</b> (retas, curvas, interseções, pontas, fora das seções) e <b>Rampa</b> (subida, plano, descida).</li><li><b>Áreas fora da análise</b>: contornar uma área no mapa (⬚) e tirá-la de todos os números, mapas, rankings e do histórico; ao reprocessar, ela também sai do treino da referência.</li><li>Todas as interações entram no impacto, inclusive as sem grupo na planilha ("Sem grupo na planilha"); interações sem Razao usam a descrição do evento.</li><li><code>AT is moving.</code> não conta como interação: só indica que o caminhão voltou a andar. Perda total passa de 345,6 h para 290,2 h.</li><li>Código da interação (<code>Evento_Codigo</code>) junto com a Razao.</li><li>Filtro de interações lista todas, não só as classificadas; as selecionadas mostram quanto impactaram.</li><li>Perda por Razao: gráfico e tabela mostram todas as Razao.</li><li>Gráficos Caminhões e Hora do dia mostram quanto a velocidade real ficou acima da referência, quando ficar.</li><li>Aba <b>Documentação</b> (glossário, seções, rampa, critérios de cálculo, dados, limitações) e nota sobre o cálculo da rampa.</li><li>Carregar dados: adicionar, substituir (mesmo nome) e remover arquivos.</li><li>Carregar dados: o de-para de códigos fica fixo (vem com os dados publicados) e só muda se alguém enviar outra planilha.</li><li>Correção: "Processar e atualizar o painel" voltou a funcionar depois da inclusão das áreas fora da análise.</li><li>Todos os filtros numa linha só.</li><li>Documentação: diagrama de como o modelo roda, do arquivo carregado ao painel.</li><li>Mapa: escolha das cores do mapa de calor e das perdas (paletas mais vivas para usar com o satélite).</li><li>Histórico: filtro "Seções com registro" para ver só as seções com leitura em todos (ou na maior parte) dos dias/turnos.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.4</span><span class="vdata">23/10/2026</span></div><ul><li>Fundo de satélite Sentinel-2 nos mapas do Trecho e do Histórico, com a imagem menos nublada dos últimos 90 dias.</li><li>"Pontas (Carga / Basc.)" junta frentes de carga e áreas de basculamento.</li><li>Seção de estatística desligada (cálculo guardado).</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.3</span><span class="vdata">22/10/2026</span></div><ul><li>Aba <b>Histórico</b>: matriz seção × dia/turno, média do período explícita, ordenação clicando nos cabeçalhos.</li><li>Mapa do histórico com zoom e arraste; clicar em seções no mapa filtra a matriz.</li><li>Carregar dados: mostra arquivos, linhas e período (data e hora) de cada entrada.</li><li>Dados de 15 a 22/10/2026; nova senha de acesso.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.2</span><span class="vdata">21/10/2026</span></div><ul><li>Publicação no GitHub Pages com tela de login e dados criptografados.</li><li><b>Seções físicas</b> da pista (retas, curvas, interseções, carga, basculamento), com tabela por tipo que abre as seções de cada um.</li><li>Tabela de grupos/Razao com escolha da ordenação (perda, queda, perda por evento, eventos, caminhões).</li><li>Descrição dos parâmetros da análise.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.1</span><span class="vdata">até 20/10/2026</span></div><ul><li>Primeira versão: velocidade de referência por modelo (gradient boosting) a partir das leituras sem interação, considerando rampa, curvatura e carga.</li><li>Mapa de células de 25 m com ranking de locais, perda por grupo e Razao, gráficos por caminhão e hora.</li><li>Aba Ciclo do caminhão.</li><li>Processamento dos CSVs no próprio navegador (aba Carregar dados).</li></ul></li></ol></section>
+    <ol class="vlist"><li class="vitem"><div class="vhead"><span class="vtag">v0.6</span><span class="vdata">27 e 28/10/2026</span><span class="vatual">atual</span></div><ul><li>Mapa em células de 25 m: estilo \"Mapa de calor\" suavizado também para velocidade, referência e rampa (sem o efeito de quadradinhos).</li><li>Mapa: com velocidade média ou de referência, escolha de sentido <b>Ida (vazio)</b> ou <b>Volta (cheio)</b>.</li><li><b>Mapa 3D</b> (botão 3D no mapa do Trecho): a pista com a cota real dos caminhões, com exagero vertical ajustável, girando e inclinando com o mouse.</li><li><b>Perfil de elevação</b> na aba Ciclo: cota ao longo do trajeto, colorida pela velocidade, com os trechos de perda marcados.</li><li>Resumo com os mesmos filtros das outras abas (caminhão, carga, turno, tipo de seção, rampa, dia, grupo/Razao).</li><li>Interações traduzidas para o português, sempre com o código (o texto original continua na lista e na busca).</li><li>Carregar dados: <b>Publicar para todos</b> (link com login, com chave de publicação) e, no arquivo local, <b>Salvar neste arquivo</b> (grava os dados no próprio HTML, por cima dos anteriores).</li><li><b>Área de análise</b>: a análise fica limitada à área de atuação; o que está fora aparece apagado no mapa, sai de todos os números e do treino da velocidade de referência.</li><li>Mapa: paleta "4 faixas" (verde, amarelo, laranja, vermelho) com níveis bem separados; a paleta escolhida vale também para a rampa.</li><li>Áreas fora da análise: botões Copiar áreas e Colar áreas, para passar as mesmas áreas a outra pessoa ou publicá-las.</li><li>Trecho: card com a quantidade de interações, por hora operada e por dia.</li><li>Aba <b>Resumo</b> (abre primeiro): ranking dos caminhões e trechos mais críticos, onde, o quê e quando se perde, e os principais achados escritos a partir dos dados.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.5</span><span class="vdata">26/10/2026</span></div><ul><li>Histórico de versões nesta aba.</li><li>Filtros novos: <b>Tipo de seção</b> (retas, curvas, interseções, pontas, fora das seções) e <b>Rampa</b> (subida, plano, descida).</li><li><b>Áreas fora da análise</b>: contornar uma área no mapa (⬚) e tirá-la de todos os números, mapas, rankings e do histórico; ao reprocessar, ela também sai do treino da referência.</li><li>Todas as interações entram no impacto, inclusive as sem grupo na planilha ("Sem grupo na planilha"); interações sem Razao usam a descrição do evento.</li><li><code>AT is moving.</code> não conta como interação: só indica que o caminhão voltou a andar. Perda total passa de 345,6 h para 290,2 h.</li><li>Código da interação (<code>Evento_Codigo</code>) junto com a Razao.</li><li>Filtro de interações lista todas, não só as classificadas; as selecionadas mostram quanto impactaram.</li><li>Perda por Razao: gráfico e tabela mostram todas as Razao.</li><li>Gráficos Caminhões e Hora do dia mostram quanto a velocidade real ficou acima da referência, quando ficar.</li><li>Aba <b>Documentação</b> (glossário, seções, rampa, critérios de cálculo, dados, limitações) e nota sobre o cálculo da rampa.</li><li>Carregar dados: adicionar, substituir (mesmo nome) e remover arquivos.</li><li>Carregar dados: o de-para de códigos fica fixo (vem com os dados publicados) e só muda se alguém enviar outra planilha.</li><li>Correção: "Processar e atualizar o painel" voltou a funcionar depois da inclusão das áreas fora da análise.</li><li>Todos os filtros numa linha só.</li><li>Documentação: diagrama de como o modelo roda, do arquivo carregado ao painel.</li><li>Mapa: escolha das cores do mapa de calor e das perdas (paletas mais vivas para usar com o satélite).</li><li>Histórico: filtro "Seções com registro" para ver só as seções com leitura em todos (ou na maior parte) dos dias/turnos.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.4</span><span class="vdata">23/10/2026</span></div><ul><li>Fundo de satélite Sentinel-2 nos mapas do Trecho e do Histórico, com a imagem menos nublada dos últimos 90 dias.</li><li>"Pontas (Carga / Basc.)" junta frentes de carga e áreas de basculamento.</li><li>Seção de estatística desligada (cálculo guardado).</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.3</span><span class="vdata">22/10/2026</span></div><ul><li>Aba <b>Histórico</b>: matriz seção × dia/turno, média do período explícita, ordenação clicando nos cabeçalhos.</li><li>Mapa do histórico com zoom e arraste; clicar em seções no mapa filtra a matriz.</li><li>Carregar dados: mostra arquivos, linhas e período (data e hora) de cada entrada.</li><li>Dados de 15 a 22/10/2026; nova senha de acesso.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.2</span><span class="vdata">21/10/2026</span></div><ul><li>Publicação no GitHub Pages com tela de login e dados criptografados.</li><li><b>Seções físicas</b> da pista (retas, curvas, interseções, carga, basculamento), com tabela por tipo que abre as seções de cada um.</li><li>Tabela de grupos/Razao com escolha da ordenação (perda, queda, perda por evento, eventos, caminhões).</li><li>Descrição dos parâmetros da análise.</li></ul></li><li class="vitem"><div class="vhead"><span class="vtag">v0.1</span><span class="vdata">até 20/10/2026</span></div><ul><li>Primeira versão: velocidade de referência por modelo (gradient boosting) a partir das leituras sem interação, considerando rampa, curvatura e carga.</li><li>Mapa de células de 25 m com ranking de locais, perda por grupo e Razao, gráficos por caminhão e hora.</li><li>Aba Ciclo do caminhão.</li><li>Processamento dos CSVs no próprio navegador (aba Carregar dados).</li></ul></li></ol></section>
 </main>
 </div>
 <div id="pane-dados" role="tabpanel" hidden>
@@ -758,7 +766,7 @@ function showTab(k){TAB=k;for(const n in tabs){tabs[n][0].setAttribute('aria-sel
 tabs.trecho[0].onclick=()=>showTab('trecho');tabs.ciclo[0].onclick=()=>showTab('ciclo');tabs.dados[0].onclick=()=>showTab('dados');tabs.hist[0].onclick=()=>showTab('hist');tabs.doc[0].onclick=()=>showTab('doc');tabs.resumo[0].onclick=()=>showTab('resumo');window.__showTab=showTab;
 
 /* ---------- estado e filtros ---------- */
-const S={ano:'',mes:'',dia:'',view:'grupo',sview:'grupo',tag:-1,carga:-1,turno:-1,stipo:-1,rampa:-1,raz:new Set(PARES.map((p,q)=>q)),metric:'ri',heat:true,sel:false,area:null,ev:false,zones:true,selZone:0,unit:'sec',selSec:0};
+const S={ano:'',mes:'',dia:'',view:'grupo',sview:'grupo',tag:-1,carga:-1,turno:-1,stipo:-1,rampa:-1,d3:false,raz:new Set(PARES.map((p,q)=>q)),metric:'ri',heat:true,sel:false,area:null,ev:false,zones:true,selZone:0,unit:'sec',selSec:0};
 const selPar=q=>S.raz.has(q);
 /* datas: dia de referência (Dt_Referencia) */
 const DIAS=M.dias&&M.dias.length?M.dias:[M.periodo[1].slice(0,10)];if(!P.dr)P.dr=new Array(N).fill(0);if(!E.dr)E.dr=new Array(NE).fill(0);
@@ -837,7 +845,8 @@ let EXCL=(()=>{try{const v=localStorage.getItem(EXKEY);if(v)return JSON.parse(v)
 const FORA=new Uint8Array(N),EFORA=new Uint8Array(NE);
 function dentroPg(x,y,pg){let c=false;for(let i=0,j=pg.length-1;i<pg.length;j=i++){const[xi,yi]=pg[i],[xj,yj]=pg[j];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;}
 const AREA=(M.area_analise||[]).filter(a=>a.pts&&a.pts.length>=3);let NFORA_AREA=0;
-function exclMask(){FORA.fill(0);EFORA.fill(0);const ox=M.origem[0],oy=M.origem[1];
+let EXV=0;
+function exclMask(){EXV++;FORA.fill(0);EFORA.fill(0);const ox=M.origem[0],oy=M.origem[1];
   if(AREA.length){const pgs=AREA.map(a=>a.pts.map(p=>[p[0]-ox,p[1]-oy])),bbs=pgs.map(pg=>{let x0=1e18,x1=-1e18,y0=1e18,y1=-1e18;for(const[x,y]of pg){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}return[x0,x1,y0,y1];});
     const den=(x,y)=>{for(let k=0;k<pgs.length;k++){const b=bbs[k];if(x>=b[0]&&x<=b[1]&&y>=b[2]&&y<=b[3]&&dentroPg(x,y,pgs[k]))return true;}return false;};
     NFORA_AREA=0;for(let i=0;i<N;i++)if(!den(P.x[i],P.y[i])){FORA[i]=1;NFORA_AREA++;}for(let j=0;j<NE;j++)if(!den(E.x[j],E.y[j]))EFORA[j]=1;}
@@ -1340,16 +1349,17 @@ function drawHeat(ord,sc){const w=Math.round(W*DPR),h=Math.round(H*DPR);if(!w||!
   const im=g.getImageData(0,0,w,h),d=im.data,L=lut();for(let p=0;p<d.length;p+=4){const a=d[p];if(a<14){d[p+3]=0;continue;}d[p]=L[a*3];d[p+1]=L[a*3+1];d[p+2]=L[a*3+2];d[p+3]=Math.min(240,25+a*.9);}
   g.putImageData(im,0,0);ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(HC,0,0);ctx.restore();}
 function draw(){if(!W)return;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle=css('--map-bg');ctx.fillRect(0,0,W,H);
-  if(SAT.on){const[a0,b1]=toW(0,0),[a1,b0]=toW(W,H);SATM.pedir(a0,b0,a1,b1,W,H);SATM.desenhar(ctx,toS,W,H);}
+  if(!S.d3&&SAT.on){const[a0,b1]=toW(0,0),[a1,b0]=toW(W,H);SATM.pedir(a0,b0,a1,b1,W,H);SATM.desenhar(ctx,toS,W,H);}
   const sz=Math.max(2.2,CS*T.s*1.08),road=SAT.on?'rgba(255,255,255,.28)':css('--road');
-  ctx.strokeStyle=road;ctx.lineWidth=Math.max(1.6,14*T.s);ctx.lineCap='round';ctx.beginPath();
+  if(!S.d3){ctx.strokeStyle=road;ctx.lineWidth=Math.max(1.6,14*T.s);ctx.lineCap='round';ctx.beginPath();
   for(let j=0;j<SEG.length;j+=4){const[ax,ay]=toS(SEG[j],SEG[j+1]),[bx,by]=toS(SEG[j+2],SEG[j+3]);if((ax<0&&bx<0)||(ay<0&&by<0)||(ax>W&&bx>W)||(ay>H&&by>H))continue;ctx.moveTo(ax,ay);ctx.lineTo(bx,by);}
   ctx.stroke();ctx.fillStyle=road;
-  if(!(S.unit==='sec'&&HASSEC)&&!SAT.on)for(const k of baseCells){const[sx,sy]=toS((k/CW|0)*CS,(k%CW)*CS+CS);if(sx<-sz||sy<-sz||sx>W||sy>H)continue;ctx.fillRect(sx,sy,sz,sz);}
+  if(!(S.unit==='sec'&&HASSEC)&&!SAT.on)for(const k of baseCells){const[sx,sy]=toS((k/CW|0)*CS,(k%CW)*CS+CS);if(sx<-sz||sy<-sz||sx>W||sy>H)continue;ctx.fillRect(sx,sy,sz,sz);}}
   const SEC=S.unit==='sec'&&HASSEC;
   SCALE=SEC?secScale():heatOn()?heatScale():metricScale();const ord=[];
   for(const k of baseCells){const v=cellVal(k);if(v==null)continue;if((S.metric==='pe'||S.metric==='pn')&&v<=0)continue;ord.push([v,k]);}
   ord.sort((a,b)=>a[0]-b[0]);
+  if(S.d3){draw3d(SEC,ord);legenda(SEC,true);return;}
   if(SEC)drawSecs();
   else if(heatOn())drawHeat(ord.filter(o=>o[0]>0),SCALE);
   else if(S.heat)drawSuave(ord,SCALE);
@@ -1381,7 +1391,9 @@ function draw(){if(!W)return;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle=css
   ctx.beginPath();ctx.moveTo(bx,by-5);ctx.lineTo(bx,by);ctx.lineTo(bx+Lp,by);ctx.lineTo(bx+Lp,by-5);ctx.stroke();
   ctx.font=`11px ${css('--f-mono')}`;ctx.textAlign='center';ctx.fillText(nice>=1000?(nice/1000)+' km':nice+' m',bx+Lp/2,by-7);
   ctx.font=`600 13px ${css('--f-body')}`;ctx.fillText('N',W-62,22);ctx.beginPath();ctx.moveTo(W-62,28);ctx.lineTo(W-67,42);ctx.lineTo(W-57,42);ctx.closePath();ctx.fill();ctx.textAlign='start';
-  const s=SCALE,dsc=heatOn()&&!SEC?HEATSTOPS.disc:s.stops.disc,grad=dsc?`linear-gradient(90deg,${FAIXAS.map((c,i)=>`rgb(${c.join(',')}) ${i*25}% ${(i+1)*25}%`).join(',')})`:heatOn()&&!SEC?`linear-gradient(90deg,${HEATSTOPS.map(([p,c])=>`rgb(${c.join(',')}) ${p*100}%`).join(',')})`:`linear-gradient(90deg,${[0,.25,.5,.75,1].map(t=>ramp(s.stops,t)).join(',')})`;
+  legenda(SEC,false);}
+function legenda(SEC,rampa){
+  const s=SCALE,dsc=heatOn()&&!SEC&&!rampa?HEATSTOPS.disc:s.stops.disc,grad=dsc?`linear-gradient(90deg,${FAIXAS.map((c,i)=>`rgb(${c.join(',')}) ${i*25}% ${(i+1)*25}%`).join(',')})`:heatOn()&&!SEC&&!rampa?`linear-gradient(90deg,${HEATSTOPS.map(([p,c])=>`rgb(${c.join(',')}) ${p*100}%`).join(',')})`:`linear-gradient(90deg,${[0,.25,.5,.75,1].map(t=>ramp(s.stops,t)).join(',')})`;
   const tks=dsc&&s.inv?[0,.25,.5,.75,1].map((t,i)=>nf(s.inv(t),Math.abs(s.inv(1))>=10?0:1)+(i===4?'+':'')):s.ticks;
   document.getElementById('legend').innerHTML=`<div>${s.lab}${s.sqrt?' <span style="color:var(--muted)">(escala raiz)</span>':''}</div><div class="ramp" style="background:${grad}"></div><div class="ticks">${tks.map(t=>`<span>${t}</span>`).join('')}</div>${S.ev?'<div class="evkey"><span><i style="background:var(--ink);opacity:.55"></i>posição de início dos eventos selecionados</span></div>':''}`;}
 let drag=null,lasso=null;
@@ -1423,9 +1435,73 @@ cv.addEventListener('pointermove',e=>{if(drag){const dx=e.clientX-drag.x,dy=e.cl
 cv.addEventListener('pointerup',e=>{cv.classList.remove('drag');if(drag&&!drag.moved)clickMap(e);drag=null;});
 cv.addEventListener('pointerleave',()=>hideTip());
 cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,Math.exp(-e.deltaY*0.0015));},{passive:false});
-function zoomAt(sx,sy,f){const[wx,wy]=toW(sx,sy);T.s=Math.max(0.03,Math.min(6,T.s*f));T.cx=wx-(sx-W/2)/T.s;T.cy=wy+(sy-H/2)/T.s;sched();}
+function zoomAt(sx,sy,f){if(S.d3){V3.s=Math.max(0.03,Math.min(8,V3.s*f));sched();return;}const[wx,wy]=toW(sx,sy);T.s=Math.max(0.03,Math.min(6,T.s*f));T.cx=wx-(sx-W/2)/T.s;T.cy=wy+(sy-H/2)/T.s;sched();}
 document.getElementById('zin').onclick=()=>zoomAt(W/2,H/2,1.5);document.getElementById('zout').onclick=()=>zoomAt(W/2,H/2,1/1.5);
-document.getElementById('zfit').onclick=()=>{S.selZone=0;fit();sched();zoneList();};
+document.getElementById('zfit').onclick=()=>{S.selZone=0;if(S.d3){v3Inicial();sched();return;}fit();sched();zoneList();};
+
+/* ---------- vista 3D (projeção axonométrica em canvas 2D, cota real dos caminhões) ---------- */
+const V3={az:-0.55,tilt:0.95,s:1,cx:0,cy:0,cz:0,ex:3};let ZC=null,ZMIN=0,ZMAX=0,SECZ=null,SEGZ=null;const SAT3=satCamada(()=>sched());
+let ZCV=-1;function zPrep(){if(ZC&&ZCV===EXV)return true;ZCV=EXV;if(!P.z)return false;const sum=new Float64Array(NCELL),n=new Uint32Array(NCELL);
+  V3.cin=new Uint8Array(NCELL);for(let i=0;i<N;i++){const k=cellOf(i);if(!FORA[i])V3.cin[k]=1;const z=P.z[i];if(z<-9000)continue;sum[k]+=z;n[k]++;}
+  ZC=new Float32Array(NCELL).fill(NaN);const zs=[];for(let k=0;k<NCELL;k++)if(n[k]>=3){ZC[k]=sum[k]/n[k];zs.push(ZC[k]);}
+  if(!zs.length){ZC=null;return false;}zs.sort((a,b)=>a-b);ZMIN=zs[Math.floor(zs.length*.01)];ZMAX=zs[Math.floor(zs.length*.99)];V3.cz=zs[Math.floor(zs.length/2)];
+  const zAt=(x,y)=>{const i0=(x/CS)|0,j0=(y/CS)|0;for(let r=0;r<=4;r++){let sm=0,c=0;for(let i=i0-r;i<=i0+r;i++)for(let j=j0-r;j<=j0+r;j++){if(r&&Math.abs(i-i0)<r&&Math.abs(j-j0)<r)continue;if(i<0||j<0||j>=CW)continue;const k=i*CW+j;if(k>=0&&k<NCELL&&ZC[k]===ZC[k]){sm+=ZC[k];c++;}}if(c)return sm/c;}return NaN;};
+  V3.zAt=zAt;
+  SECZ=SECS.map(sc=>{if(!sc.poly)return[zAt(sc.x,sc.y)];const z=sc.poly.map(q=>zAt(q[0],q[1]));const o=z.map((v,i)=>{let sm=0,c=0;for(let j=i-2;j<=i+2;j++){const w=z[j];if(w===w&&j>=0&&j<z.length){sm+=w;c++;}}return c?sm/c:NaN;});return o;});
+  SEGZ=new Float32Array(SEG.length/2);for(let j=0;j<SEG.length;j+=4){SEGZ[j/2]=zAt(SEG[j],SEG[j+1]);SEGZ[j/2+1]=zAt(SEG[j+2],SEG[j+3]);}
+  return true;}
+function v3Inicial(){V3.az=-0.55;V3.tilt=0.95;if(AREA.length){let x0=1e18,x1=-1e18,y0=1e18,y1=-1e18;for(const a of AREA)for(const q of a.pts){const x=q[0]-M.origem[0],y=q[1]-M.origem[1];x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}V3.cx=(x0+x1)/2;V3.cy=(y0+y1)/2;V3.s=Math.min(W/(x1-x0),H/(y1-y0))*0.95;}else{V3.cx=T.cx;V3.cy=T.cy;V3.s=T.s*1.1;}}
+function p3(x,y,z){const c=Math.cos(V3.az),sn=Math.sin(V3.az),ct=Math.cos(V3.tilt),st=Math.sin(V3.tilt);const dx=x-V3.cx,dy=y-V3.cy,dz=((z===z?z:V3.cz)-V3.cz)*V3.ex;
+  const xr=dx*c-dy*sn,yr=dx*sn+dy*c;return[W/2+V3.s*xr,H/2+H*.08-V3.s*(yr*ct+dz*st),yr*st-dz*ct];}
+function draw3d(SEC,ord){if(!zPrep()){ctx.fillStyle=css('--ink2');ctx.font=`13px ${css('--f-body')}`;ctx.textAlign='center';ctx.fillText('Estes dados não têm a cota (altitude) das leituras. Reprocesse em Carregar dados para ver em 3D.',W/2,H/2);ctx.textAlign='start';return;}
+  const zg=ZMIN-5;
+  // chão: satélite plano na cota mais baixa
+  if(SAT.on){const ox=M.origem[0],oy=M.origem[1];let x0=1e18,x1=-1e18,y0=1e18,y1=-1e18;for(const k of baseCells){const x=(k/CW|0)*CS,y=(k%CW)*CS;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+    SAT3.pedir(x0-300,y0-300,x1+300,y1+300,1800,1800);const L=SAT3;if(L.img){const[b0,b1,b2,b3]=L.box;const iw=L.img.naturalWidth||L.img.width,ih=L.img.naturalHeight||L.img.height;
+      const q00=p3(b0-ox,b3-oy,zg),q10=p3(b2-ox,b3-oy,zg),q01=p3(b0-ox,b1-oy,zg);ctx.save();ctx.globalAlpha=SAT.op;
+      ctx.setTransform(DPR*(q10[0]-q00[0])/iw,DPR*(q10[1]-q00[1])/iw,DPR*(q01[0]-q00[0])/ih,DPR*(q01[1]-q00[1])/ih,DPR*q00[0],DPR*q00[1]);ctx.drawImage(L.img,0,0);ctx.restore();}}
+  // contorno da área de análise no chão
+  if(AREA.length){const ox=M.origem[0],oy=M.origem[1];ctx.save();ctx.setLineDash([7,5]);ctx.strokeStyle=css('--accent');ctx.lineWidth=1.6;for(const a of AREA){ctx.beginPath();a.pts.forEach((q,i)=>{const[sx,sy]=p3(q[0]-ox,q[1]-oy,zg);i?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);});ctx.closePath();ctx.stroke();}ctx.restore();}
+  const it=[];const lw=Math.max(2.5,16*V3.s),road=SAT.on?'rgba(255,255,255,.35)':'rgba(120,118,112,.45)';
+  // malha cinza da pista, na cota real
+  const cel=(x,y)=>((x/CS)|0)*CW+((y/CS)|0);for(let j=0;j<SEG.length;j+=4){if(!V3.cin[cel(SEG[j],SEG[j+1])]&&!V3.cin[cel(SEG[j+2],SEG[j+3])])continue;const a=p3(SEG[j],SEG[j+1],SEGZ[j/2]),b=p3(SEG[j+2],SEG[j+3],SEGZ[j/2+1]);if((a[0]<-50&&b[0]<-50)||(a[0]>W+50&&b[0]>W+50)||(a[1]<-50&&b[1]<-50)||(a[1]>H+50&&b[1]>H+50))continue;it.push([(a[2]+b[2])/2,0,a,b]);}
+  const D=MET[S.metric];const colS=o=>o&&o.val!=null&&isFinite(o.val)&&(D.soma?true:o.n>=15)?ramp(SCALE.stops,(SCALE.stops.disc?0:.18)+(SCALE.stops.disc?1:.82)*Math.max(0,Math.min(1,SCALE.f(D.soma&&o.val<=0?0:o.val)))):null;
+  if(SEC){SECS.forEach((sc,si)=>{const o=SECL[si];const c=colS(o);if(!c)return;const z=SECZ[si];
+      if(sc.poly){for(let i=1;i<sc.poly.length;i++){const a=p3(sc.poly[i-1][0],sc.poly[i-1][1],z[i-1]),b=p3(sc.poly[i][0],sc.poly[i][1],z[i]);it.push([(a[2]+b[2])/2,1,a,b,c,sc.id===S.selSec]);}
+        if(V3.tilt>.25)for(let i=0;i<sc.poly.length;i+=12){const t=p3(sc.poly[i][0],sc.poly[i][1],z[i]),g=p3(sc.poly[i][0],sc.poly[i][1],zg);it.push([g[2]+1e6,3,t,g]);}}
+      else{const a=p3(sc.x,sc.y,z[0]);it.push([a[2],2,a,null,c,sc.id===S.selSec,Math.max(4,(sc.r||20)*V3.s*.8)]);}});}
+  else{for(const[v,k]of ord){const x=(k/CW|0)*CS+CS/2,y=(k%CW)*CS+CS/2,z=ZC[k];if(z!==z)continue;const a=p3(x,y,z);if(a[0]<-10||a[0]>W+10||a[1]<-10||a[1]>H+10)continue;it.push([a[2],4,a,null,ramp(SCALE.stops,SCALE.f(v))]);}}
+  it.sort((u,w)=>(u[1]===0)!==(w[1]===0)?(u[1]===0?-1:1):w[0]-u[0]);ctx.lineCap='round';
+  for(const e of it){const[,tp,a,b,c,sel,rad]=e;
+    if(tp===0){ctx.strokeStyle=road;ctx.lineWidth=Math.max(1,4*V3.s);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}
+    else if(tp===3){ctx.strokeStyle='rgba(90,90,90,.13)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}
+    else if(tp===1){if(sel){ctx.strokeStyle=css('--ink');ctx.lineWidth=lw+5;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}
+    else if(tp===2){ctx.globalAlpha=.75;ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(a[0],a[1],rad,rad*Math.max(.25,Math.cos(V3.tilt)),0,0,6.2832);ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=sel?css('--ink'):c;ctx.lineWidth=sel?3:1.2;ctx.stroke();}
+    else{const r=Math.max(1.6,CS*V3.s*.55);ctx.fillStyle=c;ctx.beginPath();ctx.arc(a[0],a[1],r,0,6.2832);ctx.fill();}}
+  // rótulos das seções do ranking
+  if(SEC&&S.zones){ctx.font=`600 11.5px ${css('--f-body')}`;for(const o of SECTOP){const si=SECS.findIndex(x=>x.id===o.id);if(si<0)continue;const sc=SECS[si],z=SECZ[si];const m=sc.poly?Math.floor(sc.poly.length/2):0;const q=sc.poly?p3(sc.poly[m][0],sc.poly[m][1],z[m]):p3(sc.x,sc.y,z[0]);
+      const lab='S'+sc.id,tw=ctx.measureText(lab).width+10;ctx.fillStyle=css('--ink');ctx.beginPath();ctx.roundRect?ctx.roundRect(q[0]+8,q[1]-26,tw,18,4):ctx.rect(q[0]+8,q[1]-26,tw,18);ctx.fill();ctx.fillStyle=css('--bg');ctx.fillText(lab,q[0]+13,q[1]-13);}}
+  // norte girando com a vista
+  {const a=p3(V3.cx,V3.cy,zg),b=p3(V3.cx,V3.cy+100,zg);let dx=b[0]-a[0],dy=b[1]-a[1];const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;const cx=W-36,cy=H-58;
+   ctx.strokeStyle=css('--ink2');ctx.fillStyle=css('--ink2');ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-dx*12,cy-dy*12);ctx.lineTo(cx+dx*12,cy+dy*12);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+dx*16,cy+dy*16);ctx.lineTo(cx+dx*8-dy*5,cy+dy*8+dx*5);ctx.lineTo(cx+dx*8+dy*5,cy+dy*8-dx*5);ctx.closePath();ctx.fill();
+   ctx.font=`600 12px ${css('--f-body')}`;ctx.textAlign='center';ctx.fillText('N',cx+dx*26,cy+dy*26+4);ctx.textAlign='start';}
+  ctx.font=`11px ${css('--f-mono')}`;ctx.fillStyle=css('--ink2');ctx.textAlign='right';ctx.fillText(`cotas ${nf(ZMIN,0)}–${nf(ZMAX,0)} m · exagero vertical ${nf(V3.ex,1)}×`,W-14,H-14);ctx.textAlign='start';}
+function modo3d(on){S.d3=on;document.getElementById('z3d').setAttribute('aria-pressed',on);document.getElementById('d3ctl').hidden=!on;const zs=document.getElementById('zsel');if(zs)zs.disabled=on;if(on){if(S.sel)modoSel(false);v3Inicial();}sched();}
+document.getElementById('z3d').onclick=()=>modo3d(!S.d3);
+document.getElementById('d3ex').oninput=e=>{V3.ex=+e.target.value;document.getElementById('d3exv').textContent=nf(V3.ex,V3.ex%1?1:0)+'×';sched();};
+document.getElementById('d3reset').onclick=()=>{v3Inicial();sched();};
+document.getElementById('d3topo').onclick=()=>{V3.tilt=0;V3.az=0;sched();};
+{let g3=null;
+ cv.addEventListener('pointerdown',e=>{if(!S.d3)return;e.stopImmediatePropagation();g3={x:e.clientX,y:e.clientY,mov:false,pan:e.shiftKey||e.button===2};cv.setPointerCapture(e.pointerId);},true);
+ cv.addEventListener('pointermove',e=>{if(!S.d3)return;e.stopImmediatePropagation();if(!g3)return;const dx=e.clientX-g3.x,dy=e.clientY-g3.y;if(Math.abs(dx)+Math.abs(dy)>2)g3.mov=true;g3.x=e.clientX;g3.y=e.clientY;
+   if(g3.pan){const c=Math.cos(V3.az),sn=Math.sin(V3.az),xr=-dx/V3.s,yr=dy/(V3.s*Math.max(.3,Math.cos(V3.tilt)));V3.cx+=xr*c+yr*sn;V3.cy+=-xr*sn+yr*c;}
+   else{V3.az+=dx*0.008;V3.tilt=Math.max(0,Math.min(1.35,V3.tilt+dy*0.006));}sched();},true);
+ cv.addEventListener('pointerup',e=>{if(!S.d3)return;e.stopImmediatePropagation();const g=g3;g3=null;if(!g||g.mov||!SECZ)return;
+   const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;let best=-1,bd=12;
+   SECS.forEach((sc,si)=>{if(!SECL[si])return;const z=SECZ[si];if(sc.poly){for(let i=1;i<sc.poly.length;i++){const a=p3(sc.poly[i-1][0],sc.poly[i-1][1],z[i-1]),b=p3(sc.poly[i][0],sc.poly[i][1],z[i]);const vx=b[0]-a[0],vy=b[1]-a[1],L=vx*vx+vy*vy||1;const t=Math.max(0,Math.min(1,((mx-a[0])*vx+(my-a[1])*vy)/L));const d=Math.hypot(a[0]+t*vx-mx,a[1]+t*vy-my);if(d<bd){bd=d;best=sc.id;}}}else{const a=p3(sc.x,sc.y,z[0]);const d=Math.hypot(a[0]-mx,a[1]-my)-Math.max(4,(sc.r||20)*V3.s*.8);if(d<bd){bd=d;best=sc.id;}}});
+   if(best>=0){S.selSec=S.selSec===best?0:best;zoneList();sched();}},true);
+ cv.addEventListener('wheel',e=>{if(!S.d3)return;e.preventDefault();e.stopImmediatePropagation();V3.s=Math.max(0.03,Math.min(8,V3.s*Math.exp(-e.deltaY*0.0015)));sched();},{capture:true,passive:false});
+ cv.addEventListener('contextmenu',e=>{if(S.d3)e.preventDefault();});}
 let raf=0;function sched(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw();});}
 function clickMap(e){const r=cv.getBoundingClientRect();const[wx,wy]=toW(e.clientX-r.left,e.clientY-r.top);
   if(S.unit==='sec'&&HASSEC){const si=secAt(wx,wy);S.selSec=si>=0?SECS[si].id:0;zoneList();sched();return;}
@@ -1661,10 +1737,38 @@ document.getElementById('cy-prev').onclick=()=>{if(C.n>0){C.n--;cyN.value=C.n;dr
 document.getElementById('cy-next').onclick=()=>{if(C.n<CYC[C.tag].length-1){C.n++;cyN.value=C.n;drawCycle();}};
 cyOpts();
 
+
+function drawPerfil(pts){const card=document.getElementById('cy-perfil-card'),host=document.getElementById('cy-perfil');if(!card||!host)return;
+  if(!P.z){card.hidden=true;return;}card.hidden=false;if(!host.clientWidth)return;
+  const d=[],z=[],v=[],r=[],lo=[],cg=[],gap=[],gr=[],tt=[];let acc=0,prev=-1;
+  for(const i of pts){if(P.z[i]<-9000)continue;if(prev>=0){const dt=P.t[i]-P.t[prev],dd=Math.hypot(P.x[i]-P.x[prev],P.y[i]-P.y[prev]);gap.push(dt>60);acc+=dt<=60?dd:0;}else gap.push(false);
+    d.push(acc/1000);z.push(P.z[i]);v.push(P.v[i]/10);r.push(P.r[i]/10);const n=P.eo[i+1]-P.eo[i];lo.push(n>0&&!P.lp[i]&&(P.r[i]-P.v[i])/10>M.tol);cg.push(P.c[i]);gr.push(P.g[i]>-990?P.g[i]/10:null);tt.push(P.t[i]);prev=i;}
+  if(d.length<2){host.innerHTML='<p class="note">Sem leituras com cota neste ciclo.</p>';return;}
+  const Wd=host.clientWidth,Hh=240,ml=52,mr=14,mt=14,mb=30,dx=Math.max(d.at(-1),0.1);let z0=Math.min(...z),z1=Math.max(...z);const pad=Math.max(5,(z1-z0)*.08);z0-=pad;z1+=pad;
+  const X=k=>ml+(Wd-ml-mr)*k/dx,Y=q=>mt+(Hh-mt-mb)*(1-(q-z0)/(z1-z0));const B=rampsB();
+  let h=`<svg width="${Wd}" height="${Hh}" viewBox="0 0 ${Wd} ${Hh}" style="display:block" role="img" aria-label="Perfil de elevação do ciclo">`;
+  // faixas cheio/vazio
+  let a=0;for(let i=1;i<=d.length;i++){if(i===d.length||cg[i]!==cg[a]){const c=cg[a]===0?'var(--band-cheio)':cg[a]===1?'var(--band-vazio)':null;if(c)h+=`<rect x="${X(d[a])}" y="${mt}" width="${Math.max(0,X(d[Math.min(i,d.length-1)])-X(d[a]))}" height="${Hh-mt-mb}" fill="${c}"/>`;a=i;}}
+  // grade
+  const stp=[5,10,20,25,50,100,200].find(s_=>(z1-z0)/s_<=6)||200;for(let q=Math.ceil(z0/stp)*stp;q<=z1;q+=stp)h+=`<line x1="${ml}" x2="${Wd-mr}" y1="${Y(q)}" y2="${Y(q)}" stroke="var(--line)"/><text x="${ml-6}" y="${Y(q)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${q}</text>`;
+  const xs=[0.25,0.5,1,2,5,10].find(s_=>dx/s_<=8)||10;for(let k=0;k<=dx+1e-9;k+=xs)h+=`<text x="${X(k)}" y="${Hh-10}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${nf(k,xs<1?2:xs<2?1:0)}</text>`;
+  h+=`<text x="${Wd-mr}" y="${Hh-10}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">km</text><text x="${ml-6}" y="${mt-2}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">m</text>`;
+  // área e linha colorida pela velocidade
+  let ar=`M${X(d[0])},${Y(z0)}`;for(let i=0;i<d.length;i++)ar+=`L${X(d[i])},${Y(z[i])}`;ar+=`L${X(d.at(-1))},${Y(z0)}Z`;h+=`<path d="${ar}" fill="var(--ink)" fill-opacity=".05"/>`;
+  for(let i=1;i<d.length;i++){if(gap[i])continue;h+=`<line x1="${X(d[i-1])}" y1="${Y(z[i-1])}" x2="${X(d[i])}" y2="${Y(z[i])}" stroke="${ramp(B,Math.min(1,(v[i]+v[i-1])/80))}" stroke-width="3.2" stroke-linecap="round"/>`;}
+  for(let i=1;i<d.length;i++)if(lo[i]&&!gap[i])h+=`<rect x="${X(d[i-1])}" y="${Hh-mb-5}" width="${Math.max(1,X(d[i])-X(d[i-1]))}" height="5" fill="#d33"/>`;
+  h+=`<line id="pf-g" x1="0" x2="0" y1="${mt}" y2="${Hh-mb}" stroke="var(--ink)" stroke-dasharray="3 3" visibility="hidden"/><circle id="pf-c" r="4" fill="var(--ink)" visibility="hidden"/><rect id="pf-hit" x="${ml}" y="${mt}" width="${Wd-ml-mr}" height="${Hh-mt-mb}" fill="transparent"/></svg><div id="pf-tip" class="pftip" hidden></div>`;
+  host.innerHTML=h;const g=host.querySelector('#pf-g'),c=host.querySelector('#pf-c'),tip=host.querySelector('#pf-tip'),hit=host.querySelector('#pf-hit');
+  hit.addEventListener('mousemove',e=>{const rc=host.getBoundingClientRect(),mx=e.clientX-rc.left;const k=(mx-ml)/(Wd-ml-mr)*dx;let lo_=0,hi=d.length-1;while(lo_<hi){const m=(lo_+hi)>>1;if(d[m]<k)lo_=m+1;else hi=m;}const i=lo_;
+    g.setAttribute('x1',X(d[i]));g.setAttribute('x2',X(d[i]));g.setAttribute('visibility','visible');c.setAttribute('cx',X(d[i]));c.setAttribute('cy',Y(z[i]));c.setAttribute('visibility','visible');
+    tip.hidden=false;tip.innerHTML=`<b>${nf(d[i],2)} km · ${clock(tt[i])}</b><br>Cota ${nf(z[i],0)} m${gr[i]!=null?` · rampa ${gr[i]>0?'+':''}${nf(gr[i],1)}%`:''}<br>Real ${nf(v[i],1)} km/h · ref. ${nf(r[i],1)} km/h<br>${cg[i]===0?'Cheio':cg[i]===1?'Vazio':''}${lo[i]?' · <span style="color:#d33">perda com interação</span>':''}`;
+    const tx=Math.min(Wd-190,Math.max(0,X(d[i])+10));tip.style.left=tx+'px';tip.style.top='8px';});
+  hit.addEventListener('mouseleave',()=>{g.setAttribute('visibility','hidden');c.setAttribute('visibility','hidden');tip.hidden=true;});}
 function drawCycle(){if(!CYC[C.tag]||!CYC[C.tag][C.n])return;const host=document.getElementById('cy-tl');if(!host.clientWidth)return;
   const c=CYC[C.tag][C.n],ta=c[1],tb=c[2];
   const pts=(PI[C.tag]||[]).filter(i=>P.t[i]>=ta&&P.t[i]<tb);
   const evs=(EI[C.tag]||[]).filter(j=>E.t[j]<tb&&E.t[j]+E.d[j]>=ta);
+  try{drawPerfil(pts);}catch(e){}
   document.getElementById('cy-title').textContent=`Caminhão ${TAGS[C.tag]} · ciclo ${C.n+1} de ${CYC[C.tag].length} · ${day(ta)} ${clock(ta)} → ${clock(tb)}`;
   // ---- decomposição ----
   let sw=0,sv=0,sdef=0,dist=0,lostS=0,lpw=0;const byP=new Map();let noEv=0;
