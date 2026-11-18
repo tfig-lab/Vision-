@@ -34,6 +34,16 @@ node scripts/proteger.js atualizar --admin admin --senha-admin "SENHA_ADMIN" --p
 # painel_enc.html = painel gerado com --binario, trocando no <script id="dados"> os nomes .bin por .enc e acrescentando "cifrado":true
 ```
 
+## Publicar uma versão nova do painel (mantém usuários, login e dados)
+
+```bash
+cd scripts && npm install javascript-obfuscator@4.1.1
+# lvg_chuva.json (LVG e chuva padrão) e dados_local/parte*.bin ficam só na máquina, fora do repositório
+node build.js todos            # painel_enc.html (web) e deploy/local/painel_local_aberto.html (dados embutidos)
+node painel_tool.js trocar ../index.html painel_enc.html admin "SENHA_ADMIN"    # troca só o painel cifrado do index
+node painel_tool.js local ../index.html deploy/local/painel_local_aberto.html admin "SENHA" "Vision Painel v0.8.html"
+```
+
 ## Gerar um painel novo a partir dos dados
 
 ```bash
