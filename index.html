@@ -90,7 +90,7 @@ async function entrar(user,pw){
 const f=document.getElementById('f'),go=document.getElementById('go'),gol=document.getElementById('gol'),msg=document.getElementById('msg'),p=document.getElementById('p'),eye=document.getElementById('eye');
 eye.onclick=()=>{const t=p.type==='password';p.type=t?'text':'password';eye.textContent=t?'ocultar':'mostrar';eye.setAttribute('aria-label',t?'Ocultar senha':'Mostrar senha');p.focus();};
 if(!window.crypto||!crypto.subtle||typeof DecompressionStream==='undefined'){msg.textContent='Este navegador não suporta o painel. Use Chrome, Edge, Firefox ou Safari atualizados.';go.disabled=true;}
-f.onsubmit=async ev=>{ev.preventDefault();msg.textContent='';
+const enviar=async ev=>{if(ev)ev.preventDefault();if(go.disabled)return;msg.textContent='';
   const u=document.getElementById('u').value,pw=p.value;if(!u||!pw){msg.textContent='Preencha usuário e senha.';return;}
   go.disabled=true;gol.textContent='Verificando…';let raw;
   try{raw=await entrar(u,pw);}catch(e){go.disabled=false;gol.textContent='Entrar';msg.textContent='Usuário ou senha inválidos.';p.select();return;}
@@ -98,6 +98,7 @@ f.onsubmit=async ev=>{ev.preventDefault();msg.textContent='';
   if(document.getElementById('keep').checked){try{sessionStorage.setItem(KS,u2b(raw));}catch(e){}}
   try{await abrir(raw);}catch(e){go.disabled=false;gol.textContent='Entrar';msg.textContent='Não foi possível abrir o painel. Tente de novo.';}
 };
+f.onsubmit=enviar;go.addEventListener('click',enviar);['u','p'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')enviar(e);})); // funciona mesmo onde o navegador bloqueia o envio de formulário (pré-visualizações)
 let saved=null;try{saved=sessionStorage.getItem(KS);}catch(e){}
 if(saved){go.disabled=true;gol.textContent='Abrindo o painel…';abrir(b2u(saved)).catch(()=>{try{sessionStorage.removeItem(KS)}catch(e){}go.disabled=false;gol.textContent='Entrar';});}
 else document.getElementById('u').focus();

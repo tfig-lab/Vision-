@@ -14,3 +14,5 @@ const modo=process.argv[2]||'todos';const tamWeb=()=>{try{return Math.round((fs.
 if(modo==='web'||modo==='todos'){fs.writeFileSync('painel_enc.html',monta({partes:['dados/parte0.enc','dados/parte1.enc'],mb:tamWeb(),cifrado:true}));console.log('web',(fs.statSync('painel_enc.html').size/1e6).toFixed(2),'MB');}
 if(modo==='local'||modo==='todos'){const gz=Buffer.concat([fs.readFileSync('dados_local/parte0.bin'),fs.readFileSync('dados_local/parte1.bin')]);
   fs.mkdirSync('deploy/local',{recursive:true});fs.writeFileSync('deploy/local/painel_local_aberto.html',monta({embutido:true,mb:Math.round(gz.length/1e5)/10},gz.toString('base64')));console.log('local aberto',(fs.statSync('deploy/local/painel_local_aberto.html').size/1e6).toFixed(2),'MB');}
+if(modo==='artifact'||modo==='todos'){fs.mkdirSync('dados',{recursive:true});['parte0','parte1'].forEach(n=>fs.writeFileSync('dados/'+n+'.txt',fs.readFileSync('dados_local/'+n+'.bin').toString('base64')));
+  fs.writeFileSync('painel.html',monta({partes:['dados/parte0.txt','dados/parte1.txt'],b64:true,mb:tamWeb()}));console.log('artifact painel.html',(fs.statSync('painel.html').size/1e6).toFixed(2),'MB');}
