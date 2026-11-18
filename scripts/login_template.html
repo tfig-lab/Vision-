@@ -54,7 +54,7 @@ footer{padding:18px 24px;text-align:center;font:400 11.5px "IBM Plex Mono",monos
   <form id="f" autocomplete="on" novalidate>
     <h2>Entrar</h2>
     <label>Usuário<input id="u" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
-    <label>Senha<span class="pw"><input id="p" name="password" type="password" autocomplete="current-password" required><button type="button" id="eye" aria-label="Mostrar senha">mostrar</button></span></label>
+    <label>Senha<span class="pw"><input id="p" autocapitalize="none" autocorrect="off" spellcheck="false" name="password" type="password" autocomplete="current-password" required><button type="button" id="eye" aria-label="Mostrar senha">mostrar</button></span></label>
     <label class="keep"><input type="checkbox" id="keep" checked>Manter conectado nesta aba</label>
     <p class="msg" id="msg" role="alert"></p>
     <button class="go" id="go" type="submit"><span class="spin"></span><span id="gol">Entrar</span></button>
@@ -91,7 +91,7 @@ const f=document.getElementById('f'),go=document.getElementById('go'),gol=docume
 eye.onclick=()=>{const t=p.type==='password';p.type=t?'text':'password';eye.textContent=t?'ocultar':'mostrar';eye.setAttribute('aria-label',t?'Ocultar senha':'Mostrar senha');p.focus();};
 if(!window.crypto||!crypto.subtle||typeof DecompressionStream==='undefined'){msg.textContent='Este navegador não suporta o painel. Use Chrome, Edge, Firefox ou Safari atualizados.';go.disabled=true;}
 const enviar=async ev=>{if(ev)ev.preventDefault();if(go.disabled)return;msg.textContent='';
-  const u=document.getElementById('u').value,pw=p.value;if(!u||!pw){msg.textContent='Preencha usuário e senha.';return;}
+  const u=document.getElementById('u').value.trim(),pw=p.value.trim(); // espaços copiados junto com a senha não atrapalhamif(!u||!pw){msg.textContent='Preencha usuário e senha.';return;}
   go.disabled=true;gol.textContent='Verificando…';let raw;
   try{raw=await entrar(u,pw);}catch(e){go.disabled=false;gol.textContent='Entrar';msg.textContent='Usuário ou senha inválidos.';p.select();return;}
   gol.textContent='Abrindo o painel…';
